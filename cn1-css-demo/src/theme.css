@@ -1,0 +1,175 @@
+@font-face {
+        font-family: "Source Sans Pro";
+        src: url(https://raw.githubusercontent.com/google/fonts/master/ofl/sourcesanspro/SourceSansPro-Light.ttf);
+    }
+    
+@media cn1 {
+    /*
+    Label {
+        padding: 10px;
+        border-radius: 10px;
+        background-color: #ccc;
+        text-align: center;
+        
+    }
+    
+    Label.pressed {
+        background-color: #666;
+    }
+    */
+    
+    
+
+    
+    
+    
+    TitleArea {
+        border: none;
+        color: black;
+        background: none;
+        
+    }
+    
+    
+    
+    
+    Center {
+        padding-top: 200px;
+        padding-bottom: 100px;
+    }
+    
+    
+    GradientForm {
+        cn1-derive: Form;
+        background: linear-gradient(135deg, #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%);
+        width: 100%;
+        height: 100%;
+        text-align: center;
+    }
+
+    Logo {
+        background-image: url(http://solutions.weblite.ca/images/weblite-logo-small.png);
+        cn1-image-id: "Logo.png";
+        
+    }
+    
+    
+    
+    LoginField {
+        cn1-derive: TextField;
+        padding: 20px;
+        color: white;
+        border-bottom: 1px solid white;
+        background-color: rgba(255,255,255,50);
+        margin: 0;
+    }
+    
+    UsernameField {
+        cn1-derive: LoginField;
+    }
+    
+    PasswordField {
+        cn1-derive: LoginField;
+    }
+    
+    
+    
+    
+    /** Sign up form **/
+    
+    Title, TitleCommand, BackCommand {
+        font-family: "Source Sans Pro";
+        
+    }
+    
+    TitleCommand {
+        color: rgb( 247, 50, 103 );
+        margin-left: 2mm;
+        margin-right: 2mm;
+        
+    }
+    
+    TitleCommand.pressed {
+        color: #ffffff;
+    }
+    
+    BackCommand {
+        margin-left: 2mm;
+        margin-right: 2mm;
+    }
+    
+    BackCommand.pressed {
+        color: rgb( 247, 50, 103 );
+        
+    }
+    
+    BackArrow {
+        background-image: url(../assets/back-arrow.png);
+        cn1-image-id: "back-arrow.png";
+    }
+    
+    RightArrow {
+        background-image : url(../assets/right_arrow.png);
+        cn1-image-id: "right_arrow.png";
+    }
+    
+    Camera {
+        background-image: url(../assets/camera.png);
+        cn1-image-id: "camera.png";   
+    }
+    
+    ProfilePhoto {
+        background-image: url(../assets/profile-photo-button.png);
+        cn1-image-id: "profile-photo-button.png";
+    }
+    
+    PhotoButton {
+        margin: 3mm;
+    }
+    
+    SignUpButton {
+        background-color: rgb( 247, 50, 103 );
+        border: none;
+        margin: 0;
+        color: white;
+        text-align: center;
+        font-family: "Source Sans Pro";
+        padding: 2mm;
+    }
+    
+    SignUpForm {
+        padding: 0;
+        cn1-derive: Form;
+        background-image: url(../assets/signup-form-bg.png);
+        
+    }
+    
+    SignUpCenter {
+        background-color: white;
+        padding: 0;
+        margin: 0;
+    }
+    
+    SignUpField, SignUpLabel {
+        border-bottom: 1px solid rgba( 77, 96, 111, 1.0 );
+        border-right: 1px solid rgba( 77, 96, 111, 1.0 );
+        opacity: 0.102;
+        padding: 2mm;
+        color: rgb( 77, 96, 111 );
+        font-family: "Source Sans Pro";
+        margin: 0;
+        
+    }
+    
+    SignUpLabel {
+        padding-left: 4mm;
+        padding-right: 4mm;
+    }
+    
+    SignupFieldHint {
+        font-family: "Source Sans Pro";
+        color: rgb( 77, 96, 111 );
+        font-size: small;
+        padding: 4mm;
+    }
+}
