@@ -27,7 +27,7 @@ public class CSSDemo {
             Hashtable vals = theme.getTheme(theme.getThemeResourceNames()[0]);
             vals.putAll(css.getTheme(css.getThemeResourceNames()[0]));
             UIManager.getInstance().setThemeProps(vals);
-            Display.getInstance().setCommandBehavior(Display.COMMAND_BEHAVIOR_DEFAULT);
+            //Display.getInstance().setCommandBehavior(Display.COMMAND_BEHAVIOR_DEFAULT);
             //UIManager.getInstance().setThemeProps(css.getTheme(css.getThemeResourceNames()[0]));
         } catch(IOException e){
             e.printStackTrace();
