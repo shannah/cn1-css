@@ -60,7 +60,7 @@ $(document).ready(function() {
     //window.app.log("We are in ready");
     myDevice = new Device();
     window.captureScreenshots = function() {
-        window.app.log("in captureScreenshots");
+        //window.app.log("in captureScreenshots");
         if (window.elements === null) {
             $('.element').hide();
             window.elements = [];
@@ -78,6 +78,20 @@ $(document).ready(function() {
         myDevice.scrollTo(0,0);
         setTimeout(function() {
             var rect = currEl.getBoundingClientRect();
+            window.app.log("----BOXSHADOW:"+$(currEl).attr('id'));
+            window.app.log("Element before shadow is located at "+rect.left+", "+rect.top+", "+rect.width+", "+rect.height);
+            if ($(currEl).attr('data-box-shadow-padding')) {
+                window.app.log("Dealing with box shadow padding "+$(currEl).attr('data-box-shadow-padding'));
+                var parts = $(currEl).attr('data-box-shadow-padding').split(',');
+                window.app.log("parsed "+parts[0]+", "+parts[1]+", "+parts[2]+", "+parts[3]);
+                
+                rect = {
+                    top: rect.top - parseInt(parts[0]),
+                    left: rect.left - parseInt(parts[3]),
+                    width: rect.width + parseInt(parts[3]) + parseInt(parts[1]),
+                    height: rect.height + parseInt(parts[2]) + parseInt(parts[0])
+                };
+            }
             setTimeout(function() {
                 // This passes back actual coordinates in the real webview viewport - not the virtual viewport
                 window.app.log("Element is located at "+rect.left+", "+rect.top+", "+rect.width+", "+rect.height);
@@ -91,10 +105,10 @@ $(document).ready(function() {
 });
 
 function getRectSnapshot(x, y, w, h) {
-    window.snapper.log("Hello");
+    //window.snapper.log("Hello");
     myDevice.scrollTo(x-20, y-20);
     setTimeout(function() {
-        window.snapper.log("About to call handleJSSnap()");
+        //window.snapper.log("About to call handleJSSnap()");
         window.snapper.handleJSSnap(window.scrollX, window.scrollY, x, y, w, h);
     }, 50);
 }

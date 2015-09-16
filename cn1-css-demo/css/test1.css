@@ -1,0 +1,218 @@
+Padding10pt {
+    padding: 10pt;
+}
+
+Padding10px {
+    padding : 10px;
+}
+
+Padding10mm {
+    padding: 10mm;
+}
+
+Padding10cm {
+    padding: 10cm;
+}
+
+BlueBackground {
+    background-color: blue;
+}
+
+BlueBackgroundRGB {
+    background-color: #0000ff;
+}
+
+BlueBackgroundRGBA {
+    background-color: rgba(0,0,255, 1.0);
+}
+
+BlueForegroundRGBA {
+    color: rgba(0,0,255, 1.0);
+}
+
+BlueForegroundRGB {
+    color: rgb(0,0,255);
+}
+
+BlueForeground {
+    color: blue;
+}
+
+BlueLineBorder {
+    border: 1px solid blue;
+}
+
+BlueLineBorder1pt {
+    border: 1pt solid blue;
+}
+
+BlueLineBorder2pt {
+    border: 2pt solid blue;
+}
+
+BlueLineBorderRGB {
+    border: 1px solid rgb(0,0,255);
+}
+
+BlueLineBorderRGBA {
+    border: 1px solid rgba(0,0,255, 1.0);
+}
+
+BlueLineBorder2px {
+    border: 2px solid blue;
+}
+
+
+BlueDashedBorder {
+    border: 1pt dashed blue;
+}
+
+BlueDashedBorder2pt {
+    border: 2pt dashed blue;
+}
+
+BlueDottedBorder {
+    border: 1pt dotted blue;
+    
+}
+
+BlueDottedBorder2pt {
+    border: 2pt dotted blue;
+    
+}
+
+/** Rounded Borders */
+
+BlueBorderRadius5pt {
+    border: 1px solid blue;
+    border-radius: 5pt;
+}
+
+BlueBorderRadius10pt {
+    border: 1px solid blue;
+    border-radius: 10pt;
+}
+
+BlueBorderRadius50pct {
+    width: 100pt;
+    height: 100pt;
+    border-radius: 50%;
+    border: 1pt solid blue;
+    
+}
+
+BlueBgRadius10pt {
+    background-color: blue;
+    border-radius: 10pt;
+}
+
+LinearGradientHorizontal9Piece{
+    background: linear-gradient(to right, rgba(179,220,237,1) 0%, rgba(41,184,229,1) 50%, rgba(188,224,238,1) 100%);
+    
+}
+LinearGradientHorizontalFill{
+    background: linear-gradient(to right, rgba(179,220,237,1) 0%, rgba(41,184,229,1) 50%, rgba(188,224,238,1) 100%);
+    width: 100%;
+    height: 100%;
+}
+
+LinearGradientVertical9Piece{
+    background: linear-gradient(to bottom, rgba(179,220,237,1) 0%, rgba(41,184,229,1) 50%, rgba(188,224,238,1) 100%);  
+}
+
+LinearGradientVerticalFill{
+    background: linear-gradient(to bottom, rgba(179,220,237,1) 0%, rgba(41,184,229,1) 50%, rgba(188,224,238,1) 100%);
+    width: 100%;
+    height: 100%;
+}
+
+RadialGradient9Piece {
+    background: radial-gradient(ellipse at center, rgba(147,206,222,1) 0%, rgba(117,189,209,1) 41%, rgba(73,165,191,1) 100%);
+}
+
+RadialGradientFill {
+    background: radial-gradient(ellipse at center, rgba(147,206,222,1) 0%, rgba(117,189,209,1) 41%, rgba(73,165,191,1) 100%);
+    width: 100%;
+    height: 100%;
+}
+
+CenterText {
+    text-align: center;
+}
+
+LeftText {
+    text-align: left;
+}
+
+RightText {
+    text-align: right;
+}
+
+Underlined {
+    text-decoration: underline;
+}
+
+StrikeThrough {
+    text-decoration: line-through;
+}
+
+Overline {
+    text-decoration: overline;
+}
+
+Italic {
+    font-style: italic;
+}
+
+Bold {
+    font-weight: bold;
+}
+
+Plain {
+    font-style: normal;
+}
+
+BackgroundImageNoRepeatScaled {
+    background-image: url(https://upload.wikimedia.org/wikipedia/en/thumb/c/c1/IPhone_6S_Rose_Gold.jpg.png/225px-IPhone_6S_Rose_Gold.jpg.png);
+    background-repeat: no-repeat;
+    cn1-source-dpi: 72;
+}
+
+BackgroundImageNoRepeatScaledFill {
+    background-image: url(https://upload.wikimedia.org/wikipedia/en/thumb/c/c1/IPhone_6S_Rose_Gold.jpg.png/225px-IPhone_6S_Rose_Gold.jpg.png);
+    background-repeat: no-repeat;
+    cn1-background-type: cn1-image-scaled-fill;
+    cn1-source-dpi: 72;
+ 
+}
+
+LoadMultipleImages {
+    background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/IPad_Air_2.png/375px-IPad_Air_2.png),
+        url(https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Sega-Mega-Drive-JP-Mk1-Console-Set.jpg/375px-Sega-Mega-Drive-JP-Mk1-Console-Set.jpg);
+    cn1-source-dpi: 72;
+}
+
+SpeechBubble {
+    background-image : url(http://www.codenameone.com/img/blog/chat-bubble-left.png);
+    cn1-9patch: 62px 25px 29px 25px;
+    cn1-source-dpi: 144;
+    width: 447px;
+    height: 93px;
+    padding: 1mm;
+    padding-left: 3mm;
+    
+}
+
+InnerShadow {
+    box-shadow: inset 10px 10px 115px 1px rgba(0,0,0,0.75);
+    cn1-background-type: cn1-image-scaled-fill;
+}
+
+BoxShadow {
+    box-shadow: 20px 10px 8px 1px rgba(0,0,0,0.75);
+    /*cn1-9patch: 20px 20px 20px 20px;*/
+    border: 1px solid gray;
+    
+    
+    
+}

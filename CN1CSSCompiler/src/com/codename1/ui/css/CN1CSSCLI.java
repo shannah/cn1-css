@@ -58,6 +58,9 @@ public class CN1CSSCLI extends Application {
             
         String outputPath = inputPath+".res";
         
+        if (args.length > 1) {
+            outputPath = args[1];
+        }
         
         JavaSEPort.setShowEDTViolationStacks(false);
             JavaSEPort.setShowEDTWarnings(false);
@@ -69,26 +72,29 @@ public class CN1CSSCLI extends Application {
         }).start();
         //Thread.sleep(5000);
         File inputFile = new File(inputPath);
+        File outputFile = new File(outputPath);
         URL url = inputFile.toURI().toURL();
         //CSSTheme theme = CSSTheme.load(CSSTheme.class.getResource("test.css"));
         CSSTheme theme = CSSTheme.load(url);
         theme.cssFile = inputFile;
+        theme.resourceFile = outputFile;
         
         Platform.runLater(() -> {
             new Thread(()-> {
                 try {
                     theme.createImageBorders(web);
                     theme.updateResources();
-                    theme.save(new File(outputPath));
+                    theme.save(outputFile);
                     //Platform.runLater(()-> {
                     //    web.getEngine().executeScript("$('div').show()");
                     //});
-                    
                     frm.dispose();
                     System.exit(0);
-                } catch (IOException ex) {
+                } catch (Throwable ex) {
                     Logger.getLogger(CN1CSSCLI.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                    frm.dispose();
+                    System.exit(1);
+                } 
             }).start();
             //System.out.println(theme.getHtmlPreview());
             //web.getEngine().loadContent(theme.getHtmlPreview());

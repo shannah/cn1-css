@@ -15,7 +15,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -36,8 +38,15 @@ public class CN1CSSCompileTask extends Task {
     public void execute() throws BuildException {
         
         String srcDirPath = getProject().getProperty("src.dir");
+        
+        File cssDir = new File(getProject().getBaseDir(), "css");
+        if (!cssDir.exists()) {
+            log("Skipping CSS task because no 'css' directory found in project.");
+            return;
+        }
+        
         File srcDir = new File(getProject().getBaseDir(), srcDirPath);
-        System.out.println(getProject().getProperties());
+        //System.out.println(getProject().getProperties());
         String[] classPath = getProject().getProperty("run.classpath").split(":");
         String javaSEJarPath = null;
         for (String path : classPath) {
@@ -85,34 +94,16 @@ public class CN1CSSCompileTask extends Task {
         
         
         
-        String[] cssFiles = srcDir.list((dir, name) -> {
-            if (name.endsWith(".css")) {
-                File f = new File(dir, name);
-                try {
-                    Scanner scanner = new Scanner(f);
-
-                    //now read the file line by line...
-                    int lineNum = 0;
-                    while (scanner.hasNextLine()) {
-                        String line = scanner.nextLine();
-                        lineNum++;
-                        if(line.contains("@media") && line.contains("cn1")) { 
-                            return true;
-                        }
-                    }
-                } catch(FileNotFoundException e) { 
-                    //handle this
-                }
-                
-            }
-            return false;
+        String[] cssFiles = cssDir.list((dir, name) -> {
+            return name.endsWith(".css");
+            
         });
         
         Map<String,String> checksums = loadChecksums();
         
         for (String cssFile : cssFiles) {
             try {
-                File f = new File(srcDir, cssFile);
+                File f = new File(cssDir, cssFile);
                 File destFile = new File(srcDir, cssFile + ".res");
                 if (destFile.exists() && f.lastModified() < destFile.lastModified()) {
                     log("Not compiling " + f + " because " + destFile + " has a newer modification time.");
@@ -145,6 +136,9 @@ public class CN1CSSCompileTask extends Task {
                 
                 Argument arg = javaTask.createArg();
                 arg.setValue(f.getAbsolutePath());
+                
+                Argument destArg = javaTask.createArg();
+                destArg.setValue(destFile.getAbsolutePath());
                 
                 javaTask.execute();
                 
