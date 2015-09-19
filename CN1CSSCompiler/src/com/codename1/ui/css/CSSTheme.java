@@ -590,10 +590,10 @@ public class CSSTheme {
         sb.append("<!doctype html>\n<html><base href=\""+baseURL.toExternalForm()+"\"/> <head><style type=\"text/css\">body {padding:0; margin:0} div.element {margin: 0 !important; padding: 0 !important; }</style></head><body>");
         for (String name : elements.keySet()) {
             Element el = (Element)elements.get(name);
-            sb.append(el.getUnselected().getEmptyHtmlWithId(name))
-                    .append(el.getSelected().getEmptyHtmlWithId(name+".sel"))
-                    .append(el.getPressed().getEmptyHtmlWithId(name+".press"))
-                    .append(el.getDisabled().getEmptyHtmlWithId(name+".dis"));
+            sb.append(el.getUnselected().getEmptyHtmlWithId(name, el.getUnselected().getFlattenedStyle()))
+                    .append(el.getSelected().getEmptyHtmlWithId(name+".sel", el.getSelected().getFlattenedStyle()))
+                    .append(el.getPressed().getEmptyHtmlWithId(name+".press", el.getPressed().getFlattenedStyle()))
+                    .append(el.getDisabled().getEmptyHtmlWithId(name+".dis", el.getDisabled().getFlattenedStyle()));
                     
         }
         sb.append("</body></html>");
@@ -1369,11 +1369,14 @@ public class CSSTheme {
             return sb.toString();
         }
         
-        public String getEmptyHtmlWithId(String id) {
+        public String getEmptyHtmlWithId(String id, Map<String,LexicalUnit> style) {
             StringBuilder sb = new StringBuilder();
+            String generateImage = (this.requiresBackgroundImageGeneration(style) || this.requiresImageBorder(style)) ? "true" : "false";
+            
             sb.append("<div id=\""+id+"\" class=\"element\" style=\"").append(generateStyleCSS())
-                    .append("\" data-box-shadow-padding=\"").append(generateBoxShadowPaddingString())
-                    .append("\"></div>");
+                    .append("\" data-box-shadow-padding=\"").append(generateBoxShadowPaddingString()).append("\"")
+                    .append(" data-generate-image=\"").append(generateImage).append("\"")
+                    .append("></div>");
             return sb.toString();
         }
         

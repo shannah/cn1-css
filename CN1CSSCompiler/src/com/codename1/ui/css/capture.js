@@ -68,6 +68,9 @@ $(document).ready(function() {
                 window.elements.push(this);
             });
         }
+        while (currIndex < elements.length && $(elements[currIndex]).attr('data-generate-image') !== 'true') {
+            currIndex++;
+        }
         if (currIndex >= elements.length) {
             window.app.finishedCaptureScreenshotsCallback();
             return;
