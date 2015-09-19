@@ -2,6 +2,10 @@
 
 A library to add support for designing Codename One themes using CSS (Cascading Style Sheets).
 
+#Requirements
+
+- Your development machine must have Java 8 installed.
+
 ## Features
 
 * .css files compiled to native Codename One .res theme files at compile time.
@@ -23,8 +27,8 @@ A library to add support for designing Codename One themes using CSS (Cascading 
 
 ## Installation
 
-* Download cn1css-ant-task.jar and copy into your project's `lib` directory.
-* Copy the following snippet into you project's `build.xml` file:
+1. Download cn1css-ant-task.jar and copy into your project's `lib` directory.
+2. Copy the following snippet into you project's `build.xml` file:
  ~~~~
     <taskdef name="compileCSS"
         classname="com.codename1.ui.css.CN1CSSCompileTask"
@@ -34,7 +38,8 @@ A library to add support for designing Codename One themes using CSS (Cascading 
         <compileCSS/>
     </target>
  ~~~~
-* Change the following line in your project's `build.xml` file:
+3. Change the following line in your project's `build.xml` file:
+ 
  ~~~~
  <target name="-post-compile">
  ~~~~
@@ -143,4 +148,20 @@ There are 3 variants of selectors that you can use in your CSS files:
  
  }
  ~~~~
+
+## Examples
+
+* [Test CSS File](https://github.com/shannah/cn1-css/blob/master/cn1-css-demo/css/test1.css)
+
+## Building From Source
+
+~~~~
+$ git clone https://github.com/shannah/cn1-css.git
+$ cd cn1-css/CN1CSSCompiler
+$ ant jar
+~~~~
+
+If all went well, you'll find the generated `cn1css-ant-task.jar` inside the `cn1-css/CN1CSSCompiler/dist` directory.
+
+
 
