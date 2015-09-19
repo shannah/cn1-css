@@ -54,7 +54,7 @@ public class WebviewSnapshotter {
             });
             return;
         } 
-        System.out.println("in FireJSSnap "+x+","+y+","+w+","+h);
+        //System.out.println("in FireJSSnap "+x+","+y+","+w+","+h);
         JSObject window = (JSObject)web.getEngine().executeScript("window");
         window.setMember("snapper", this);
         web.getEngine().executeScript("getRectSnapshot("+x+","+y+","+w+","+h+");");
@@ -76,7 +76,7 @@ public class WebviewSnapshotter {
     }
     
     public final void handleJSSnap(int scrollX, int scrollY, int x, int y, int w, int h) {
-        System.out.println("In handleJSSnap before thread check");
+        //System.out.println("In handleJSSnap before thread check");
         if (!isEventThread()) {
             runLater(()-> {
                 handleJSSnap(scrollX, scrollY, x, y, w, h);
@@ -84,7 +84,7 @@ public class WebviewSnapshotter {
             return;
         }
         
-        System.out.println("In handleJSSnap "+scrollX+", "+scrollY+", "+x+","+y+","+w+","+h);
+        //System.out.println("In handleJSSnap "+scrollX+", "+scrollY+", "+x+","+y+","+w+","+h);
         Platform.runLater(()-> {
             //snapshotParams.
             WritableImage wi = web.snapshot(snapshotParams, null);
@@ -92,13 +92,13 @@ public class WebviewSnapshotter {
             BufferedImage img = SwingFXUtils.fromFXImage(wi, null);
             
             runLater(()-> {
-                System.out.println("Getting subImag "+(x-scrollX)+", "+(y-scrollY)+", "+w+", "+h+" for image "+img.getWidth()+", "+img.getHeight());
+                //System.out.println("Getting subImag "+(x-scrollX)+", "+(y-scrollY)+", "+w+", "+h+" for image "+img.getWidth()+", "+img.getHeight());
                 int remw = Math.min(w, 320);
                 int remh = Math.min(h, 480);
                 //remw = Math.min(remw, 320);
                 //remh = Math.min(remh, 480);
                 BufferedImage img2 = img.getSubimage(20,20, remw, remh);
-                System.out.println("Writing image at "+(x-20)+", "+(y-20)+" with width "+remw+" and height "+remh);
+                //System.out.println("Writing image at "+(x-20)+", "+(y-20)+" with width "+remw+" and height "+remh);
                 imageGraphics.drawImage(img2, null, x-20, y-20);
                 if (x+remw < this.x+this.w || y+remh < this.y+this.h) {
                     if (x+remw < this.x+this.w) {
@@ -128,7 +128,7 @@ public class WebviewSnapshotter {
             });
             return;
         } 
-        System.out.println("In fireDone()");
+        //System.out.println("In fireDone()");
         imageGraphics.dispose();
         
         // Now do the fireDone

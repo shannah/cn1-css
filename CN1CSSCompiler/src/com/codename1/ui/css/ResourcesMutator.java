@@ -198,7 +198,7 @@ public class ResourcesMutator {
         if (addIndex) {
             res.setMultiImage(prefix + "_" + i + ".png", multi);
         } else {
-            System.out.println("Setting multiimage at "+prefix+" to "+multi);
+            //System.out.println("Setting multiimage at "+prefix+" to "+multi);
             res.setMultiImage(prefix, multi);
         }
         return multi.getBest();
@@ -378,8 +378,8 @@ public class ResourcesMutator {
     private final Object screenshotsLock = new Object();
     public void createScreenshotCallback_old(String id, int x, int y, int w, int h) {
         Platform.runLater(()->{
-            System.out.println("in screenshot callback id "+id);
-            System.out.println(imageProcessors);
+            //System.out.println("in screenshot callback id "+id);
+            //System.out.println(imageProcessors);
             if (imageProcessors.containsKey(id)) {
                 double ratio = 1.0;
                 //this.targetDensity = Display.DENSITY_VERY_HIGH;
@@ -399,8 +399,8 @@ public class ResourcesMutator {
     
     public void createScreenshotCallback(String id, int x, int y, int w, int h) {
         Platform.runLater(()->{
-            System.out.println("in screenshot callback id "+id);
-            System.out.println(imageProcessors);
+            //System.out.println("in screenshot callback id "+id);
+            //System.out.println(imageProcessors);
             if (imageProcessors.containsKey(id)) {
                 double ratio = 1.0;
                 //this.targetDensity = Display.DENSITY_VERY_HIGH;
@@ -431,7 +431,7 @@ public class ResourcesMutator {
     }
     
     public void finishedCaptureScreenshotsCallback() {
-        System.out.println("In finished screen cap");
+        //System.out.println("In finished screen cap");
         screenshotsComplete = true;
         synchronized(screenshotsLock) {
             screenshotsLock.notifyAll();

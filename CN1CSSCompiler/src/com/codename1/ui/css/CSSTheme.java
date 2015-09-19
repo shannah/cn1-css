@@ -1094,12 +1094,12 @@ public class CSSTheme {
             }
             
         }
-        System.out.println(generateCaptureHtml());
+        //System.out.println(generateCaptureHtml());
         resm.createScreenshots(web, generateCaptureHtml(), this.baseURL.toExternalForm());
         for (Runnable r : onComplete) {
             r.run();
         }
-        System.out.println(res.getTheme("Theme"));
+        //System.out.println(res.getTheme("Theme"));
     }
     
     public void save(File outputFile) throws IOException {
@@ -1250,18 +1250,18 @@ public class CSSTheme {
                     boxShadow = tmp;
                 }
             }
-            System.out.println("Trying to get box shadow: "+boxShadow);
+            //System.out.println("Trying to get box shadow: "+boxShadow);
             
             if (isNone(boxShadow)) {
                 return i;
             }
             
-            System.out.println("It is not none "+boxShadow);
+            //System.out.println("It is not none "+boxShadow);
             
             ScaledUnit insetUnit = boxShadow;
             while (insetUnit != null) {
                 if ("inset".equals(insetUnit.getStringValue())) {
-                    System.out.println("it is inset");
+                    //System.out.println("it is inset");
                     return i;
                 }
                 insetUnit = (ScaledUnit)insetUnit.getNextLexicalUnit();
@@ -1269,7 +1269,7 @@ public class CSSTheme {
             
             
             double hShadow = boxShadow.getPixelValue();
-            System.out.println("hShadow is "+hShadow);
+            //System.out.println("hShadow is "+hShadow);
             boxShadow = (ScaledUnit)boxShadow.getNextLexicalUnit();
             
             double vShadow = boxShadow.getPixelValue();
@@ -2894,7 +2894,7 @@ public class CSSTheme {
             }
             
             case "background" : {
-                System.out.println("Setting background");
+                //System.out.println("Setting background");
                 
                 while (value != null) {
                     //System.out.println(value);

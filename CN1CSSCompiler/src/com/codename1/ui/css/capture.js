@@ -47,7 +47,7 @@ function Device() {
 }
 
 Device.prototype.scrollTo = function(x,y) {
-    window.app.log("Scrolling to "+x+','+y);
+    //window.app.log("Scrolling to "+x+','+y);
     $(this.el).css({
         left : -x,
         top :  -y
@@ -81,12 +81,12 @@ $(document).ready(function() {
         myDevice.scrollTo(0,0);
         setTimeout(function() {
             var rect = currEl.getBoundingClientRect();
-            window.app.log("----BOXSHADOW:"+$(currEl).attr('id'));
-            window.app.log("Element before shadow is located at "+rect.left+", "+rect.top+", "+rect.width+", "+rect.height);
+            //window.app.log("----BOXSHADOW:"+$(currEl).attr('id'));
+            //window.app.log("Element before shadow is located at "+rect.left+", "+rect.top+", "+rect.width+", "+rect.height);
             if ($(currEl).attr('data-box-shadow-padding')) {
-                window.app.log("Dealing with box shadow padding "+$(currEl).attr('data-box-shadow-padding'));
+                //window.app.log("Dealing with box shadow padding "+$(currEl).attr('data-box-shadow-padding'));
                 var parts = $(currEl).attr('data-box-shadow-padding').split(',');
-                window.app.log("parsed "+parts[0]+", "+parts[1]+", "+parts[2]+", "+parts[3]);
+                //window.app.log("parsed "+parts[0]+", "+parts[1]+", "+parts[2]+", "+parts[3]);
                 
                 rect = {
                     top: rect.top - parseInt(parts[0]),
@@ -97,7 +97,7 @@ $(document).ready(function() {
             }
             setTimeout(function() {
                 // This passes back actual coordinates in the real webview viewport - not the virtual viewport
-                window.app.log("Element is located at "+rect.left+", "+rect.top+", "+rect.width+", "+rect.height);
+                //window.app.log("Element is located at "+rect.left+", "+rect.top+", "+rect.width+", "+rect.height);
                 window.app.createScreenshotCallback($(currEl).attr('id'), rect.left, rect.top, rect.width, rect.height);
             }, 2);
         }, 50);

@@ -80,7 +80,7 @@ public class CN1CSSCompiler implements DocumentHandler {
     public static class FXApplication extends Application {
         
         public void ready() {
-                System.out.println("App ready");
+                //System.out.println("App ready");
                 if (webpageLoadedCallback != null) {
                     webpageLoadedCallback.run();
                 }
@@ -100,7 +100,7 @@ public class CN1CSSCompiler implements DocumentHandler {
                 @Override
                 public void changed(ObservableValue<? extends State> ov, State t, State t1) {
                     
-                    System.out.println("WEbview changed "+t1);
+                    //System.out.println("WEbview changed "+t1);
                     if (t1 == Worker.State.SUCCEEDED) {
                         try {
                             // Use reflection to retrieve the WebEngine's private 'page' field.
@@ -262,7 +262,7 @@ public class CN1CSSCompiler implements DocumentHandler {
                     }
                 }
             }
-            System.out.println(props);
+            /(props);
             //CodenameOneTask cn1 = new CodenameOneTask();
             //cn1.setDest(outputFile);
 
@@ -316,7 +316,7 @@ public class CN1CSSCompiler implements DocumentHandler {
             
             
             theme.put("uninitialized", true);
-            System.out.println(theme);
+            //System.out.println(theme);
             res.setTheme("test", theme);
             //for (Object key : theme.keySet()) {
             //    res.setThemeProperty("test.css", (String)key, theme.get(key));
@@ -324,7 +324,7 @@ public class CN1CSSCompiler implements DocumentHandler {
             
             //res.setThemeProperties("test.css", theme);
             //res.getTheme("test.css").putAll(theme);
-            System.out.println(res.getTheme("test"));
+            //System.out.println(res.getTheme("test"));
             DataOutputStream resFile = new DataOutputStream(new FileOutputStream(outputFile));
             res.save(resFile);
             //res.saveXML(outputFile);
@@ -472,8 +472,8 @@ public class CN1CSSCompiler implements DocumentHandler {
         do {
             cssUnit.unit = lu.getLexicalUnitType();
             cssUnit.val = lu.getFloatValue();
-            System.out.println("Flval is "+lu.getFloatValue());
-            System.out.println("Val is "+cssUnit.val+ " for "+lu);
+            //System.out.println("Flval is "+lu.getFloatValue());
+            //System.out.println("Val is "+cssUnit.val+ " for "+lu);
             convertUnitToCN1(cssUnit, cn1Unit);
             vals.add(Math.round(cn1Unit.val));
             units.add(cn1Unit.unit);
