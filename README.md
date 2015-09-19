@@ -151,7 +151,7 @@ There are 3 variants of selectors that you can use in your CSS files:
 
 ## Examples
 
-* [Test CSS File](https://github.com/shannah/cn1-css/blob/master/cn1-css-demo/css/test1.css)
+* [Test CSS File](https://github.com/shannah/cn1-css/blob/master/cn1-css-demo/css/test1.css) is compiled to [this Codename One theme file](https://github.com/shannah/cn1-css/blob/master/cn1-css-demo/src/test1.css.res?raw=true)
 
 ## Building From Source
 
