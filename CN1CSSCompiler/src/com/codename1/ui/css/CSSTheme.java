@@ -859,13 +859,15 @@ public class CSSTheme {
             
             InputStream is = imgURL.openStream();
             EncodedImage encImg = EncodedImage.create(is);
+            
             is.close();
             
             
             ResourcesMutator resm = new ResourcesMutator(res);
             int[] dpis = getDpi(encImg);
             if (styles.containsKey("cn1-source-dpi")) {
-                resm.targetDensity = getDensityForDpi(styles.get("cn1-source-dpi").getFloatValue());
+                //System.out.println("Using cn1-source-dpi "+styles.get("cn1-source-dpi").getFloatValue());
+                resm.targetDensity = getDensityForDpi(((ScaledUnit)styles.get("cn1-source-dpi")).getNumericValue());
             } else if (dpis[0] > 0) {
                 resm.targetDensity = getImageDensity(encImg);
             } else {
@@ -873,8 +875,11 @@ public class CSSTheme {
                 resm.targetDensity = getDensityForDpi(bgImage.dpi);
             }
             
-            //System.out.println("Loading image from "+url+" with density "+resm.targetDensity);
+            System.out.println("Target density for image is "+resm.targetDensity);
+            
+            System.out.println("Loading image from "+url+" with density "+resm.targetDensity);
             Image im = resm.storeImage(encImg, imageIdStr, false);
+            System.out.println("Finished storing image "+url);
             //System.out.println("Storing image "+url+" at id "+imageIdStr);
             loadedImages.put(url, im);
             
@@ -887,7 +892,7 @@ public class CSSTheme {
     
     public int getSourceDensity(Map<String,LexicalUnit> style, int defaultValue) {
         if (style.containsKey("cn1-source-dpi")) {
-            return getDensityForDpi(style.get("cn1-source-dpi").getFloatValue());
+            return getDensityForDpi(((ScaledUnit)style.get("cn1-source-dpi")).getNumericValue());
         } else {
             return defaultValue;
         }
@@ -941,7 +946,7 @@ public class CSSTheme {
                         String prefix = id + "_" + i + ".png";
                         //System.out.println("Generating image "+prefix);
                         resm.targetDensity = getSourceDensity(unselectedStyles, resm.targetDensity);
-                        Image im = resm.storeImage(EncodedImage.create(ResourcesMutator.toPng(img)), prefix, false);
+                        Image im = resm.storeImage(EncodedImage.create(ResourcesMutator.toPngOrJpeg(img)), prefix, false);
                         unselectedBorder.image = im;
                         resm.put(id+".bgImage", im);
                         resm.targetDensity = targetDensity;
@@ -986,7 +991,7 @@ public class CSSTheme {
                         String prefix = id + "_" + i + ".png";
                         //System.out.println("Generating image "+prefix);
                         resm.targetDensity = getSourceDensity(selectedStyles, resm.targetDensity);
-                        Image im = resm.storeImage(EncodedImage.create(ResourcesMutator.toPng(img)), prefix, false);
+                        Image im = resm.storeImage(EncodedImage.create(ResourcesMutator.toPngOrJpeg(img)), prefix, false);
                         selectedBorder.image = im;
                         resm.put(id+".sel#bgImage", im);
                         //resm.put(id+".press#bgType", Style.B)
@@ -1033,7 +1038,7 @@ public class CSSTheme {
                         }
                         String prefix = id + "_" + i + ".png";
                         resm.targetDensity = getSourceDensity(pressedStyles, resm.targetDensity);
-                        Image im = resm.storeImage(EncodedImage.create(ResourcesMutator.toPng(img)), prefix, false);
+                        Image im = resm.storeImage(EncodedImage.create(ResourcesMutator.toPngOrJpeg(img)), prefix, false);
                         pressedBorder.imageId = prefix;
                         resm.put(id+".press#bgImage", im/*res.findId(im, true)*/);
                         resm.targetDensity = targetDensity;
@@ -1080,7 +1085,7 @@ public class CSSTheme {
                         }
                         String prefix = id + "_" + i + ".png";
                         resm.targetDensity = getSourceDensity(disabledStyles, resm.targetDensity);
-                        Image im = resm.storeImage(EncodedImage.create(ResourcesMutator.toPng(img)), prefix, false);
+                        Image im = resm.storeImage(EncodedImage.create(ResourcesMutator.toPngOrJpeg(img)), prefix, false);
                         disabledBorder.image = im;
                         resm.put(id+".dis#bgImage", im);
                         resm.targetDensity = targetDensity;
@@ -1850,14 +1855,14 @@ public class CSSTheme {
                         borderInsets.top + boxShadowInsets.top + boxShadowInsets.bottom + 1;
             } else {
             
-                i.top = borderInsets.top + 2*boxShadowInsets.top + boxShadowInsets.bottom + 1;
+                i.top = borderInsets.top + boxShadowInsets.top + boxShadowInsets.bottom + 1;
             }
             if (!isNone(borderRadiusBottomLeftY) || !isNone(borderRadiusBottomRightY)) {
                 i.bottom = Math.max(getPixelValue(borderRadiusBottomLeftY), getPixelValue(borderRadiusBottomRightY)) + 
                         borderInsets.bottom + boxShadowInsets.bottom + boxShadowInsets.top + 1;
             } else {
             
-                i.bottom = borderInsets.bottom + 2*boxShadowInsets.bottom + boxShadowInsets.top + 1;
+                i.bottom = borderInsets.bottom + boxShadowInsets.bottom + boxShadowInsets.top + 1;
             }
             
             //i.top = Math.max(getPixelValue(borderTopWidth), i.top);
@@ -2026,9 +2031,9 @@ public class CSSTheme {
                                 if (bgSize != null) {
                                     switch (bgSize.getLexicalUnitType()) {
                                         case LexicalUnit.SAC_PERCENTAGE: {
-                                            LexicalUnit width = bgSize;
-                                            LexicalUnit height = bgSize.getNextLexicalUnit();
-                                            if (width.getFloatValue() > 99 && (height == null || height.getFloatValue() > 99 || "auto".equals(height.getStringValue()))) {
+                                            ScaledUnit width = (ScaledUnit)bgSize;
+                                            ScaledUnit height = (ScaledUnit)bgSize.getNextLexicalUnit();
+                                            if (width.getNumericValue() > 99 && (height == null || height.getNumericValue() > 99 || "auto".equals(height.getStringValue()))) {
                                                 // This is clearly asking us to stretch the 
                                                 // image
                                                 return Style.BACKGROUND_IMAGE_SCALED;
@@ -2105,9 +2110,9 @@ public class CSSTheme {
                     if (bgSize != null) {
                         switch (bgSize.getLexicalUnitType()) {
                             case LexicalUnit.SAC_PERCENTAGE: {
-                                LexicalUnit width = bgSize;
-                                LexicalUnit height = bgSize.getNextLexicalUnit();
-                                if (width.getFloatValue() > 99 && (height == null || height.getFloatValue() > 99 || "auto".equals(height.getStringValue()))) {
+                                ScaledUnit width = (ScaledUnit)bgSize;
+                                ScaledUnit height = (ScaledUnit)bgSize.getNextLexicalUnit();
+                                if (width.getNumericValue() > 99 && (height == null || height.getNumericValue() > 99 || "auto".equals(height.getStringValue()))) {
                                     // This is clearly asking us to stretch the 
                                     // image
                                     return Style.BACKGROUND_IMAGE_SCALED;
@@ -2285,7 +2290,7 @@ public class CSSTheme {
                 }
                 fontSize = fontSize.getNextLexicalUnit();
             }
-            
+            fontSize = styles.get("font-size");
             loop : while (fontStyle != null) {
                 switch (fontStyle.getStringValue()) {
                     case "normal" :
@@ -2348,36 +2353,36 @@ public class CSSTheme {
                                     if (fontSize != null) {
                                         switch (fontSize.getLexicalUnitType()) {
                                             case LexicalUnit.SAC_MILLIMETER:
-                                                ttfFontSize = 4;
+                                                ttfFontSize = 3;
                                                 actualSize = fontSize.getFloatValue();
                                                 break;
                                             case LexicalUnit.SAC_PIXEL:
                                             case LexicalUnit.SAC_POINT:
-                                                ttfFontSize = 3;
+                                                ttfFontSize = 4;
                                                 actualSize = fontSize.getFloatValue();
                                                 break;
                                                 
                                             case LexicalUnit.SAC_CENTIMETER:
-                                                ttfFontSize = 4;
+                                                ttfFontSize = 3;
                                                 actualSize = fontSize.getFloatValue()*10f;
                                                 break;
                                             case LexicalUnit.SAC_INCH:
-                                                ttfFontSize = 4;
+                                                ttfFontSize = 3;
                                                 actualSize = fontSize.getFloatValue()*25f;
                                                 break;
                                             case LexicalUnit.SAC_EM:
-                                                ttfFontSize = 3;
+                                                ttfFontSize = 4;
                                                 actualSize = fontSize.getFloatValue()* 14f;
                                                 break;
                                             case LexicalUnit.SAC_PERCENTAGE:
-                                                ttfFontSize = 3;
+                                                ttfFontSize = 4;
                                                 actualSize = fontSize.getFloatValue() /100f * 14f;
                                                 break;
                                                 
                                         }
                                     }
                                     Font sys = Font.createSystemFont(iFontFace,iFontStyle, iFontSizeType);
-                           
+                                    System.out.println("TTF Font "+fontFile+" "+ttfFontSize + " " +actualSize + " "+sys);
                                     ttfFont = new EditorTTFFont(fontFile, ttfFontSize, actualSize, sys);
                                     break loop;
                                 }

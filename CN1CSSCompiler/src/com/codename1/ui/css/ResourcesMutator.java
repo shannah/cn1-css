@@ -205,6 +205,20 @@ public class ResourcesMutator {
     }
 
 
+    public static byte[] toPngOrJpeg(BufferedImage b) {
+        if (hasAlpha(b)) {
+            return toPng(b);
+        } else {
+            byte[] png = toPng(b);
+            byte[] jpeg = toJpeg(b);
+            if (png.length <= jpeg.length * 2) {
+                return png;
+            } else {
+                return jpeg;
+            }
+        }
+    }
+    
     public static byte[] toPng(BufferedImage b) {
         try {
             ByteArrayOutputStream bo = new ByteArrayOutputStream();
@@ -217,8 +231,40 @@ public class ResourcesMutator {
         }
     }
     
-    public static EditableResources.MultiImage scaleMultiImage(int fromDPI, int toDPI, int scaledWidth, int scaledHeight, EditableResources.MultiImage multi) {
+    public static boolean hasAlpha(BufferedImage b) {
+        
+        if (!b.getColorModel().hasAlpha()) {
+            System.out.println("The image color model has not alpha");
+            return false;
+        }
+        int[] rgb = b.getRGB(0, 0, b.getWidth(), b.getHeight(), null, 0, b.getWidth());
+        for (int px : rgb) {
+            int alpha = (px & 0xff000000) >>> 24;
+            if (alpha != 0xff) {
+                System.out.println(px + " / " + (alpha));
+                System.out.println("The image has alpha!!");
+                return true;
+           }
+        }
+        System.out.println("The image has not alpha");
+        return false;
+    }
+    
+    public static byte[] toJpeg(BufferedImage b) {
         try {
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            ImageIO.write(b, "jpeg", bo);
+            bo.close();
+            return bo.toByteArray();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        
+    }
+    
+    public static EditableResources.MultiImage scaleMultiImage(int fromDPI, int toDPI, int scaledWidth, int scaledHeight, EditableResources.MultiImage multi) {
+        //try {
             int[] dpis = multi.getDpi();
             com.codename1.ui.EncodedImage[] imgs = multi.getInternalImages();
             int fromOffset = -1;
@@ -256,18 +302,19 @@ public class ResourcesMutator {
             sourceImage.getRGB();
             sourceImage.getWidth();
             BufferedImage scaled = getScaledInstance(buffer, scaledWidth, scaledHeight);
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            ImageIO.write(scaled, "png", output);
-            output.close();
-            byte[] bytes = output.toByteArray();
+            byte[] bytes = toPngOrJpeg(scaled);
+            //ByteArrayOutputStream output = new ByteArrayOutputStream();
+            //ImageIO.write(scaled, "png", output);
+            //output.close();
+            //byte[] bytes = output.toByteArray();
             com.codename1.ui.EncodedImage encoded = com.codename1.ui.EncodedImage.create(bytes);
             newImage.getInternalImages()[toOffset] = encoded;
             return newImage;
-        } catch (IOException ex) {
-            ex.printStackTrace();
-                
-        }
-        return null;
+        //} catch (IOException ex) {
+        //    ex.printStackTrace();
+        //        
+        //}
+        //return null;
     }
     
     private static BufferedImage getScaledInstance(BufferedImage img,
@@ -342,15 +389,15 @@ public class ResourcesMutator {
             bottomImage = getScaledInstance(bottomImage, Math.max(20, bottomImage.getWidth()), bottomImage.getHeight());
         }
         
-        com.codename1.ui.EncodedImage topLeftCodenameOne = com.codename1.ui.EncodedImage.create(toPng(topLeft));
-        com.codename1.ui.EncodedImage topRightCodenameOne = com.codename1.ui.EncodedImage.create(toPng(topRight));
-        com.codename1.ui.EncodedImage bottomLeftCodenameOne = com.codename1.ui.EncodedImage.create(toPng(bottomLeft));
-        com.codename1.ui.EncodedImage bottomRightCodenameOne = com.codename1.ui.EncodedImage.create(toPng(bottomRight));
-        com.codename1.ui.EncodedImage centerCodenameOne = com.codename1.ui.EncodedImage.create(toPng(center));
-        com.codename1.ui.EncodedImage topImageCodenameOne = com.codename1.ui.EncodedImage.create(toPng(topImage));
-        com.codename1.ui.EncodedImage bottomImageCodenameOne = com.codename1.ui.EncodedImage.create(toPng(bottomImage));
-        com.codename1.ui.EncodedImage leftImageCodenameOne = com.codename1.ui.EncodedImage.create(toPng(leftImage));
-        com.codename1.ui.EncodedImage rightImageCodenameOne = com.codename1.ui.EncodedImage.create(toPng(rightImage));
+        com.codename1.ui.EncodedImage topLeftCodenameOne = com.codename1.ui.EncodedImage.create(toPngOrJpeg(topLeft));
+        com.codename1.ui.EncodedImage topRightCodenameOne = com.codename1.ui.EncodedImage.create(toPngOrJpeg(topRight));
+        com.codename1.ui.EncodedImage bottomLeftCodenameOne = com.codename1.ui.EncodedImage.create(toPngOrJpeg(bottomLeft));
+        com.codename1.ui.EncodedImage bottomRightCodenameOne = com.codename1.ui.EncodedImage.create(toPngOrJpeg(bottomRight));
+        com.codename1.ui.EncodedImage centerCodenameOne = com.codename1.ui.EncodedImage.create(toPngOrJpeg(center));
+        com.codename1.ui.EncodedImage topImageCodenameOne = com.codename1.ui.EncodedImage.create(toPngOrJpeg(topImage));
+        com.codename1.ui.EncodedImage bottomImageCodenameOne = com.codename1.ui.EncodedImage.create(toPngOrJpeg(bottomImage));
+        com.codename1.ui.EncodedImage leftImageCodenameOne = com.codename1.ui.EncodedImage.create(toPngOrJpeg(leftImage));
+        com.codename1.ui.EncodedImage rightImageCodenameOne = com.codename1.ui.EncodedImage.create(toPngOrJpeg(rightImage));
         //String prefix = (String)applies.getAppliesTo().getModel().getElementAt(0);
         topLeftCodenameOne = storeImage(topLeftCodenameOne, prefix +"TopL");
         topRightCodenameOne = storeImage(topRightCodenameOne, prefix +"TopR");
