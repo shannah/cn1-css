@@ -1740,14 +1740,15 @@ public class CSSTheme {
                 i.left = borderLeftWidth.getPixelValue();
             }
             if (!isNone(borderRightWidth)) {
-                i.left = borderRightWidth.getPixelValue();
+                i.right = borderRightWidth.getPixelValue();
             }
             if (!isNone(borderTopWidth)) {
-                i.left = borderTopWidth.getPixelValue();
+                i.top = borderTopWidth.getPixelValue();
             }
             if (!isNone(borderBottomWidth)) {
-                i.left = borderBottomWidth.getPixelValue();
+                i.bottom = borderBottomWidth.getPixelValue();
             }
+            System.out.println("Border insets "+i);
             return i;
         }
         
