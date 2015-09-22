@@ -1,0 +1,123 @@
+@font-face {
+    font-family: "Source Sans Pro";
+    src: url(https://raw.githubusercontent.com/google/fonts/master/ofl/sourcesanspro/SourceSansPro-Light.ttf);
+} 
+/*------------------------------------------------------------------------*/
+/* Import Images from ../assets into the resource file*/
+RightArrow {
+    background-image : url(../assets/right_arrow.png);
+    cn1-image-id: "right_arrow.png";
+}
+
+BackArrow {
+    background-image: url(../assets/back-arrow.png);
+    cn1-image-id: "back-arrow.png";
+}
+
+ProfilePhoto {
+    background-image: url(../assets/profile-photo-button.png);
+    cn1-image-id: "profile-photo-button.png";
+}
+
+/*------------------------------------------------------------------------*/
+/* Form Styles */
+SignUpForm {
+    padding: 0;
+    cn1-derive: Form;
+    background-image: url(../assets/signup-form-bg.png);
+
+}
+
+/* White background for center panel on which all text fields are placed */
+SignUpCenter {
+    background-color: white;
+    padding: 0;
+    margin: 0;
+}
+
+
+/*------------------------------------------------------------------------*/
+/* Override Built-in Styles */
+/*
+Title, TitleCommand, BackCommand {
+    font-family: "Source Sans Pro";
+
+}
+
+
+TitleArea {
+    background-color: transparent;
+}
+
+TitleCommand {
+    color: rgb( 247, 50, 103 );
+    margin-left: 2mm;
+    margin-right: 2mm;
+
+}
+
+TitleCommand.pressed {
+    color: #ffffff;
+}
+
+BackCommand {
+    margin-left: 2mm;
+    margin-right: 2mm;
+}
+
+BackCommand.pressed {
+    color: rgb( 247, 50, 103 );
+
+}
+*/
+/*------------------------------------------------------------------------*/
+/* Text Field Styles */
+
+
+
+SignUpField, SignUpLabel {
+    border-bottom: 1px solid rgb( 77, 96, 111 );
+    border-right: 1px solid rgb( 77, 96, 111 );
+    opacity: 0.102;
+    padding: 2mm;
+    color: rgb( 77, 96, 111 );
+    font-family: "Source Sans Pro";
+    margin: 0;
+
+
+}
+
+SignUpLabel {
+    padding-left: 4mm;
+    padding-right: 4mm;
+}
+
+SignupFieldHint {
+    font-family: "Source Sans Pro";
+    color: rgb( 77, 96, 111 );
+    font-size: small;
+    padding: 4mm;
+}
+
+/*------------------------------------------------------------------------*/
+/* Buttons */
+
+PhotoButton {
+    margin: 3mm;
+}
+
+SignUpButton {
+    background-color: rgb( 247, 50, 103 );
+    border: none;
+    margin: 0;
+    color: white;
+    text-align: center;
+    font-family: "Source Sans Pro";
+    padding: 2mm;
+}
+
+SignUpButton.pressed {
+    background-color: gray;
+
+
+}

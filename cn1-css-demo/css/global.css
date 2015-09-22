@@ -1,0 +1,19 @@
+@font-face {
+    font-family: "Source Sans Pro";
+    src: url(github://google/fonts/blob/master/ofl/sourcesanspro/SourceSansPro-Light.ttf);
+}
+
+TitleArea {
+    background-color: rgba(0,0,0,0);
+}
+
+TitleCommand, BackCommand, Title {
+    color: white;
+    text-decoration: none;
+    font-family: "Source Sans Pro";
+    
+}
+
+TitleCommand.pressed, BackCommand.pressed {
+    color: gray;
+}

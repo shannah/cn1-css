@@ -251,9 +251,12 @@ public class ResourcesMutator {
     }
     
     public static byte[] toJpeg(BufferedImage b) {
+        BufferedImage buffer = new BufferedImage(b.getWidth(), b.getHeight(), BufferedImage.TYPE_INT_RGB);
+        int[] rgb = b.getRGB(0, 0, b.getWidth(), b.getHeight(), null, 0, b.getWidth());
+        buffer.setRGB(0, 0, b.getWidth(), b.getHeight(), rgb, 0, b.getWidth());
         try {
             ByteArrayOutputStream bo = new ByteArrayOutputStream();
-            ImageIO.write(b, "jpeg", bo);
+            ImageIO.write(buffer, "jpeg", bo);
             bo.close();
             return bo.toByteArray();
         } catch (IOException ex) {

@@ -157,6 +157,11 @@ public class CSSTheme {
                 switch (src.getLexicalUnitType()) {
                     case LexicalUnit.SAC_URI:
                         String url = src.getStringValue();
+                        if (url.startsWith("github://")) {
+                            //url(https://raw.githubusercontent.com/google/fonts/master/ofl/sourcesanspro/SourceSansPro-Light.ttf);
+                            url = "https://raw.githubusercontent.com/" + url.substring(9).replace("/blob/master/", "/master/");
+                            return new URL(url);
+                        }
                         if (url.startsWith("http://") || url.startsWith("https://")) {
                             return new URL(url);
                         } else {

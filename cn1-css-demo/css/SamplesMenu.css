@@ -1,0 +1,47 @@
+@font-face {
+    font-family: "Source Sans Pro";
+    src: url(https://raw.githubusercontent.com/google/fonts/master/ofl/sourcesanspro/SourceSansPro-Light.ttf);
+} 
+
+SamplesMenu {
+    cn1-derive: Form;
+    background: linear-gradient(135deg, #45484d 0%,#000000 100%);
+    width: 100%;
+    height: 100%;
+}
+SamplesMenuButton {
+    padding: 1mm;
+    color: white;
+    font-family: "Source Sans Pro";
+    font-size: small;
+    opacity: 0.4;
+    text-align: center;
+}
+
+SamplesMenuButton.pressed {
+    background: linear-gradient(135deg, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%);
+    width: 100%;
+    height: 100%;
+}
+
+Imports {
+    background-image: url(images/signupform-250.png),
+        url(images/weatherform-250.png),
+        url(images/logo-dark.png);
+    cn1-source-dpi: 144.0;
+    
+}
+
+
+AboutDialog {
+    
+    background: linear-gradient(135deg, rgba(246,248,249,1) 0%,rgba(229,235,238,1) 50%,rgba(215,222,227,1) 51%,rgba(245,247,249,1) 100%);
+    background-color: blue;
+    width: 100%;
+    height: 100%;
+    border-radius: 10pt;
+    border: 1pt solid #eaeaea;
+
+    
+}
+

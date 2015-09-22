@@ -1,0 +1,67 @@
+@font-face {
+    font-family: "Source Sans Pro";
+    src: url(github://google/fonts/blob/master/ofl/sourcesanspro/SourceSansPro-Light.ttf);
+}
+
+@font-face {
+    font-family: "FontAwesome";
+    src: url(github://FortAwesome/Font-Awesome/blob/master/fonts/fontawesome-webfont.ttf);
+}
+
+WeatherForecastDegrees, WeatherForecastClear, WeatherForecastCityLabel,  WeatherForecastStateLabel{
+    font-family: "Source Sans Pro";
+    color: white;
+    text-align: center;
+}
+
+WeatherForecastForm {
+    background-image: url(images/beach-bg.jpg);
+    background-repeat: no-repeat;
+    cn1-background-type: cn1-image-scaled-fill;
+    padding: 0;
+    cn1-source-dpi: 72;
+    cn1-derive: Form;
+    
+}
+
+WeatherForecastFormSouth {
+    background-color: rgb(119, 181, 171);
+    margin: 0;
+    padding: 2mm;
+}
+
+WeatherForecastCityLabel {
+    font-size: large;
+    text-align: center;
+    
+    padding:0;
+    margin:0;
+    
+}
+
+WeatherForecastStateLabel {
+    font-size: small;
+    padding:0;
+    margin:0;
+
+    
+}
+
+WeatherForecastDegrees {
+    font-size: 25mm;
+    padding:0;
+    margin:0;
+    
+}
+
+WeatherForecastClear {
+    font-size: small;
+    padding:0;
+    margin:0;
+}
+
+WeatherForecastIcon {
+    font-family: "FontAwesome";
+    color: white;
+}
+

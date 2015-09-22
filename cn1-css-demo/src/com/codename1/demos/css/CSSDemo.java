@@ -23,12 +23,15 @@ public class CSSDemo {
     public void init(Object context) {
         try {
             theme = Resources.openLayered("/theme");
-            css = Resources.openLayered("/theme.css");
+            //css = Resources.openLayered("/theme.css");
             Hashtable vals = theme.getTheme(theme.getThemeResourceNames()[0]);
-            vals.putAll(css.getTheme(css.getThemeResourceNames()[0]));
+            //vals.putAll(css.getTheme(css.getThemeResourceNames()[0]));
             UIManager.getInstance().setThemeProps(vals);
             //Display.getInstance().setCommandBehavior(Display.COMMAND_BEHAVIOR_DEFAULT);
             //UIManager.getInstance().setThemeProps(css.getTheme(css.getThemeResourceNames()[0]));
+            UIManager.getInstance().addThemeProps(Resources.openLayered("/global.css").getTheme("Theme"));
+            WeatherForecastForm.init();
+            SignUpForm.init();
         } catch(IOException e){
             e.printStackTrace();
         }
@@ -47,12 +50,22 @@ public class CSSDemo {
     }
     
     public void start() {
+        if (current != null) {
+            current.show();
+            return;
+        }
+        
+        Form menu = new SamplesMenu();
+        menu.show();
+    }
+    
+    public void start_old() {
         if(current != null){
             current.show();
             return;
         }
         if (true) {
-            Form sf = new SignUpForm(css);
+            Form sf = new SignUpForm();
             sf.show();
             return;
         }

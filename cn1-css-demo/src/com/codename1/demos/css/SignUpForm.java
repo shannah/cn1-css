@@ -18,18 +18,33 @@ import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.FlowLayout;
 import com.codename1.ui.layouts.GridLayout;
+import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
+import java.io.IOException;
 
 /**
  *
  * @author shannah
  */
 public class SignUpForm extends Form {
-    final Resources res;
-    public SignUpForm(Resources res) {
+    static Resources res;
+    
+    public static void init() {
+        if (res == null) {
+            try {
+                res = Resources.openLayered("/SignUpForm.css");
+            } catch (IOException ex) {
+                throw new RuntimeException(ex.getMessage());
+            }
+            //UIManager.getInstance().
+            UIManager.getInstance().addThemeProps(res.getTheme("Theme"));
+        }
+    }
+    
+    public SignUpForm() {
         super("Sign Up");
         this.setUIID("SignUpForm");
-        this.res = res;
+        
         setLayout(new BorderLayout());
         Container north = new Container(new FlowLayout(Component.CENTER));
         north.setUIID("SignUpNorth");
@@ -100,11 +115,13 @@ public class SignUpForm extends Form {
             
         });
         
+        final Form backForm = Display.getInstance().getCurrent();
+        
         this.setBackCommand(new Command("", res.getImage("back-arrow.png")) {
 
             @Override
             public void actionPerformed(ActionEvent evt) {
-                
+                backForm.showBack();
             }
             
         });
