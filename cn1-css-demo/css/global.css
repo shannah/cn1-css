@@ -2,6 +2,56 @@
     font-family: "Source Sans Pro";
     src: url(github://google/fonts/blob/master/ofl/sourcesanspro/SourceSansPro-Light.ttf);
 }
+#Device {
+    min-resolution: 120dpi;
+    max-resolution: 480dpi;
+    resolution: 480dpi;
+}
+
+
+#Constants {
+    PopupDialogArrowBool: false;
+    calTitleDayStyleBool: true;
+    calTransitionVertBool: false;
+    calendarLeftImage: "cal_left_arrow.png";
+    calendarRightImage: "cal_right_arrow.png";
+    centeredPopupBool: false;
+    checkBoxCheckDisFocusImage: "Check-Box_Normal.png";
+    checkBoxCheckedFocusImage: "Check-Box_Press.png";
+    checkBoxCheckedImage: "Check-Box_Press.png";
+    checkBoxOppositeSideBool: true;
+    checkBoxUncheckedFocusImage: "Check-Box_Normal.png";
+    checkBoxUncheckedImage: "Check-Box_Normal.png";
+    comboImage: "combo.png";
+    commandBehavior: "Side";
+    dialogTransitionIn: "fade";
+    dialogTransitionOut: "fade";
+    dlgButtonCommandUIID: "DialogButton";
+    dlgCommandGridBool: true;
+    dlgInvisibleButtons: #1a1a1a;
+    formTransitionIn: "empty";
+    formTransitionOut: "slide";
+    includeNativeBool: true;
+    menuImage: "of_menu.png";
+    noTextModeBool: true;
+    onOffIOSModeBool: true;
+    otherPopupRendererBool: false;
+    pureTouchBool: true;
+    radioSelectedFocusImage: "Radio_btn_Press.png";
+    radioSelectedImage: "Radio_btn_Press.png";
+    radioUnselectedFocusImage: "Radio_btn_Normal.png";
+    radioUnselectedImage: "Radio_btn_Normal.png";
+    sideMenuImage: "menu.png";
+    switchMaskImage: "switch_mask.png";
+    switchOffImage: "switch_off.png";
+    switchOnImage: "switch_on.png";
+    tabPlacementInt: 0;
+}
+
+
+
+
+
 
 TitleArea {
     background-color: rgba(0,0,0,0);
@@ -16,4 +66,21 @@ TitleCommand, BackCommand, Title {
 
 TitleCommand.pressed, BackCommand.pressed {
     color: gray;
+}
+
+ButtonsForm {
+    cn1-derive: Form;
+    background-color: black;
+}
+
+ButtonsFormContent {
+    background-color: white;
+}
+
+BlueRoundedButton {
+    background-color: blue;
+    color: white;
+    border-radius: 10pt;
+    padding: 20pt;
+    
 }

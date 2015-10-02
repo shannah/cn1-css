@@ -7,6 +7,7 @@ package com.codename1.ui.css;
 
 import com.codename1.io.Util;
 import com.codename1.ui.Component;
+import com.codename1.ui.Display;
 import com.codename1.ui.EditorTTFFont;
 import com.codename1.ui.EncodedImage;
 import com.codename1.ui.Font;
@@ -31,6 +32,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -44,10 +46,12 @@ import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
 import org.w3c.css.sac.AttributeCondition;
 import org.w3c.css.sac.CSSException;
+import org.w3c.css.sac.CSSParseException;
 import org.w3c.css.sac.Condition;
 import org.w3c.css.sac.ConditionalSelector;
 import org.w3c.css.sac.DocumentHandler;
 import org.w3c.css.sac.ElementSelector;
+import org.w3c.css.sac.ErrorHandler;
 import org.w3c.css.sac.InputSource;
 import org.w3c.css.sac.LexicalUnit;
 import org.w3c.css.sac.Parser;
@@ -71,10 +75,11 @@ public class CSSTheme {
     File resourceFile = new File("test.css.res");
     Element anyNodeStyle = new Element();
     Map<String,Element> elements = new HashMap<String,Element>();
+    Map<String,LexicalUnit> constants = new HashMap<String,LexicalUnit>();
     EditableResources res;
     private String themeName = "Theme";
     private List<FontFace> fontFaces = new ArrayList<FontFace>();
-    public static final int DEFAULT_TARGET_DENSITY = com.codename1.ui.Display.DENSITY_VERY_HIGH;
+    public static final int DEFAULT_TARGET_DENSITY = com.codename1.ui.Display.DENSITY_HD;
     public static final String[] supportedNativeBorderTypes = new String[]{
         "none",
         "line",
@@ -93,6 +98,11 @@ public class CSSTheme {
     }
     
     private int targetDensity = DEFAULT_TARGET_DENSITY;
+    private double minDpi = 120;
+    private double maxDpi = 480;
+    private double currentDpi = 480;
+    //private int currentScreenWidth=1080;
+    //private int currentScreenHeight=1920;
     
     /*
     LexicalUnit px(LexicalUnit val) {
@@ -416,7 +426,7 @@ public class CSSTheme {
         public int getPixelValue(double targetDpi, int baseWidth, int baseHeight) {
             switch (src.getLexicalUnitType()) {
                 case LexicalUnit.SAC_POINT:
-                    return (int)(this.getNumericValue() * targetDpi / 72.0);
+                    return (int)(this.getNumericValue() * targetDpi / 160.0);
                 case LexicalUnit.SAC_PIXEL:
                     return (int)this.getNumericValue();
                 case LexicalUnit.SAC_MILLIMETER:
@@ -506,7 +516,7 @@ public class CSSTheme {
         if (lu == null) {
             return "none";
         }
-        return ((ScaledUnit)lu).renderAsCSSValue(72, 640, 960);
+        return ((ScaledUnit)lu).renderAsCSSValue(160, 640, 960);
     }
     
     String renderCSSProperty(String property, Map<String, LexicalUnit> styles) {
@@ -724,6 +734,29 @@ public class CSSTheme {
             }
             
             
+            for (String constantKey : constants.keySet()) {
+                LexicalUnit lu = constants.get(constantKey);
+                
+                if (lu.getLexicalUnitType() == LexicalUnit.SAC_STRING_VALUE || lu.getLexicalUnitType() == LexicalUnit.SAC_IDENT) {
+                    if (constantKey.endsWith("Image")) {
+                        // We have an image
+                        Image im = getResourceImage(lu.getStringValue());
+                        if (im != null) {
+                            res.setThemeProperty(themeName, "@"+constantKey, im);
+                        }
+                        if (!res.containsResource(lu.getStringValue())) {
+                            throw new RuntimeException("Failed to set constant value "+constantKey+" to value "+ lu.getStringValue()+" because no such image was found in the resource file");
+                        }
+
+                    } else {
+                        res.setThemeProperty(themeName, "@"+constantKey, lu.getStringValue());
+                    }
+                    
+                } else if (lu.getLexicalUnitType() == LexicalUnit.SAC_INTEGER) {
+                    res.setThemeProperty(themeName, "@"+constantKey, String.valueOf(((ScaledUnit)lu).getIntegerValue()));
+                }
+            }
+            
         }
     }
     
@@ -749,8 +782,8 @@ public class CSSTheme {
             IIOMetadataNode dpcWidth = (IIOMetadataNode) nodes.item(0);
             NamedNodeMap nnm = dpcWidth.getAttributes();
             Node item = nnm.item(0);
-            xDPI = Math.round(25.4f / Float.parseFloat(item.getNodeValue()));
-            //System.out.println("xDPI: " + xDPI);
+            xDPI = Math.round(25.4f / Float.parseFloat(item.getNodeValue()) / 0.45f);
+            
         } else {
             //System.out.println("xDPI: -");
         }
@@ -759,7 +792,7 @@ public class CSSTheme {
             IIOMetadataNode dpcHeight = (IIOMetadataNode) nodes.item(0);
             NamedNodeMap nnm = dpcHeight.getAttributes();
             Node item = nnm.item(0);
-            yDPI = Math.round(25.4f / Float.parseFloat(item.getNodeValue()));
+            yDPI = Math.round(25.4f / Float.parseFloat(item.getNodeValue()) / 0.45f);
             //System.out.println("yDPI: " + yDPI);
         } else {
             //System.out.println("yDPI: -");
@@ -769,13 +802,16 @@ public class CSSTheme {
     }
     
     public int getDensityForDpi(double maxDpi) {
-        if (maxDpi <= 72) {
+        if (maxDpi <= 120) {
+            return com.codename1.ui.Display.DENSITY_LOW;
+        }
+        if (maxDpi <= 160) {
                 return com.codename1.ui.Display.DENSITY_MEDIUM;
-            } else if (maxDpi <= 144) {
+            } else if (maxDpi <= 320) {
                 return com.codename1.ui.Display.DENSITY_VERY_HIGH;
             } else if (maxDpi <= 200) {
                 return com.codename1.ui.Display.DENSITY_560;
-            } else if (maxDpi <= 216) {
+            } else if (maxDpi <= 480) {
                 return com.codename1.ui.Display.DENSITY_HD;
             } else {
                 return com.codename1.ui.Display.DENSITY_2HD;
@@ -785,7 +821,7 @@ public class CSSTheme {
     public int getImageDensity(EncodedImage im) {
         try {
             int[] dpis = getDpi(im);
-            int maxDpi = 72;
+            int maxDpi = 160;
             if (dpis != null && dpis[0] > 0 && dpis[0] > maxDpi) {
                 maxDpi = dpis[0];
             }
@@ -818,6 +854,175 @@ public class CSSTheme {
     
     public Image getBackgroundImage(Map<String,LexicalUnit> styles) {
         return getBackgroundImage(styles, (ScaledUnit)styles.get("background-image"));
+    }
+    
+    public Image getResourceImage(String imageName) {
+        if (new File(cssFile, "res").exists()) {
+            File res = new File(cssFile, "res");
+            
+            File preferredThemeDir = new File(res, themeName);
+            if (preferredThemeDir.exists()) {
+                Image i = null;
+                try {
+                    i = getResourceImage(imageName, preferredThemeDir);
+                    if (i != null) {
+                        return i;
+                    }
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+            
+            for (File d : res.listFiles()) {
+                if (d.isDirectory()) {
+                   
+                    Image i = null;
+                    try {
+                        i = getResourceImage(imageName, d);
+                        if (i!=null) {
+                            return i;
+                        }
+                    } catch (Throwable t){
+                        t.printStackTrace();
+                    }
+                    
+                }
+            }
+        
+        }
+        if (new File(cssFile.getParentFile(), "res").exists()) {
+            File res = new File(cssFile.getParentFile(), "res");
+            File preferredThemeDir = new File(res, themeName);
+            if (preferredThemeDir.exists()) {
+                Image i = null;
+                try {
+                    i = getResourceImage(imageName, preferredThemeDir);
+                    if (i != null) {
+                        return i;
+                    }
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+            for (File d : res.listFiles()) {
+                if (d.isDirectory()) {
+                   
+                    Image i = null;
+                    try {
+                        i = getResourceImage(imageName, d);
+                        if (i!=null) {
+                            return i;
+                        }
+                    } catch (Throwable t){
+                        t.printStackTrace();
+                    }
+                    
+                }
+            }
+        
+        }
+        
+        if (new File(cssFile.getParentFile().getParentFile(), "res").exists()) {
+            File res = new File(cssFile.getParentFile().getParentFile(), "res");
+            File preferredThemeDir = new File(res, themeName);
+            if (preferredThemeDir.exists()) {
+                Image i = null;
+                try {
+                    i = getResourceImage(imageName, preferredThemeDir);
+                    if (i != null) {
+                        return i;
+                    }
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+            for (File d : res.listFiles()) {
+                if (d.isDirectory()) {
+                   
+                    Image i = null;
+                    try {
+                        i = getResourceImage(imageName, d);
+                        if (i!=null) {
+                            return i;
+                        }
+                    } catch (Throwable t){
+                        t.printStackTrace();
+                    }
+                    
+                }
+            }
+        
+        }
+        return null;
+    }
+    
+    public Image getResourceImage(String imageName, File baseDir)  {
+        
+        try {
+            if (res.containsResource(imageName)) {
+                return res.getImage(imageName);
+            } else {
+                File imageFolder = new File(baseDir, imageName );
+                if (imageFolder.exists()) {
+                    EditableResources.MultiImage multi = new EditableResources.MultiImage();
+                    ArrayList<Integer> dpis = new ArrayList<Integer>();
+                    ArrayList<EncodedImage> encodedImages = new ArrayList<EncodedImage>();
+                    
+                    //File largestVersion = null;
+                    //long largestSize = 0;
+                    for (File f : imageFolder.listFiles()) {
+                        int density  = Display.DENSITY_MEDIUM;
+                        switch (f.getName()) {
+                            case "2hd.png":
+                                density = Display.DENSITY_2HD; break;
+                            case "4k.png":
+                                density = Display.DENSITY_4K; break;
+                            case "560.png":
+                                density = Display.DENSITY_560; break;
+                            case "hd.png":
+                                density = Display.DENSITY_HD;break;
+                            case "high.png":
+                                density = Display.DENSITY_HIGH; break;
+                            case "low.png":
+                                density = Display.DENSITY_LOW; break;
+                            case "medium.png":
+                                density = Display.DENSITY_MEDIUM; break;
+                            case "veryhigh.png":
+                                density = Display.DENSITY_VERY_HIGH; break;
+                            case "verylow.png":
+                                density = Display.DENSITY_VERY_LOW; break;
+
+
+                        }
+                        InputStream is = f.toURL().openStream();
+                        EncodedImage encImg = EncodedImage.create(is);
+                        is.close();
+                        dpis.add(density);
+                        encodedImages.add(encImg);
+                        
+                    }
+                    int[] iDpis = new int[dpis.size()];
+                    int ctr = 0;
+                    for (Integer i : dpis) {
+                        iDpis[ctr++] = i;
+                    }
+                    
+                    multi.setDpi(iDpis);
+                    multi.setInternalImages(encodedImages.toArray(new EncodedImage[encodedImages.size()]));
+                    
+                    res.setMultiImage(imageName, multi);
+                    loadedImages.put(imageFolder.toURL().toString(), multi.getBest());
+            
+            
+                    return multi.getBest();
+                    
+                }
+            }
+            
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return null;
     }
     
     public Image getBackgroundImage(Map<String,LexicalUnit> styles, ScaledUnit bgImage)  {
@@ -868,7 +1073,7 @@ public class CSSTheme {
             is.close();
             
             
-            ResourcesMutator resm = new ResourcesMutator(res);
+            ResourcesMutator resm = new ResourcesMutator(res, com.codename1.ui.Display.DENSITY_VERY_HIGH, minDpi, maxDpi);
             int[] dpis = getDpi(encImg);
             if (styles.containsKey("cn1-source-dpi")) {
                 //System.out.println("Using cn1-source-dpi "+styles.get("cn1-source-dpi").getFloatValue());
@@ -909,7 +1114,7 @@ public class CSSTheme {
         }
         ArrayList<Border> borders = new ArrayList<Border>();
         
-        ResourcesMutator resm = new ResourcesMutator(res);
+        ResourcesMutator resm = new ResourcesMutator(res, Display.DENSITY_VERY_HIGH, minDpi, maxDpi);
         resm.targetDensity = targetDensity;
         
         
@@ -1331,7 +1536,7 @@ public class CSSTheme {
             }
             
             if (styles.get("height") == null) {
-                styles.put("height", new ScaledUnit(new PixelUnit(100), 144, 640, 960));
+                styles.put("height", new ScaledUnit(new PixelUnit(100), 320, 640, 960));
             }
             //styles.put("margin", new ScaledUnit(new PixelUnit(1), 144, 640, 960));
             
@@ -3544,7 +3749,8 @@ public class CSSTheme {
                                         throw new RuntimeException("Unsupported style class "+clsCond.getValue());
                                 }
                             default :
-                                throw new RuntimeException("Unsupported CSS condition type "+csel.getCondition().getConditionType());
+                                throw new CSSException("Unsupported CSS condition type "+csel.getCondition().getConditionType()+" for "+csel.getSimpleSelector());
+                                //throw new RuntimeException("Unsupported CSS condition type "+csel.getCondition().getConditionType());
                         }
                     }
                     default :
@@ -3559,6 +3765,30 @@ public class CSSTheme {
     }
     
     public void apply(Selector sel, String property, LexicalUnit value) {
+        if (sel.getSelectorType() == Selector.SAC_CONDITIONAL_SELECTOR) {
+            ConditionalSelector csel = (ConditionalSelector)sel;
+            if (csel.getCondition().getConditionType() == Condition.SAC_ID_CONDITION) {
+                AttributeCondition acond = (AttributeCondition)csel.getCondition();
+                if ("Device".equalsIgnoreCase(acond.getValue())) {
+                    switch (property) {
+                        case "min-resolution" :
+                            minDpi = ((ScaledUnit)value).getNumericValue();
+                            break;
+                        case "max-resolution" :
+                            maxDpi = ((ScaledUnit)value).getNumericValue();
+                            break;
+                        case "resolution" :
+                            currentDpi = ((ScaledUnit)value).getNumericValue();
+                            break;
+                    }
+                    return;
+                }
+                if ("Constants".equalsIgnoreCase(acond.getValue())) {
+                    constants.put(property, value);
+                    return;
+                }
+            }
+        }
         Element el = getElementForSelector(sel);
         apply(el, property, value);
         
@@ -3806,7 +4036,13 @@ public class CSSTheme {
         
     }
     
+    private int getPreviewScreenWidth() {
+        return (int)currentDpi * 2;
+    }
     
+    private int getPreviewScreenHeight() {
+        return (int)currentDpi * 3;
+    }
     
     public static CSSTheme load(URL uri) throws IOException {
         try {
@@ -3819,13 +4055,35 @@ public class CSSTheme {
             Parser parser = parserFactory.makeParser();
             final CSSTheme theme = new CSSTheme();
             theme.baseURL = uri;
+            parser.setErrorHandler(new ErrorHandler() {
+
+                @Override
+                public void warning(CSSParseException csspe) throws CSSException {
+                    
+                    System.out.println("CSS Warning: "+csspe.getLocalizedMessage()+" on line "+csspe.getLineNumber()+" col: "+csspe.getColumnNumber()+" of file "+csspe.getURI());
+                }
+
+                @Override
+                public void error(CSSParseException csspe) throws CSSException {
+                    System.out.println("CSS Error: "+csspe.getLocalizedMessage()+" on line "+csspe.getLineNumber()+" col: "+csspe.getColumnNumber()+" of file "+csspe.getURI());
+                }
+
+                @Override
+                public void fatalError(CSSParseException csspe) throws CSSException {
+                    System.out.println("CSS Fatal Error: "+csspe.getLocalizedMessage()+" on line "+csspe.getLineNumber()+" col: "+csspe.getColumnNumber()+" of file "+csspe.getURI());
+                }
+                
+            });
+            //parser.setLocale(Locale.getDefault());
             parser.setDocumentHandler(new DocumentHandler() {
                 
                 SelectorList currSelectors;
                 FontFace currFontFace;
-                double currentTargetDpi = 144;
-                int currentScreenWidth = 640;
-                int currentScreenHeight = 960;
+                //double currentTargetDpi = 320;
+                //double currentMinDpi = 120;
+                //double currentMaxDpi = 640;
+                //int currentScreenWidth = 1280;
+                //int currentScreenHeight = 1920;
                 
                 @Override
                 public void startDocument(InputSource is) throws CSSException {
@@ -3839,7 +4097,8 @@ public class CSSTheme {
                 
                 @Override
                 public void comment(String string) throws CSSException {
-                    //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    
+                    
                 }
                 
                 @Override
@@ -3860,7 +4119,6 @@ public class CSSTheme {
                 @Override
                 public void startMedia(SACMediaList sacml) throws CSSException {
                     
-                    //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
                 
                 @Override
@@ -3902,7 +4160,8 @@ public class CSSTheme {
                 
                 @Override
                 public void property(String string, LexicalUnit lu, boolean bln) throws CSSException {
-                    lu = new ScaledUnit(lu, currentTargetDpi, currentScreenWidth, currentScreenHeight);
+                    
+                    lu = new ScaledUnit(lu, theme.currentDpi, theme.getPreviewScreenWidth(), theme.getPreviewScreenHeight());
                     if (currFontFace != null) {
                         switch (string) {
                             case "font-family" :

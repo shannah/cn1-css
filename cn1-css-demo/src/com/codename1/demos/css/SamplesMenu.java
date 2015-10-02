@@ -85,6 +85,19 @@ public class SamplesMenu extends Form {
         
         addComponent(weatherForecast);
         
+        
+        Button buttons = new Button("Buttons");
+        buttons.setUIID("SamplesMenuButton");
+        buttons.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+                new ButtonsDemo().show();
+            }
+            
+        });
+        
+        addComponent(buttons);
+        
         addCommand(new Command("About") {
             public void actionPerformed(ActionEvent evt) {
                 showAboutDialog();

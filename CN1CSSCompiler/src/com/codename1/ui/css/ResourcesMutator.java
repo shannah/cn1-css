@@ -49,16 +49,33 @@ public class ResourcesMutator {
     private Map<String,ImageProcessor> imageProcessors = new HashMap<>();
     private String themeName = "Theme";
     
-    public ResourcesMutator(EditableResources res) {
+    public ResourcesMutator(EditableResources res, int targetDensity, double minDpi, double maxDpi) {
         this.res = res;
+        this.targetDensity = targetDensity;
         if (res.getTheme(themeName) == null) {
             res.setTheme(themeName, new Hashtable());
         }
-        includedDensities.add(Display.DENSITY_LOW);
-        includedDensities.add(Display.DENSITY_MEDIUM);
-        includedDensities.add(Display.DENSITY_HIGH);
-        includedDensities.add(Display.DENSITY_VERY_HIGH);
-        includedDensities.add(Display.DENSITY_VERY_LOW);
+        if (minDpi < 160 && maxDpi >= 160) {
+            includedDensities.add(Display.DENSITY_LOW);
+        }
+        if (minDpi <= 160 && maxDpi > 160) {
+            includedDensities.add(Display.DENSITY_MEDIUM);
+        }
+        if (minDpi <= 240 && maxDpi > 240) {
+            includedDensities.add(Display.DENSITY_HIGH);
+        }
+        if (minDpi <= 320 && maxDpi >= 320) {
+            includedDensities.add(Display.DENSITY_VERY_HIGH);
+        }
+        if (minDpi <= 480 && maxDpi >= 480) {
+            includedDensities.add(Display.DENSITY_HD);
+        }
+        if (minDpi <= 640 && maxDpi >= 640) {
+            includedDensities.add(Display.DENSITY_2HD);
+        }
+        if (minDpi <= 60 && maxDpi >= 60){
+            includedDensities.add(Display.DENSITY_VERY_LOW);
+        }
     }
     
     public void addImageProcessor(String id, ImageProcessor proc) {
@@ -234,19 +251,19 @@ public class ResourcesMutator {
     public static boolean hasAlpha(BufferedImage b) {
         
         if (!b.getColorModel().hasAlpha()) {
-            System.out.println("The image color model has not alpha");
+            //System.out.println("The image color model has not alpha");
             return false;
         }
         int[] rgb = b.getRGB(0, 0, b.getWidth(), b.getHeight(), null, 0, b.getWidth());
         for (int px : rgb) {
             int alpha = (px & 0xff000000) >>> 24;
             if (alpha != 0xff) {
-                System.out.println(px + " / " + (alpha));
-                System.out.println("The image has alpha!!");
+                //System.out.println(px + " / " + (alpha));
+                //System.out.println("The image has alpha!!");
                 return true;
            }
         }
-        System.out.println("The image has not alpha");
+        //System.out.println("The image has not alpha");
         return false;
     }
     

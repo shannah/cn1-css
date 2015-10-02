@@ -213,15 +213,21 @@ public class CN1CSSCompiler implements DocumentHandler {
     
     
     }
+    
+    static final Set<Integer> defaultDensities = new HashSet<Integer>();
+    static {
+        defaultDensities.add(Display.DENSITY_LOW);
+        defaultDensities.add(Display.DENSITY_MEDIUM);
+        defaultDensities.add(Display.DENSITY_HIGH);
+        defaultDensities.add(Display.DENSITY_VERY_HIGH);
+        
+    }
+    
     public CN1CSSCompiler() {
         inputFile = new File("test.css");
         outputFile = new File("test.css.res");
         
-        includedDensities.add(Display.DENSITY_LOW);
-        includedDensities.add(Display.DENSITY_MEDIUM);
-        includedDensities.add(Display.DENSITY_HIGH);
-        includedDensities.add(Display.DENSITY_VERY_HIGH);
-        includedDensities.add(Display.DENSITY_VERY_LOW);
+        
         
         
         
@@ -234,7 +240,8 @@ public class CN1CSSCompiler implements DocumentHandler {
         //props = new Properties();
         theme = new Hashtable();
         res = new EditableResources();
-        
+        includedDensities.clear();
+        includedDensities.addAll(defaultDensities);
     }
 
     
@@ -359,7 +366,7 @@ public class CN1CSSCompiler implements DocumentHandler {
 
     @Override
     public void startMedia(SACMediaList sacml) throws CSSException {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
