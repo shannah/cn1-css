@@ -631,6 +631,7 @@ public class CSSTheme {
             
             
             res.setThemeProperty(themeName, unselId+".padding", el.getThemePadding(unselectedStyles));
+            
             res.setThemeProperty(themeName, unselId+".padUnit", el.getThemePaddingUnit(unselectedStyles));
             res.setThemeProperty(themeName, selId+"#padding", el.getThemePadding(selectedStyles));
             res.setThemeProperty(themeName, selId+"#padUnit", el.getThemePaddingUnit(selectedStyles));
@@ -662,6 +663,7 @@ public class CSSTheme {
             res.setThemeProperty(themeName, selId+"#transparency", el.getThemeTransparency(selectedStyles));
             res.setThemeProperty(themeName, pressedId+"#transparency", el.getThemeTransparency(pressedStyles));
             res.setThemeProperty(themeName, disabledId+"#transparency", el.getThemeTransparency(disabledStyles));
+            
             
             res.setThemeProperty(themeName, unselId+".align", el.getThemeAlignment(unselectedStyles));
             res.setThemeProperty(themeName, selId+"#align", el.getThemeAlignment(selectedStyles));
@@ -754,6 +756,16 @@ public class CSSTheme {
                     
                 } else if (lu.getLexicalUnitType() == LexicalUnit.SAC_INTEGER) {
                     res.setThemeProperty(themeName, "@"+constantKey, String.valueOf(((ScaledUnit)lu).getIntegerValue()));
+                }
+            }
+            
+            
+            Map<String,Object> theme = res.getTheme(themeName);
+            HashSet<String> keys = new HashSet<String>();
+            keys.addAll(theme.keySet());
+            for (String key : keys) {
+                if (key.startsWith("Default.")) {
+                    res.setThemeProperty(themeName, key.substring(key.indexOf(".")+1), theme.get(key));
                 }
             }
             
@@ -2406,7 +2418,7 @@ public class CSSTheme {
                 return null;
             }
             Insets i = getInsets("padding", style);
-            return new byte[]{i.topUnit, i.rightUnit, i.bottomUnit, i.leftUnit};
+            return new byte[]{i.topUnit, i.leftUnit, i.bottomUnit, i.rightUnit};
         }
         
         public String getThemeMargin(Map<String,LexicalUnit> style) {
@@ -2422,7 +2434,7 @@ public class CSSTheme {
                 return null;
             }
             Insets i = getInsets("margin", style);
-            return new byte[]{i.topUnit, i.rightUnit, i.bottomUnit, i.leftUnit};
+            return new byte[]{i.topUnit, i.leftUnit, i.bottomUnit, i.rightUnit};
         }
         
         public Integer getThemeAlignment(Map<String,LexicalUnit> style) {
@@ -2618,7 +2630,7 @@ public class CSSTheme {
         public String getThemeTransparency(Map<String,LexicalUnit> styles) {
             
             LexicalUnit cn1BgType = styles.get("cn1-background-type");
-            if (cn1BgType != null && "none".equals(cn1BgType.getStringValue())) {
+            if (cn1BgType != null && "none".equals(cn1BgType.getStringValue()) && !styles.containsKey("background-color")) {
                 return "0";
             }
         LexicalUnit bgColor = styles.get("background-color");
