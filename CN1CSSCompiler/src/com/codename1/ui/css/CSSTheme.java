@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -736,39 +737,43 @@ public class CSSTheme {
             }
             
             
-            for (String constantKey : constants.keySet()) {
-                LexicalUnit lu = constants.get(constantKey);
-                
-                if (lu.getLexicalUnitType() == LexicalUnit.SAC_STRING_VALUE || lu.getLexicalUnitType() == LexicalUnit.SAC_IDENT) {
-                    if (constantKey.endsWith("Image")) {
-                        // We have an image
-                        Image im = getResourceImage(lu.getStringValue());
-                        if (im != null) {
-                            res.setThemeProperty(themeName, "@"+constantKey, im);
-                        }
-                        if (!res.containsResource(lu.getStringValue())) {
-                            throw new RuntimeException("Failed to set constant value "+constantKey+" to value "+ lu.getStringValue()+" because no such image was found in the resource file");
-                        }
+            
+            
+        }
+        
+        for (String constantKey : constants.keySet()) {
+            LexicalUnit lu = constants.get(constantKey);
 
-                    } else {
-                        res.setThemeProperty(themeName, "@"+constantKey, lu.getStringValue());
+            if (lu.getLexicalUnitType() == LexicalUnit.SAC_STRING_VALUE || lu.getLexicalUnitType() == LexicalUnit.SAC_IDENT) {
+                if (constantKey.endsWith("Image")) {
+                    // We have an image
+                    Image im = res.getImage(lu.getStringValue());
+                    if (im == null) {
+                        im = getResourceImage(lu.getStringValue());
                     }
-                    
-                } else if (lu.getLexicalUnitType() == LexicalUnit.SAC_INTEGER) {
-                    res.setThemeProperty(themeName, "@"+constantKey, String.valueOf(((ScaledUnit)lu).getIntegerValue()));
+                    if (im == null) {
+                        System.out.println(Arrays.toString(res.getImageResourceNames()));
+                        throw new RuntimeException("Failed to set constant value "+constantKey+" to value "+ lu.getStringValue()+" because no such image was found in the resource file");
+                    }
+                    res.setThemeProperty(themeName, "@"+constantKey, im);
+
+
+                } else {
+                    res.setThemeProperty(themeName, "@"+constantKey, lu.getStringValue());
                 }
+            } else if (lu.getLexicalUnitType() == LexicalUnit.SAC_INTEGER) {
+                res.setThemeProperty(themeName, "@"+constantKey, String.valueOf(((ScaledUnit)lu).getIntegerValue()));
             }
-            
-            
-            Map<String,Object> theme = res.getTheme(themeName);
-            HashSet<String> keys = new HashSet<String>();
-            keys.addAll(theme.keySet());
-            for (String key : keys) {
-                if (key.startsWith("Default.")) {
-                    res.setThemeProperty(themeName, key.substring(key.indexOf(".")+1), theme.get(key));
-                }
+        }
+
+
+        Map<String,Object> theme = res.getTheme(themeName);
+        HashSet<String> keys = new HashSet<String>();
+        keys.addAll(theme.keySet());
+        for (String key : keys) {
+            if (key.startsWith("Default.")) {
+                res.setThemeProperty(themeName, key.substring(key.indexOf(".")+1), theme.get(key));
             }
-            
         }
     }
     
