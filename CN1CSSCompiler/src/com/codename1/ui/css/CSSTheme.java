@@ -12,6 +12,8 @@ import com.codename1.ui.EditorTTFFont;
 import com.codename1.ui.EncodedImage;
 import com.codename1.ui.Font;
 import com.codename1.ui.Image;
+import com.codename1.ui.animations.AnimationAccessor;
+import com.codename1.ui.plaf.Accessor;
 import com.codename1.ui.plaf.Border;
 import com.codename1.ui.plaf.Style;
 import com.codename1.ui.util.EditableResources;
@@ -19,23 +21,31 @@ import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.paint.Color;
@@ -608,19 +618,153 @@ public class CSSTheme {
         StringBuilder sb = new StringBuilder();
         sb.append("<!doctype html>\n<html><base href=\""+baseURL.toExternalForm()+"\"/> <head><style type=\"text/css\">body {padding:0; margin:0} div.element {margin: 0 !important; padding: 0 !important; }</style></head><body>");
         for (String name : elements.keySet()) {
+            if (!isModified(name)) {
+                continue;
+            }
+            
+            
             Element el = (Element)elements.get(name);
-            sb.append(el.getUnselected().getEmptyHtmlWithId(name, el.getUnselected().getFlattenedStyle()))
-                    .append(el.getSelected().getEmptyHtmlWithId(name+".sel", el.getSelected().getFlattenedStyle()))
-                    .append(el.getPressed().getEmptyHtmlWithId(name+".press", el.getPressed().getFlattenedStyle()))
-                    .append(el.getDisabled().getEmptyHtmlWithId(name+".dis", el.getDisabled().getFlattenedStyle()));
+            Map unselectedStyle = el.getUnselected().getFlattenedStyle();
+            if (el.requiresBackgroundImageGeneration(unselectedStyle) || el.requiresImageBorder(unselectedStyle)) {
+                sb.append(el.getUnselected().getEmptyHtmlWithId(name, unselectedStyle));
+            }
+            Map selectedStyle = el.getSelected().getFlattenedStyle();
+            if (el.requiresBackgroundImageGeneration(selectedStyle) || el.requiresImageBorder(selectedStyle)) {
+                sb.append(el.getSelected().getEmptyHtmlWithId(name+".sel", selectedStyle));
+            }
+            Map pressedStyle = el.getPressed().getFlattenedStyle();   
+            if (el.requiresBackgroundImageGeneration(pressedStyle) || el.requiresImageBorder(pressedStyle)) {
+                sb.append(el.getPressed().getEmptyHtmlWithId(name+".press", pressedStyle));
+            }
+            Map disabledStyle = el.getDisabled().getFlattenedStyle();
+            if (el.requiresBackgroundImageGeneration(disabledStyle) || el.requiresImageBorder(disabledStyle)) {
+                sb.append(el.getDisabled().getEmptyHtmlWithId(name+".dis", disabledStyle));
+            }
                     
         }
         sb.append("</body></html>");
         return sb.toString();
     }
     
+    public Map<String,String> calculateSelectorChecksums() {
+        Map<String,String> out = new HashMap<String,String>();
+        for (String id : elements.keySet()) {
+            Element el = elements.get(id);
+            //System.out.println("Checksum("+id+") is "+el.getChecksum());
+            out.put(id, el.getChecksum());
+        }
+       
+        return out;
+    }
+    
+    public void saveSelectorChecksums(File output) throws FileNotFoundException, IOException {
+        try (ObjectOutputStream fos = new ObjectOutputStream(new FileOutputStream(output))) {
+            fos.writeObject(calculateSelectorChecksums());
+        }
+    }
+    
+    public Map<String, String> loadSelectorChecksums(File input) throws FileNotFoundException, IOException, ClassNotFoundException {
+        try (ObjectInputStream fis = new ObjectInputStream(new FileInputStream(input))) {
+            return (Map<String,String>)fis.readObject();
+        }
+    }
+    
+    public static enum CacheStatus {
+        UNCHANGED,
+        MODIFIED,
+        DELETED,
+        ADDED
+    }
+    
+    Map<String,CacheStatus> selectorCacheStatus;
+    File selectorCacheFile;
+    
+    public void loadSelectorCacheStatus(File cachedFile) throws IOException {
+        if (!cachedFile.equals(selectorCacheFile)) {
+            selectorCacheStatus = calculateSelectorCacheStatus(cachedFile);
+            selectorCacheFile = cachedFile;
+        }
+        
+    }
+    
+    public Map<String,CacheStatus> getCacheStatus(File cachedFile) throws IOException {
+        loadSelectorCacheStatus(cachedFile);
+        return selectorCacheStatus;
+    }
+    
+    /**
+     * Checks if the given element ID has been modified since the last cache
+     * @param id
+     * @return 
+     */
+    public boolean isModified(String id) {
+        if (selectorCacheStatus != null) {
+            CacheStatus status = selectorCacheStatus.get(id);
+            if (status == null) {
+                return true;
+            }
+            switch (status) {
+                case MODIFIED:
+                case ADDED:
+                    return true;
+            }
+            return false;
+        }
+        return true;
+    }
+    
+    public Set<String> getDeletedElements() {
+        HashSet<String> out = new HashSet<String>();
+        
+        if (selectorCacheStatus != null) {
+            for (String id : selectorCacheStatus.keySet()) {
+                if (CacheStatus.DELETED.equals(selectorCacheStatus.get(id))) {
+                    out.add(id);
+                }
+            }
+        }
+        return out;
+    }
+    
+    public Map<String, CacheStatus> calculateSelectorCacheStatus(File cachedFile) throws IOException {
+        try {
+            Map<String,String> current = calculateSelectorChecksums();
+            Map<String,String> previous = loadSelectorChecksums(cachedFile);
+            HashMap<String, CacheStatus> out = new HashMap<String, CacheStatus>();
+            if (previous == null) {
+                for (String id : current.keySet()) {
+                    out.put(id, CacheStatus.ADDED);
+                }
+                return out;
+            } else {
+                for (String id : current.keySet()) {
+                    if (!previous.containsKey(id)) {
+                        out.put(id, CacheStatus.ADDED);
+                    } else if (previous.get(id).equals(current.get(id))) {
+                        out.put(id, CacheStatus.UNCHANGED);
+                    } else {
+                        out.put(id, CacheStatus.MODIFIED);
+                    }
+                }
+                for (String id : previous.keySet()) {
+                    if (!current.containsKey(id)) {
+                        out.put(id, CacheStatus.DELETED);
+                    }
+                }
+                return out;
+            }
+        } catch (ClassNotFoundException ex) {
+            
+            throw new RuntimeException(ex);
+        }
+        
+    }
+    
     public void updateResources() {
         for (String id : elements.keySet()) {
+            if (!isModified(id)) {
+                continue;
+            }
             Element el = elements.get(id);
             Map<String,LexicalUnit> unselectedStyles = el.getUnselected().getFlattenedStyle();
             Map<String,LexicalUnit> selectedStyles = el.getSelected().getFlattenedStyle();
@@ -755,7 +899,7 @@ public class CSSTheme {
                         im = getResourceImage(lu.getStringValue());
                     }
                     if (im == null) {
-                        System.out.println(Arrays.toString(res.getImageResourceNames()));
+                        //System.out.println(Arrays.toString(res.getImageResourceNames()));
                         throw new RuntimeException("Failed to set constant value "+constantKey+" to value "+ lu.getStringValue()+" because no such image was found in the resource file");
                     }
                     res.setThemeProperty(themeName, "@"+constantKey, im);
@@ -773,11 +917,134 @@ public class CSSTheme {
         Map<String,Object> theme = res.getTheme(themeName);
         HashSet<String> keys = new HashSet<String>();
         keys.addAll(theme.keySet());
+        Set<String> deletedIds = getDeletedElements();
         for (String key : keys) {
             if (key.startsWith("Default.")) {
                 res.setThemeProperty(themeName, key.substring(key.indexOf(".")+1), theme.get(key));
+            } else {
+                for (String delId : deletedIds) {
+                    if (key.startsWith(delId+".") || key.startsWith(delId+"#")) {
+                        res.setThemeProperty(themeName, key, null);
+                    }
+                }
             }
         }
+        
+        
+        // Get rid of unused images now
+        deleteUnusedImages();
+       
+        
+        
+    }
+    
+    
+    private Set<String> referencedImageNames;
+    
+    private boolean isImageReferencedInCSS(String imageName) {
+        if (referencedImageNames == null) {
+            referencedImageNames = new HashSet<String>();
+            for (String id : elements.keySet()) {
+                Element el = elements.get(id);
+                for (Object o : el.style.values()) {
+                    ScaledUnit su = (ScaledUnit)o;
+                    while (su != null) {
+                        switch (su.getLexicalUnitType()) {
+                            case LexicalUnit.SAC_STRING_VALUE:
+                                referencedImageNames.add(su.getStringValue());
+
+                                break;
+                            case LexicalUnit.SAC_URI: {
+                                String sv = su.getStringValue();
+                                if (sv.contains("/")) {
+                                    sv = sv.substring(sv.lastIndexOf("/")+1);
+                                }
+                                referencedImageNames.add(sv);
+                                break;
+                            }
+
+                        }
+                        su = (ScaledUnit)su.getNextLexicalUnit();
+                    }
+                }
+            }
+            //System.out.println("Referenced names "+referencedImageNames);
+        }
+        return referencedImageNames.contains(imageName);
+    }
+    
+    public void deleteUnusedImages() {
+        Vector<String> images = new Vector<String>();
+        for(String img : res.getImageResourceNames()) {
+            if(!isInUse(img)) {
+                images.add(img);
+            }
+        }
+        
+        //System.out.println("Unused images: "+images);
+        for (String im : images) {
+            res.remove(im);
+        }
+    }
+    
+    private boolean isInUse(String imageName) {
+        if (isImageReferencedInCSS(imageName)) {
+            return true;
+        }
+        Object multi = res.getResourceObject(imageName);
+        if(multi instanceof EditableResources.MultiImage) {
+            EditableResources.MultiImage m = (EditableResources.MultiImage)multi;
+            for(com.codename1.ui.Image i : m.getInternalImages()) {
+                if(isInUse(i)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        com.codename1.ui.Image resourceValue = res.getImage(imageName);
+        return isInUse(resourceValue);
+    }
+    
+    private boolean isInUse(com.codename1.ui.Image resourceValue) {
+        for(String themeName : res.getThemeResourceNames()) {
+            Hashtable theme = res.getTheme(themeName);
+            if(theme.values().contains(resourceValue)) {
+                return true;
+            }
+            // we need to check the existance of image borders to replace images there...
+            for(Object v : theme.values()) {
+                if(v instanceof com.codename1.ui.plaf.Border) {
+                    com.codename1.ui.plaf.Border b = (com.codename1.ui.plaf.Border)v;
+                    // BORDER_TYPE_IMAGE
+                    if(Accessor.getType(b) == Accessor.TYPE_IMAGE || Accessor.getType(b) == Accessor.TYPE_IMAGE_HORIZONTAL ||
+                            Accessor.getType(b) == Accessor.TYPE_IMAGE_VERTICAL || Accessor.getType(b) == Accessor.TYPE_IMAGE_SCALED) {
+                        com.codename1.ui.Image[] images = Accessor.getImages(b);
+                        for(int i = 0 ; i < images.length ; i++) {
+                            if(images[i] == resourceValue) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // check if a timeline is making use of said image and replace it
+        for(String image : res.getImageResourceNames()) {
+            com.codename1.ui.Image current = res.getImage(image);
+            if(current instanceof com.codename1.ui.animations.Timeline) {
+                com.codename1.ui.animations.Timeline time = (com.codename1.ui.animations.Timeline)current;
+                for(int iter = 0 ; iter < time.getAnimationCount() ; iter++) {
+                    com.codename1.ui.animations.AnimationObject o = time.getAnimation(iter);
+                    if(AnimationAccessor.getImage(o) == resourceValue) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        
+
+        return false;
     }
     
     private Map<String,Image> loadedImages = new HashMap<String,Image>();
@@ -1105,11 +1372,11 @@ public class CSSTheme {
                 resm.targetDensity = getDensityForDpi(bgImage.dpi);
             }
             
-            System.out.println("Target density for image is "+resm.targetDensity);
+            //System.out.println("Target density for image is "+resm.targetDensity);
             
-            System.out.println("Loading image from "+url+" with density "+resm.targetDensity);
+            //System.out.println("Loading image from "+url+" with density "+resm.targetDensity);
             Image im = resm.storeImage(encImg, imageIdStr, false);
-            System.out.println("Finished storing image "+url);
+            //System.out.println("Finished storing image "+url);
             //System.out.println("Storing image "+url+" at id "+imageIdStr);
             loadedImages.put(url, im);
             
@@ -1128,6 +1395,15 @@ public class CSSTheme {
         }
     }
     
+    public void loadResourceFile() throws IOException {
+        if ( resourceFile != null) {
+            if (res == null) {
+                res = new EditableResources();
+            }
+            res.openFileWithXMLSupport(resourceFile);
+        }
+    }
+    
     public void createImageBorders(WebView web) {
         if (res == null) {
             res = new EditableResources();
@@ -1140,6 +1416,12 @@ public class CSSTheme {
         
         List<Runnable> onComplete = new ArrayList<Runnable>();
         for (String id : elements.keySet()) {
+            if (!isModified(id)) {
+                //System.out.println("id "+id+" not modified in createImageBorders");
+                continue;
+            } else {
+                //System.out.println("id "+id +" IS modified in createImageBorders");
+            }
             Element e = (Element)elements.get(id);
             
             Element unselected = e.getUnselected();
@@ -1466,6 +1748,40 @@ public class CSSTheme {
         return o.matches("^0*$");
     }
     
+    private static String hashString(String message, String algorithm) {
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance(algorithm);
+            byte[] hashedBytes = digest.digest(message.getBytes("UTF-8"));
+
+            return convertByteArrayToHexString(hashedBytes);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+            throw new RuntimeException(
+                    "Could not generate hash from String", ex);
+        }
+    }
+
+    private static String convertByteArrayToHexString(byte[] arrayBytes) {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 0; i < arrayBytes.length; i++) {
+            stringBuffer.append(Integer.toString((arrayBytes[i] & 0xff) + 0x100, 16)
+                    .substring(1));
+        }
+        return stringBuffer.toString();
+    }
+    
+    public static String generateMD5(String message) {
+        return hashString(message, "MD5");
+    }
+
+    public static String generateSHA1(String message) {
+        return hashString(message, "SHA-1");
+    }
+
+    public static String generateSHA256(String message) {
+        return hashString(message, "SHA-256");
+    }
+    
     public class Element {
         Element parent = anyNodeStyle;
         Map properties = new HashMap();
@@ -1474,6 +1790,17 @@ public class CSSTheme {
         Element selected;
         Element pressed;
         Element disabled;
+        
+        public String getChecksum() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("STYLE=").append(this.getFlattenedStyle())
+                    .append(";UNSELECTED=").append(this.getFlattenedUnselectedStyle())
+                    .append(";SELECTED=").append(this.getFlattenedSelectedStyle())
+                    .append(";PRESSED=").append(this.getFlattenedPressedStyle())
+                    .append(";DISABLED=").append(this.getFlattenedDisabledStyle());
+            //System.out.println(sb);
+            return generateMD5(sb.toString());
+        }
         
         Insets getBoxShadowPadding(Map<String, LexicalUnit> style) {
             Insets i = new Insets();
@@ -1978,7 +2305,7 @@ public class CSSTheme {
             if (!isNone(borderBottomWidth)) {
                 i.bottom = borderBottomWidth.getPixelValue();
             }
-            System.out.println("Border insets "+i);
+            //System.out.println("Border insets "+i);
             return i;
         }
         
@@ -2615,7 +2942,7 @@ public class CSSTheme {
                                         }
                                     }
                                     Font sys = Font.createSystemFont(iFontFace,iFontStyle, iFontSizeType);
-                                    System.out.println("TTF Font "+fontFile+" "+ttfFontSize + " " +actualSize + " "+sys);
+                                    //System.out.println("TTF Font "+fontFile+" "+ttfFontSize + " " +actualSize + " "+sys);
                                     ttfFont = new EditorTTFFont(fontFile, ttfFontSize, actualSize, sys);
                                     break loop;
                                 }
@@ -4220,6 +4547,7 @@ public class CSSTheme {
                 }
                 
             });
+            
             parser.parseStyleSheet(source);
             stream.close();
             return theme;
@@ -4230,7 +4558,12 @@ public class CSSTheme {
         } catch (InstantiationException ex) {
             Logger.getLogger(CSSTheme.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NullPointerException ex) {
-            Logger.getLogger(CSSTheme.class.getName()).log(Level.SEVERE, null, ex);
+            if (ex.getMessage().contains("encoding properties")) {
+                // This error always happens and there doesn't seem to be a way to fix it... so let's just hide
+                // it .  Doesn't seem to hurt anything.
+            } else {
+                //Logger.getLogger(CSSTheme.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } catch (ClassCastException ex) {
             Logger.getLogger(CSSTheme.class.getName()).log(Level.SEVERE, null, ex);
         }

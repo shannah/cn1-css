@@ -78,13 +78,23 @@ public class CN1CSSCLI extends Application {
         CSSTheme theme = CSSTheme.load(url);
         theme.cssFile = inputFile;
         theme.resourceFile = outputFile;
-        
+       
         Platform.runLater(() -> {
             new Thread(()-> {
                 try {
+                    
+                    
+                    File cacheFile = new File(theme.cssFile.getParentFile(), theme.cssFile.getName()+".checksums");
+                    if (outputFile.exists() && cacheFile.exists()) {
+                        theme.loadResourceFile();
+                    
+                        theme.loadSelectorCacheStatus(cacheFile);
+                    }
+                    
                     theme.createImageBorders(web);
                     theme.updateResources();
                     theme.save(outputFile);
+                    theme.saveSelectorChecksums(cacheFile);
                     //Platform.runLater(()-> {
                     //    web.getEngine().executeScript("$('div').show()");
                     //});
