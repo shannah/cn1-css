@@ -213,6 +213,9 @@ public class CSSTheme {
                             Util.cleanup(fos);
                             fontFile = tmpFontFile;
                         }
+                    } else if ("file".equals(url.getProtocol())){
+                        fontFile = new File(url.toURI());
+                        
                     }
                 } catch (Exception ex) {
                     Logger.getLogger(CSSTheme.class.getName()).log(Level.SEVERE, null, ex);
@@ -2392,6 +2395,8 @@ public class CSSTheme {
                     return Style.BACKGROUND_IMAGE_ALIGNED_BOTTOM;
                 case "cn1-image-align-right" :
                     return Style.BACKGROUND_IMAGE_ALIGNED_RIGHT;
+                case "cn1-image-align-left" :
+                    return Style.BACKGROUND_IMAGE_ALIGNED_LEFT;
                 case "cn1-image-align-center" :
                     return Style.BACKGROUND_IMAGE_ALIGNED_CENTER;
                 case "cn1-image-align-top-left" :
@@ -2638,6 +2643,12 @@ public class CSSTheme {
             if (cn1BgType != null && "none".equals(cn1BgType.getStringValue()) && !styles.containsKey("background-color")) {
                 return "0";
             }
+            
+            if (styles.get("opacity") != null && !requiresImageBorder(styles) && !requiresBackgroundImageGeneration(styles)) {
+                double opacity = ((ScaledUnit)styles.get("opacity")).getNumericValue();
+                return ""+(int)(opacity * 255.0);
+            }
+            
         LexicalUnit bgColor = styles.get("background-color");
         if (bgColor == null) {
             return null;
