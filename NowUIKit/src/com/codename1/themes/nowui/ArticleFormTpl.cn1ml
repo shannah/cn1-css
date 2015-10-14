@@ -1,0 +1,46 @@
+<!doctype cn1ml>
+<html>
+    <head>
+        <head>
+            <script>
+                import com.codename1.ui.plaf.UIManager;
+            </script>
+    </head>
+    </head>
+    <body attributes="UIManager ui;" layout="y" uiid="NoPadding">
+        <!--<div layout="BorderLayout">-->
+            <div layout="LayeredLayout" uiid="NoPadding">
+                <label  uiid="NoPaddingLabel" name="headerImage">
+                    <img src="res:SeaIce.png"/>
+                </label>
+                <div layout="BorderLayout">
+                    <label class="SpanLabel" layout-constraint="s" name="headline" uiid="ArticleHeadline">Arctic sea ice hits record low for winter maximum</label>
+                </div>
+            </div>
+        <!--</div>-->
+        
+        
+        <div layout="BorderLayout" uiid="ArticleCommandArea">
+            <div layout-constraint="c" layout="FlowLayout">
+                <button uiid="NUIIconLinkButton" name="sourceButton" 
+                        set:icon='java:ui.getThemeImageConstant("articleSourceIconImage")'>CNN</button>
+                <button uiid="NUIIconLinkButton" name="dateButton">Apr. 3, 2015</button>
+            </div>
+            <div layout-constraint="e" layout="FlowLayout">
+                <button uiid="NUICategoryButton" name="categoryButton">ENVIRONMENT</button>
+            </div>
+        </div>
+        <div class="com.codename1.components.xmlview.XMLView" name="body"/>
+
+        <div uiid="NUIArticleFooter" layout="y">
+            <label uiid="NUINextStoryLabel">NEXT STORY</label>
+            <label class="SpanLabel" uiid="NUINextStoryTitle" name="nextStoryTitle">New Battery for smartphones can be charged in a minute</label>
+            <button uiid="NUINextStoryLink" name="nextStoryButton">
+                <img src="res:Arrow-right.png"/>
+                Next
+            </button>
+            <div>Testing</div>
+        </div>
+       
+    </body>
+</html>

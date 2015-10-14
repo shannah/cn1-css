@@ -1,0 +1,26 @@
+<!doctype cn1ml>
+<html>
+    <head>
+    </head>
+    <body layout="BorderLayout" uiid="NUILoginForm">
+        
+        <div layout-constraint="c" layout="FlowLayout(Component.CENTER)">
+            <script>((FlowLayout)self.getLayout()).setValign(Component.CENTER);</script>
+            
+            <img src="res:NowLogo.png" />
+            
+        </div>
+        
+        <div layout-constraint="s" layout="y">
+           
+            <input name="usernameField" type="text" set:Hint="Username"/>
+            <input name="passwordField" type="password" set:Hint="Password"/>
+            <button name="submitButton">Get Started</button>
+            <div layout="BorderLayout">
+                <button name="signupButton" layout-constraint="w" uiid="NUILinkButtonLight">Create Account</button>
+                <button name="helpButton" layout-constraint="e" uiid="NUILinkButtonLight">Need Help?</button>
+            </div>
+            
+        </div>
+    </body>
+</html>

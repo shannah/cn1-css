@@ -1,3 +1,9 @@
 build
 private
 dist
+CodenameOneBuildClient.jar
+JavaSE.jar
+CLDC11.jar
+CodenameOne.jar
+.DS_STORE
+cn1-css-demo/res

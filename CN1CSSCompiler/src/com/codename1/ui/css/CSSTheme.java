@@ -1396,11 +1396,11 @@ public class CSSTheme {
     }
     
     public void loadResourceFile() throws IOException {
-        if ( resourceFile != null) {
+        if ( resourceFile != null && resourceFile.exists()) {
             if (res == null) {
                 res = new EditableResources();
             }
-            res.openFileWithXMLSupport(resourceFile);
+            res.openFile(new FileInputStream(resourceFile));
         }
     }
     

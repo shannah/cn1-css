@@ -63,6 +63,7 @@ public class CN1CSSCLI extends Application {
         }
         
         JavaSEPort.setShowEDTViolationStacks(false);
+        
             JavaSEPort.setShowEDTWarnings(false);
             JFrame frm = new JFrame("Placeholder");
             frm.setVisible(false);
@@ -78,7 +79,7 @@ public class CN1CSSCLI extends Application {
         CSSTheme theme = CSSTheme.load(url);
         theme.cssFile = inputFile;
         theme.resourceFile = outputFile;
-       
+        JavaSEPort.setBaseResourceDir(outputFile.getParentFile());
         Platform.runLater(() -> {
             new Thread(()-> {
                 try {

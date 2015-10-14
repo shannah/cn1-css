@@ -1,0 +1,60 @@
+<!doctype cn1ml>
+<html>
+    <head>
+        <script>import com.codename1.ui.plaf.UIManager;</script>
+    </head>
+    <body attributes="UIManager ui;" layout="y" uiid="NoPadding" set:scrollableY="true">
+        <div layout="LayeredLayout" uiid="NoPadding">
+            <div layout="y" uiid="NoPadding">
+                <label uiid="NoPaddingLabel">
+                    <img src="res:RedPlanet.png"/>
+                </label>
+            </div>
+            <div layout="BorderLayout" uiid="NoPadding">
+                <div layout-constraint="s" layout="y" uiid="NoPadding">
+                    <label class="SpanLabel" uiid="ArticleHeadline" set:TextUIID="ArticleHeadlineText">Astronauts could land on Red Planet by 2039</label>
+                    <div layout="BorderLayout" uiid="ArticleCommandArea">
+                        <div layout-constraint="w">
+                            <button uiid="NUISourceButton50White" name="sourceButton">SPACE.com</button>
+                            
+                            <button uiid="NUIDateButton50White" name="dateButton">20m ago</button>
+                        </div>
+                        <div layout-constraint="e">
+                            <button uiid="NUICategoryButtonLight" name="categoryButton">SCIENCE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div layout="y" name="articleList">
+            <div layout="y" uiid="ArticleListItem">
+                <label class="SpanLabel">Arctic sea ice extent hits record low for winter maximum</label>
+                <div layout="BorderLayout" uiid="ArticleCommandArea">
+                    <div layout-constraint="w">
+                        <button uiid="NUISourceButton30" name="sourceButton_1">CNN</button>
+                        <button uiid="NUIDateButton30" name="dateButton_1">1h ago</button>
+                    </div>
+                    <div layout-constraint="e">
+                        <button uiid="NUICategoryButton" name="categoryButton_1">ENVIRONMENT</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div layout="y" uiid="ArticleListItem">
+                <label class="SpanLabel">New battery for smart phones can be charged in a minute</label>
+                <div layout="BorderLayout" uiid="ArticleCommandArea">
+                    <div layout-constraint="w">
+                        <button uiid="NUISourceButton30" name="sourceButton_2">Reuters</button>
+                        <button uiid="NUIDateButton30" name="dateButton_2">6h ago</button>
+                    </div>
+                    <div layout-constraint="e">
+                        <button uiid="NUICategoryButton" name="categoryButton_2">TECHNOLOGY</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </body>
+</html>

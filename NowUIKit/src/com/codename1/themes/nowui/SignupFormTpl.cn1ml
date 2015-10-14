@@ -1,0 +1,22 @@
+<!doctype cn1ml>
+<html>
+    <head>
+    </head>
+    <body layout="BorderLayout">
+        <div layout-constraint="n" layout="y">
+            <label uiid="h1">CREATE ACCOUNT</label>
+        </div>
+        <div layout-constraint="c" layout="BorderLayout">
+            <div layout-constraint="s" layout="y">
+                <input name="nameField" set:Hint="Name" type="text"/>
+                <input name="emailField" set:Hint="Email" type="text"/>
+                <input name="passwordField" set:Hint="Password" type="text"/>
+
+            </div>
+        </div>
+        <div layout-constraint="s" layout="y">
+            <button name="continueButton" uiid="ClearButton" >Continue</button>
+            <button name="termsButton" uiid="NUILinkButtonLight" >Terms &amp; Conditions</button>
+        </div>
+    </body>
+</html>

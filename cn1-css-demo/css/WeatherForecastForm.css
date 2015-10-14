@@ -5,7 +5,7 @@
 
 @font-face {
     font-family: "FontAwesome";
-    src: url(github://FortAwesome/Font-Awesome/blob/master/fonts/fontawesome-webfont.ttf);
+    src: url(github://FontAwesome/Font-Awesome/blob/master/fonts/fontawesome-webfont.ttf);
 }
 
 WeatherForecastDegrees, WeatherForecastClear, WeatherForecastCityLabel,  WeatherForecastStateLabel{

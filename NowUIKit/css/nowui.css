@@ -1,0 +1,583 @@
+@font-face {
+    font-family: "Montserrat";
+    src: url(res/Montserrat-Regular.ttf);
+}
+
+@font-face {
+    font-family: "Montserrat-Bold";
+    src: url(res/Montserrat-Bold.ttf);
+}
+
+@font-face {
+    font-family: "FontAwesome";
+    src: url(github://FortAwesome/Font-Awesome/blob/master/fonts/fontawesome-webfont.ttf);
+}
+
+#Device {
+    min-resolution: 120dpi;
+    max-resolution: 480dpi;
+    resolution: 480dpi;
+}
+
+
+
+
+#Constants {
+    PopupDialogArrowBool: false;
+    calTitleDayStyleBool: true;
+    calTransitionVertBool: false;
+    calendarLeftImage: "cal_left_arrow.png";
+    calendarRightImage: "cal_right_arrow.png";
+    centeredPopupBool: false;
+    checkBoxCheckDisFocusImage: "Check-Box_Normal.png";
+    checkBoxCheckedFocusImage: "Check-Box_Press.png";
+    checkBoxCheckedImage: "Check-Box_Press.png";
+    checkBoxOppositeSideBool: true;
+    checkBoxUncheckedFocusImage: "Check-Box_Normal.png";
+    checkBoxUncheckedImage: "Check-Box_Normal.png";
+    comboImage: "combo.png";
+    commandBehavior: "Side";
+    dialogTransitionIn: "fade";
+    dialogTransitionOut: "fade";
+    dlgButtonCommandUIID: "DialogButton";
+    dlgCommandGridBool: true;
+    dlgInvisibleButtons: #1a1a1a;
+    formTransitionIn: "empty";
+    formTransitionOut: "slide";
+    includeNativeBool: true;
+    menuImage: "of_menu.png";
+    noTextModeBool: true;
+    onOffIOSModeBool: true;
+    otherPopupRendererBool: false;
+    pureTouchBool: true;
+    radioSelectedFocusImage: "Radio_btn_Press.png";
+    radioSelectedImage: "Radio_btn_Press.png";
+    radioUnselectedFocusImage: "Radio_btn_Normal.png";
+    radioUnselectedImage: "Radio_btn_Normal.png";
+    sideMenuImage: "menu.png";
+    switchMaskImage: "switch_mask.png";
+    switchOffImage: "switch_off.png";
+    switchOnImage: "switch_on.png";
+    tabPlacementInt: 0;
+    backIconImage: "Back-icon.png";
+    articleSourceIconImage: "Source-icon.png";
+    articleDateIconImage: "Date-icon.png";
+    articleArrowRightImage: "Arrow-right.png";
+    articleShareIconImage: "Share-icon.png";
+    articleBookmarkIconImage: "Bookmark-icon.png";
+    articleTextIconImage: "Text-icon.png";
+    articleCommentsIconImage: "Comments-icon.png";
+    newsIconImage: "News-icon.png";
+    channelsIconImage: "Channels-icon.png";
+    bookmarksIconImage: "Bookmarks-icon.png";
+    overviewIconImage: "Overview-icon.png";
+    calendarIconImage: "Calendar-icon.png";
+    timelineIconImage: "Timeline-icon.png";
+    profileIconImage: "Profile-icon.png";
+    widgetsIconImage: "Widgets-icon.png";
+    settingsIconImage: "Settings-icon.png";
+    
+}
+
+Default {
+    background-color: transparent;
+}
+
+Images {
+    background-image: url(images/NowLogo.png),
+        url(images/Username-icon.png),
+        url(images/Password-icon.png),
+        url(images/Name-icon.png), 
+        url(images/Email-icon.png), 
+        url(images/SeaIce.png), 
+        url(images/Back-icon.png), 
+        url(images/Source-icon.png), 
+        url(images/Date-icon.png), 
+        url(images/Arrow-right.png), 
+        url(images/Share-icon.png),
+        url(images/Text-icon.png),
+        url(images/Comments-icon.png),
+        url(images/RedPlanet.png),
+        url(images/News-icon.png),
+        url(images/Channels-icon.png),
+        url(images/Bookmarks-icon.png),
+        url(images/Overview-icon.png),
+        url(images/Calendar-icon.png),
+        url(images/Timeline-icon.png),
+        url(images/Profile-icon.png),
+        url(images/Widgets-icon.png),
+        url(images/Settings-icon.png),
+        url(images/Bookmark-icon.png);
+        
+    
+}
+
+SideNavigationPanel {
+    background-image: url(images/SignupForm-bg.png);
+    cn1-background-type: cn1-image-scaled-fill;
+    padding: 2mm;
+    
+}
+
+BackCommand {
+    color: white;
+    background-image: url(images/Back-icon.png);
+    cn1-background-type: cn1-image-align-left;
+    
+}
+
+TitleCommand {
+    margin: 1mm 2mm 1mm 2mm;
+    padding: 0;
+    cn1-background-type: none;
+    background-image: none;
+    border: none;
+    
+    
+}
+
+SideCommand {
+    background-image: none;
+    border: none;
+    color: white;
+    font-family:  "Montserrat-Bold";
+    font-style: bold;
+    padding: 1mm 2mm 1mm 3mm;
+    margin: 1mm;
+    text-decoration: none;
+}
+
+
+Form {
+    background-color: white;
+    background-image: none;
+    cn1-background-type: none;
+    
+}
+
+TitleArea {
+    background-color: rgb( 249, 99, 50 );
+    border: none;
+    cn1-background-type: none;
+    /*padding: 2mm 1mm 2mm 1mm;*/
+    text-align: center;
+    
+    
+}
+
+Title {
+    color: white;
+    font-family: "Montserrat-Bold";
+    background-color: transparent;
+    text-align: center;
+}
+
+TextField {
+    background-color: white;
+    width: 200pt;
+    height: 40pt;
+    border-radius: 20pt;
+    opacity: 0.102;
+    color: white;
+    font-family: "Montserrat";
+    padding-left: 4mm;
+    
+
+}
+
+NUITextFieldHint {
+    color: white;
+    margin-left: 10mm;
+    font-family: "Montserrat";
+    cn1-derive: Label;
+    padding-left: 1mm;
+    
+    
+    
+        
+}
+
+Label {
+    cn1-background-type: none;
+    background-color: transparent;
+}
+
+Button {
+    cn1-background-type: none;
+    background-color: rgb( 249, 99, 50 );
+    font-family: "Montserrat";
+    color: white;
+    height: 40pt;
+    width: 200pt;
+    border-radius: 20pt;
+    margin: 1mm;
+
+}
+
+Button.pressed {
+    background-color: transparent;
+    border: 1pt solid white;
+}
+
+LoginForm {
+    cn1-derive: Form;
+    background-image: url(images/LoginForm-bg.png);
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    cn1-background-type: cn1-image-scaled-fill;    
+    background-color: black;
+    padding:0;
+    margin:0;
+    
+}
+
+NUIHiddenTitleArea {
+    background-color: transparent;
+    cn1-derive: TitleArea;
+    
+    
+}
+
+NUIHiddentatusBar {
+    padding:0;
+    margin:0;
+    cn1-derive: StatusBar;
+}
+
+NUILinkButton {
+    cn1-derive: Button;
+    background-color: transparent;
+    font-family: "Montserrat";
+    font-size: small;
+}
+
+NUILinkButtonLight {
+    cn1-derive: NUILinkButton;
+    color: #eaeaea;
+}
+
+NUILinkButton.pressed {
+    border: none;
+}
+
+NUILinkButtonLight.pressed {
+    color: #cccccc;
+}
+
+ClearButton {
+    cn1-derive: Button;
+    background-color: transparent;
+    border: 1pt solid white;
+}
+
+ClearButton.pressed {
+    background-color: rgba(255,255,255,0.5);
+}
+
+NUILinkButtonDark {
+    cn1-derive: NUILinkButton;
+    color: black;
+}
+
+NUISignupForm {
+    cn1-derive: Form;
+    background-image: url(images/SignupForm-bg.png);
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    cn1-background-type: cn1-image-scaled-fill;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    font-family: "Montserrat-Bold";
+    font-size: large;
+    padding-top: 5mm;
+}
+
+XMLVIewIcon {
+    font-family: "FontAwesome";
+}
+
+ParagraphView {
+    padding: 2mm;
+    background-color: white;
+    cn1-background-type: none;
+    
+}
+
+ParagraphViewText {
+    font-family: "Montserrat";
+    font-weight: normal;
+    background-color: white;
+    color: black;
+}
+
+blockquote {
+    border-left: 2pt solid rgb( 249, 99, 50 );
+    padding: 2mm;
+    margin: 2mm;
+    background-color: white;
+    
+}
+
+blockquoteText {
+    font-family: "Montserrat";
+    color: rgb( 249, 99, 50 );
+    background-color: white;
+}
+
+NUINextStoryLabel {
+    font-size: small;
+    color: #666;
+    font-weight: bold;
+    font-family: "Montserrat";
+    text-align: center;
+}
+
+NUIArticleFooter {
+    background-color: rgb( 242, 242, 242 );
+    padding: 6mm 3mm 6mm 3mm;
+    margin: 0;
+}
+
+NUINextStoryTitle, NUINextStoryTitleText {
+    color: black;
+    font-family: "Montserrat";
+    font-size: medium;
+    text-align: center;
+    font-style: bold;
+}
+
+MediaPlayer {
+    background-color: black;
+}
+
+ArticleHeadline {
+    color: white;
+    font-family: "Montserrat-Bold";
+    font-weight: bold;
+    padding: 2mm;
+    font-size: large;
+    background-color: transparent;
+    cn1-background-type: none;
+    
+}
+
+ArticleHeadlineText {
+    color: white;
+    font-family: "Montserrat-Bold";
+    font-weight: bold;
+    
+    background-color: transparent;
+    cn1-background-type: none;
+    
+}
+
+
+
+ContentPane, NoPadding {
+    padding: 0;
+    margin: 0;
+}
+
+NoPaddingForm {
+    cn1-derive:Form;
+    padding:0;
+    margin:0;
+}
+
+NoPaddingLabel {
+    cn1-derive: Label;
+    padding:0;
+    margin:0;
+}
+
+NUIIconLinkButton {
+    color: black;
+    background-color: transparent;
+    font-family: "Montserrat";
+    font-size: small;
+    padding: 5px;
+    padding-left: 3mm;
+    margin: 5px 10px 5px 10px;
+    
+    
+}
+
+NUISourceButton30 {
+    cn1-derive: NUIIconLinkButton;
+    background-image: url(images/Source-icon.png);
+    cn1-background-type: cn1-image-align-left;
+}
+
+NUISourceButton50 {
+    cn1-derive: NUISourceButton30;
+    background-image: url(images/Source-icon-test.png);
+}
+
+NUIDateButton30 {
+    cn1-derive: NUIIconLinkButton;
+    background-image: url(images/Date-icon.png);
+    cn1-background-type: cn1-image-align-left;
+}
+
+NUIDateButton50 {
+    cn1-derive: NUIDateButton30;
+    background-image: url(images/Date-icon-50pct.png);
+}
+
+NUISourceButton50White {
+    cn1-derive: NUISourceButton50;
+    color: white;
+}
+
+NUIDateButton50White {
+    cn1-derive: NUIDateButton50;
+    color: white;
+}
+
+
+
+NUIIconLinkButtonLight{
+    cn1-derive: NUIIconLinkButton;
+    color: white;
+}
+
+
+NUIIconLinkButton.pressed, NUIIconLinkButton.pressed, NUICategoryButtonLight.pressed, NUICategoryButton.pressed {
+    color: #ccc;
+}
+
+NUICategoryButton {
+    color: black;
+    font-family: "Montserrat";
+    background-color: transparent;
+    border-bottom: 2pt solid #ccc;
+    font-size: small;
+}
+
+NUICategoryButtonLight {
+    cn1-derive: NUICategoryButton;
+    color: white;
+}
+
+VideoView, ImageView {
+    margin: 0;
+    padding: 0;
+}
+
+NUINextStoryLink {
+    color: white;
+    font-family: "Montserrat";
+    text-align: center;
+}
+
+
+ArticleCommandArea {
+    padding: 0 2mm 0 2mm;
+}
+
+ArticleListItem {
+    border-bottom: 1pt solid rgb(249, 249, 249);
+}
+
+
+/*Channels Form*/
+
+ChannelButton {
+    cn1-background-type: cn1-image-scaled-fill;
+    margin: 0;
+}
+
+FashionButton {
+    cn1-derive: ChannelButton;
+    background-image: url(images/Fashion-bg.png);
+}
+
+TechnologyButton {
+    cn1-derive: ChannelButton;
+    background-image: url(images/Technology-bg.png);
+}
+
+FinancesButton {
+    cn1-derive: ChannelButton;
+    background-image: url(images/Finances-bg.png);
+}
+
+ScienceButton {
+    cn1-derive: ChannelButton;
+    background-image: url(images/Science-bg.png);
+}
+
+AutoButton {
+    cn1-derive: ChannelButton;
+    background-image: url(images/Auto-bg.png);
+}
+
+EnvironmentButton {
+    cn1-derive: ChannelButton;
+    background-image: url(images/Environment-bg.png);
+}
+
+ChannelInternalButton {
+    font-family: "Montserrat-Bold";
+    color: white;
+    text-align: left;
+    font-size: 2mm;
+    padding: 2mm;
+    
+    
+}
+
+NUINorthMenu {
+    background-color: rgb( 236, 93, 47 );
+    margin: 0;
+    padding-top: 2mm;
+    padding-bottom: 2mm;
+}
+
+FilterButtonSelected {
+    text-align: center;
+    color: white;
+    font-family: "Montserrat";
+    border: 1pt solid rgba(255,255,255, 0.8);
+    border-radius: 20pt;
+    width: 100pt;
+    height: 40pt;
+    background-color: transparent;
+    margin: 2mm;
+    font-size: 2mm;
+    padding: 1mm;
+}
+
+FilterButtonSelected.pressed {
+    background-color: rgba(255, 255, 255, 0.3);
+    
+}
+
+FilterButton {
+    text-align: center;
+    color: #eaeaea;
+    font-family: "Montserrat";
+    background-color: transparent;
+    margin: 2mm;
+    padding: 1mm;
+    font-size: 2mm;
+    
+    
+}
+
+FilterButton.pressed {
+    border: 1pt solid rgba(255,255,255, 0.8);
+    border-radius: 20pt;
+    width: 100pt;
+    height: 40pt;
+}
+
+
+/** Calendar Form*/
