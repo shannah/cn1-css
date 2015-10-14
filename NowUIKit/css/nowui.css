@@ -81,6 +81,7 @@
 
 Default {
     background-color: transparent;
+    
 }
 
 Images {
@@ -142,7 +143,7 @@ SideCommand {
     color: white;
     font-family:  "Montserrat-Bold";
     font-style: bold;
-    padding: 1mm 2mm 1mm 3mm;
+    padding: 1mm 2mm 1mm 2mm;
     margin: 1mm;
     text-decoration: none;
 }

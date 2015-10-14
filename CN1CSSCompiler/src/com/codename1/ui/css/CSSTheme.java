@@ -16,6 +16,7 @@ import com.codename1.ui.animations.AnimationAccessor;
 import com.codename1.ui.plaf.Accessor;
 import com.codename1.ui.plaf.Border;
 import com.codename1.ui.plaf.Style;
+import com.codename1.ui.util.CSSEditableResources;
 import com.codename1.ui.util.EditableResources;
 import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
@@ -1398,7 +1399,7 @@ public class CSSTheme {
     public void loadResourceFile() throws IOException {
         if ( resourceFile != null && resourceFile.exists()) {
             if (res == null) {
-                res = new EditableResources();
+                res = new CSSEditableResources(resourceFile);
             }
             res.openFile(new FileInputStream(resourceFile));
         }
@@ -1406,7 +1407,7 @@ public class CSSTheme {
     
     public void createImageBorders(WebView web) {
         if (res == null) {
-            res = new EditableResources();
+            res = new CSSEditableResources(resourceFile);
         }
         ArrayList<Border> borders = new ArrayList<Border>();
         
