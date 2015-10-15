@@ -127,78 +127,78 @@ There are 3 variants of selectors that you can use in your CSS files:
  }
  ~~~~
 4. **Default Element** - You can use the UIID `Default` to specify styles that should be set for the default element in the theme.  E.g.
-~~~~
-Default {
-    /** Styles applied to the default element of the theme. **/
-}
-~~~~
+ ~~~~
+ Default {
+     /** Styles applied to the default element of the theme. **/
+ }
+ ~~~~
 5. **`#Device`** - You can use the `#Device` selector to configure some specific properties about the target devices for this theme.  E.g.:
-~~~~
-#Device {
-    min-resolution: 120dpi;
-    max-resolution: 480dpi;
-    resolution: 480dpi;
-}
-~~~~
+ ~~~~
+ #Device {
+     min-resolution: 120dpi;
+     max-resolution: 480dpi;
+     resolution: 480dpi;
+ }
+ ~~~~
 6. **`#Constants`** - You can specify theme constants in this directive.  Constants will have the same name as their corresponding constants in a Codename One Theme as shown in the resource editor.  Here is a sample section from a stylesheet that sets all of the default constants.
-~~~~
-#Constants {
-    PopupDialogArrowBool: false;
-    calTitleDayStyleBool: true;
-    calTransitionVertBool: false;
-    calendarLeftImage: "cal_left_arrow.png";
-    calendarRightImage: "cal_right_arrow.png";
-    centeredPopupBool: false;
-    checkBoxCheckDisFocusImage: "Check-Box_Normal.png";
-    checkBoxCheckedFocusImage: "Check-Box_Press.png";
-    checkBoxCheckedImage: "Check-Box_Press.png";
-    checkBoxOppositeSideBool: true;
-    checkBoxUncheckedFocusImage: "Check-Box_Normal.png";
-    checkBoxUncheckedImage: "Check-Box_Normal.png";
-    comboImage: "combo.png";
-    commandBehavior: "Side";
-    dialogTransitionIn: "fade";
-    dialogTransitionOut: "fade";
-    dlgButtonCommandUIID: "DialogButton";
-    dlgCommandGridBool: true;
-    dlgInvisibleButtons: #1a1a1a;
-    formTransitionIn: "empty";
-    formTransitionOut: "slide";
-    includeNativeBool: true;
-    menuImage: "of_menu.png";
-    noTextModeBool: true;
-    onOffIOSModeBool: true;
-    otherPopupRendererBool: false;
-    pureTouchBool: true;
-    radioSelectedFocusImage: "Radio_btn_Press.png";
-    radioSelectedImage: "Radio_btn_Press.png";
-    radioUnselectedFocusImage: "Radio_btn_Normal.png";
-    radioUnselectedImage: "Radio_btn_Normal.png";
-    sideMenuImage: "menu.png";
-    switchMaskImage: "switch_mask.png";
-    switchOffImage: "switch_off.png";
-    switchOnImage: "switch_on.png";
-    tabPlacementInt: 0;
-    backIconImage: "Back-icon.png";
-    articleSourceIconImage: "Source-icon.png";
-    articleDateIconImage: "Date-icon.png";
-    articleArrowRightImage: "Arrow-right.png";
-    articleShareIconImage: "Share-icon.png";
-    articleBookmarkIconImage: "Bookmark-icon.png";
-    articleTextIconImage: "Text-icon.png";
-    articleCommentsIconImage: "Comments-icon.png";
-    newsIconImage: "News-icon.png";
-    channelsIconImage: "Channels-icon.png";
-    bookmarksIconImage: "Bookmarks-icon.png";
-    overviewIconImage: "Overview-icon.png";
-    calendarIconImage: "Calendar-icon.png";
-    timelineIconImage: "Timeline-icon.png";
-    profileIconImage: "Profile-icon.png";
-    widgetsIconImage: "Widgets-icon.png";
-    settingsIconImage: "Settings-icon.png";
-    
-}
-~~~~
+ ~~~~
+ #Constants {
+     PopupDialogArrowBool: false;
+     calTitleDayStyleBool: true;
+     calTransitionVertBool: false;
+     calendarLeftImage: "cal_left_arrow.png";
+     calendarRightImage: "cal_right_arrow.png";
+     centeredPopupBool: false;
+     checkBoxCheckDisFocusImage: "Check-Box_Normal.png";
+     checkBoxCheckedFocusImage: "Check-Box_Press.png";
+     checkBoxCheckedImage: "Check-Box_Press.png";
+     checkBoxOppositeSideBool: true;
+     checkBoxUncheckedFocusImage: "Check-Box_Normal.png";
+     checkBoxUncheckedImage: "Check-Box_Normal.png";
+     comboImage: "combo.png";
+     commandBehavior: "Side";
+     dialogTransitionIn: "fade";
+     dialogTransitionOut: "fade";
+     dlgButtonCommandUIID: "DialogButton";
+     dlgCommandGridBool: true;
+     dlgInvisibleButtons: #1a1a1a;
+     formTransitionIn: "empty";
+     formTransitionOut: "slide";
+     includeNativeBool: true;
+     menuImage: "of_menu.png";
+     noTextModeBool: true;
+     onOffIOSModeBool: true;
+     otherPopupRendererBool: false;
+     pureTouchBool: true;
+     radioSelectedFocusImage: "Radio_btn_Press.png";
+     radioSelectedImage: "Radio_btn_Press.png";
+     radioUnselectedFocusImage: "Radio_btn_Normal.png";
+     radioUnselectedImage: "Radio_btn_Normal.png";
+     sideMenuImage: "menu.png";
+     switchMaskImage: "switch_mask.png";
+     switchOffImage: "switch_off.png";
+     switchOnImage: "switch_on.png";
+     tabPlacementInt: 0;
+     backIconImage: "Back-icon.png";
+     articleSourceIconImage: "Source-icon.png";
+     articleDateIconImage: "Date-icon.png";
+     articleArrowRightImage: "Arrow-right.png";
+     articleShareIconImage: "Share-icon.png";
+     articleBookmarkIconImage: "Bookmark-icon.png";
+     articleTextIconImage: "Text-icon.png";
+     articleCommentsIconImage: "Comments-icon.png";
+     newsIconImage: "News-icon.png";
+     channelsIconImage: "Channels-icon.png";
+     bookmarksIconImage: "Bookmarks-icon.png";
+     overviewIconImage: "Overview-icon.png";
+     calendarIconImage: "Calendar-icon.png";
+     timelineIconImage: "Timeline-icon.png";
+     profileIconImage: "Profile-icon.png";
+     widgetsIconImage: "Widgets-icon.png";
+     settingsIconImage: "Settings-icon.png";
+     
+ }
+ ~~~~
 
 
 ## Examples
