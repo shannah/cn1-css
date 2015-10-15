@@ -2398,7 +2398,7 @@ public class CSSTheme {
             
             if (!isNone(borderRadiusTopLeftX) || !isNone(borderRadiusBottomLeftX)) {
                 i.left = Math.max(getPixelValue(borderRadiusTopLeftX), getPixelValue(borderRadiusBottomLeftX)) + 
-                        borderInsets.left + boxShadowInsets.left + 1;
+                        borderInsets.left + boxShadowInsets.left + boxShadowInsets.right + 1;
             } else {
             
                 i.left = borderInsets.left + boxShadowInsets.left + boxShadowInsets.right + 1;
