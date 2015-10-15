@@ -27,29 +27,7 @@ A library to add support for designing Codename One themes using CSS (Cascading 
 
 ## Installation
 
-1. Download [cn1css-ant-task.jar](https://github.com/shannah/cn1-css/releases/download/1.0/cn1css-ant-task.jar) and copy into your project's `lib` directory.
-2. Copy the following snippet into you project's `build.xml` file:
- ~~~~
-    <taskdef name="compileCSS"
-        classname="com.codename1.ui.css.CN1CSSCompileTask"
-        classpath="lib/cn1css-ant-task.jar"/>
-    
-    <target name="compile-css">
-        <compileCSS/>
-    </target>
- ~~~~
-3. Change the following line in your project's `build.xml` file:
- 
- ~~~~
- <target name="-pre-compile">
- ~~~~
- 
- to
- 
- ~~~~
- <target name="-pre-compile" depends="compile-css">
- ~~~~
- 
+[See the Installation Wiki Page](https://github.com/shannah/cn1-css/wiki/Installation) 
  
 ## Usage / How it Works
 
@@ -64,145 +42,25 @@ UIManager.getInstance().addThemeProps(css.getThemeResourceNames()[0]);
 
 ## Supported CSS Directives
 
-* `padding`  (and variants)
-* `margin` (and variants)
-* `border` (and variants)
-* `border-radius`
-* `background`
-* `background-color`
-* `background-repeat`
-* `background-image`
-* `font`
-* `font-family`
-* `font-style`
-* `font-size`
-* `@font-face`
-* `color`
-* `text-align`
-* `opacity`
-* `box-shadow`
-* `width`  (only used for generating background-images and borders)
-* `height` (only used for generating background-images and borders)
-
-## Custom Codename One CSS Directives
-
-* `cn1-source-dpi` - Used to specify source DPI for multi-image generation of background images.
-* `cn1-background-type` - Used to explicitly specify the background-type that should be used for the class.
-* `cn1-9patch` - Used to explicitly specify the slices used when generating 9-piece borders.
-* `cn1-derive` - Used to specify that this UIID should derive from an existing UIID.
-
+[See the Supported CSS Properties Wiki Page](https://github.com/shannah/cn1-css/wiki/Supported-Properties)
 
 ## Supported CSS Selectors
 
-There are 3 variants of selectors that you can use in your CSS files:
+[See the Supported Selectors Wiki Page](https://github.com/shannah/cn1-css/wiki/Supported-CSS-Selectors)
 
-1. **UIID Name** - If you add a selector without specifying a class or ID, it will be interpreted as a UIID.  E.g.:
- ~~~~
- Form { /* Styles applied to the "Form" style/UIID */
-      
- }
- 
- Foo {  /* Creates style/UIID named "Foo" */
- 
- }
- ~~~~
-2. **Predefined CSS Classes** - `.pressed`, `selected`, `.unselected`, `.disabled` E.g.:
- ~~~~
- Button.selected { /** Styles applied to the Button style/UIID in "selected" state.*/
- 
- }
- 
- Button.pressed { /** Styles applied to Button style/UIID in "pressed" state*/
- 
- }
- 
- Button { /** Styles applied to *ALL* states of Button style/UIID */
- 
- }
- ~~~~
-3. **All Styles** - You can use the `*` selector to apply styling to all UIIDs (that are defined in the same CSS file.  E.g.:
- ~~~~
- * {/** Styles applied to all UIIDs **/
- 
- }
- ~~~~
-4. **Default Element** - You can use the UIID `Default` to specify styles that should be set for the default element in the theme.  E.g.:
- ~~~~
- Default {/** Styles applied to the default element of the theme. */
- 
- }
- ~~~~
-5. **`#Device`** - You can use the `#Device` selector to configure some specific properties about the target devices for this theme.  E.g.:
-  ~~~~
-  
-  #Device {
-     min-resolution: 120dpi;
-     max-resolution: 480dpi;
-     resolution: 480dpi;
-  }
-  
-  ~~~~
-6. **`#Constants`** - You can specify theme constants in this directive.  Constants will have the same name as their corresponding constants in a Codename One Theme as shown in the resource editor.  Here is a sample section from a stylesheet that sets all of the default constants.
-  ~~~~
-  #Constants {
-     PopupDialogArrowBool: false;
-     calTitleDayStyleBool: true;
-     calTransitionVertBool: false;
-     calendarLeftImage: "cal_left_arrow.png";
-     calendarRightImage: "cal_right_arrow.png";
-     centeredPopupBool: false;
-     checkBoxCheckDisFocusImage: "Check-Box_Normal.png";
-     checkBoxCheckedFocusImage: "Check-Box_Press.png";
-     checkBoxCheckedImage: "Check-Box_Press.png";
-     checkBoxOppositeSideBool: true;
-     checkBoxUncheckedFocusImage: "Check-Box_Normal.png";
-     checkBoxUncheckedImage: "Check-Box_Normal.png";
-     comboImage: "combo.png";
-     commandBehavior: "Side";
-     dialogTransitionIn: "fade";
-     dialogTransitionOut: "fade";
-     dlgButtonCommandUIID: "DialogButton";
-     dlgCommandGridBool: true;
-     dlgInvisibleButtons: #1a1a1a;
-     formTransitionIn: "empty";
-     formTransitionOut: "slide";
-     includeNativeBool: true;
-     menuImage: "of_menu.png";
-     noTextModeBool: true;
-     onOffIOSModeBool: true;
-     otherPopupRendererBool: false;
-     pureTouchBool: true;
-     radioSelectedFocusImage: "Radio_btn_Press.png";
-     radioSelectedImage: "Radio_btn_Press.png";
-     radioUnselectedFocusImage: "Radio_btn_Normal.png";
-     radioUnselectedImage: "Radio_btn_Normal.png";
-     sideMenuImage: "menu.png";
-     switchMaskImage: "switch_mask.png";
-     switchOffImage: "switch_off.png";
-     switchOnImage: "switch_on.png";
-     tabPlacementInt: 0;
-     backIconImage: "Back-icon.png";
-     articleSourceIconImage: "Source-icon.png";
-     articleDateIconImage: "Date-icon.png";
-     articleArrowRightImage: "Arrow-right.png";
-     articleShareIconImage: "Share-icon.png";
-     articleBookmarkIconImage: "Bookmark-icon.png";
-     articleTextIconImage: "Text-icon.png";
-     articleCommentsIconImage: "Comments-icon.png";
-     newsIconImage: "News-icon.png";
-     channelsIconImage: "Channels-icon.png";
-     bookmarksIconImage: "Bookmarks-icon.png";
-     overviewIconImage: "Overview-icon.png";
-     calendarIconImage: "Calendar-icon.png";
-     timelineIconImage: "Timeline-icon.png";
-     profileIconImage: "Profile-icon.png";
-     widgetsIconImage: "Widgets-icon.png";
-     settingsIconImage: "Settings-icon.png";
-     
-  }
-  ~~~~
+## Image Support
 
+[See the Images Wiki Page](https://github.com/shannah/cn1-css/wiki/Images) :
 
+* [Importing Multiple Images in a Single Selector](https://github.com/shannah/cn1-css/wiki/Images#import-multiple-images-in-single-selector)
+* [Loading Images Remotely](https://github.com/shannah/cn1-css/wiki/Images#loading-images-from-urls)
+* [Generating 9-Piece Image Borders](https://github.com/shannah/cn1-css/wiki/Images#generating-9-piece-image-borders)
+* [Image Backgrounds](https://github.com/shannah/cn1-css/wiki/Images#image-backgrounds)
+* [Image Compression](https://github.com/shannah/cn1-css/wiki/Images#image-compression)
+
+## Font Support 
+
+[See the Fonts Wiki Page](https://github.com/shannah/cn1-css/wiki/Fonts)
 
 
 ## Examples
