@@ -134,11 +134,13 @@ There are 3 variants of selectors that you can use in your CSS files:
  ~~~~
 5. **`#Device`** - You can use the `#Device` selector to configure some specific properties about the target devices for this theme.  E.g.:
   ~~~~
+  
   #Device {
      min-resolution: 120dpi;
      max-resolution: 480dpi;
      resolution: 480dpi;
   }
+  
   ~~~~
 6. **`#Constants`** - You can specify theme constants in this directive.  Constants will have the same name as their corresponding constants in a Codename One Theme as shown in the resource editor.  Here is a sample section from a stylesheet that sets all of the default constants.
   ~~~~
