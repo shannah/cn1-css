@@ -141,8 +141,8 @@ There are 3 variants of selectors that you can use in your CSS files:
  }
  ~~~~
 6. **`#Constants`** - You can specify theme constants in this directive.  Constants will have the same name as their corresponding constants in a Codename One Theme as shown in the resource editor.  Here is a sample section from a stylesheet that sets all of the default constants.
- ~~~~
- #Constants {
+  ~~~~
+  #Constants {
      PopupDialogArrowBool: false;
      calTitleDayStyleBool: true;
      calTransitionVertBool: false;
@@ -197,8 +197,10 @@ There are 3 variants of selectors that you can use in your CSS files:
      widgetsIconImage: "Widgets-icon.png";
      settingsIconImage: "Settings-icon.png";
      
- }
- ~~~~
+  }
+  ~~~~
+
+
 
 
 ## Examples
