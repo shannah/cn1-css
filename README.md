@@ -112,7 +112,7 @@ There are 3 variants of selectors that you can use in your CSS files:
  
  }
  
- Button.pressed { /** Styles applied to Button style/UIID in "pressed" state
+ Button.pressed { /** Styles applied to Button style/UIID in "pressed" state*/
  
  }
  
@@ -126,10 +126,10 @@ There are 3 variants of selectors that you can use in your CSS files:
  
  }
  ~~~~
-4. **Default Element** - You can use the UIID `Default` to specify styles that should be set for the default element in the theme.  E.g.
+4. **Default Element** - You can use the UIID `Default` to specify styles that should be set for the default element in the theme.  E.g.:
  ~~~~
- Default {
-     /** Styles applied to the default element of the theme. **/
+ Default {/** Styles applied to the default element of the theme. */
+ 
  }
  ~~~~
 5. **`#Device`** - You can use the `#Device` selector to configure some specific properties about the target devices for this theme.  E.g.:
