@@ -27,7 +27,7 @@ A library to add support for designing Codename One themes using CSS (Cascading 
 
 ## Installation
 
-1. Download cn1css-ant-task.jar and copy into your project's `lib` directory.
+1. Download [cn1css-ant-task.jar](https://github.com/shannah/cn1-css/releases/download/1.0/cn1css-ant-task.jar) and copy into your project's `lib` directory.
 2. Copy the following snippet into you project's `build.xml` file:
  ~~~~
     <taskdef name="compileCSS"
