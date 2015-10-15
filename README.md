@@ -41,13 +41,13 @@ A library to add support for designing Codename One themes using CSS (Cascading 
 3. Change the following line in your project's `build.xml` file:
  
  ~~~~
- <target name="-post-compile">
+ <target name="-pre-compile">
  ~~~~
  
  to
  
  ~~~~
- <target name="-post-compile" depends="compile-css">
+ <target name="-pre-compile" depends="compile-css">
  ~~~~
  
  
@@ -59,30 +59,7 @@ Suppose you add a CSS file into your project  `css/theme.css`.  When you compile
 
 ~~~~
 Resources css = Resources.openLayered("/theme.css");
-~~~~
-
-Here is an example `init()` method that loads your app's default theme file, then layers the styles in your `theme.css` file over top of it:
-
-~~~~
-public class CSSDemo {
-
-    private Resources theme;
-    private Resources css;
-
-    public void init(Object context) {
-        try {
-            theme = Resources.openLayered("/theme");
-            css = Resources.openLayered("/theme.css");
-            Hashtable vals = theme.getTheme(theme.getThemeResourceNames()[0]);
-            vals.putAll(css.getTheme(css.getThemeResourceNames()[0]));
-            UIManager.getInstance().setThemeProps(vals);
-            
-        } catch(IOException e){
-            e.printStackTrace();
-        }
-        
-    }
-    ....
+UIManager.getInstance().addThemeProps(css.getThemeResourceNames()[0]);
 ~~~~
 
 ## Supported CSS Directives
@@ -112,6 +89,7 @@ public class CSSDemo {
 * `cn1-source-dpi` - Used to specify source DPI for multi-image generation of background images.
 * `cn1-background-type` - Used to explicitly specify the background-type that should be used for the class.
 * `cn1-9patch` - Used to explicitly specify the slices used when generating 9-piece borders.
+* `cn1-derive` - Used to specify that this UIID should derive from an existing UIID.
 
 
 ## Supported CSS Selectors
@@ -148,6 +126,80 @@ There are 3 variants of selectors that you can use in your CSS files:
  
  }
  ~~~~
+4. **Default Element** - You can use the UIID `Default` to specify styles that should be set for the default element in the theme.  E.g.
+~~~~
+Default {
+    /** Styles applied to the default element of the theme. **/
+}
+~~~~
+5. **`#Device`** - You can use the `#Device` selector to configure some specific properties about the target devices for this theme.  E.g.:
+~~~~
+#Device {
+    min-resolution: 120dpi;
+    max-resolution: 480dpi;
+    resolution: 480dpi;
+}
+~~~~
+6. **`#Constants`** - You can specify theme constants in this directive.  Constants will have the same name as their corresponding constants in a Codename One Theme as shown in the resource editor.  Here is a sample section from a stylesheet that sets all of the default constants.
+~~~~
+#Constants {
+    PopupDialogArrowBool: false;
+    calTitleDayStyleBool: true;
+    calTransitionVertBool: false;
+    calendarLeftImage: "cal_left_arrow.png";
+    calendarRightImage: "cal_right_arrow.png";
+    centeredPopupBool: false;
+    checkBoxCheckDisFocusImage: "Check-Box_Normal.png";
+    checkBoxCheckedFocusImage: "Check-Box_Press.png";
+    checkBoxCheckedImage: "Check-Box_Press.png";
+    checkBoxOppositeSideBool: true;
+    checkBoxUncheckedFocusImage: "Check-Box_Normal.png";
+    checkBoxUncheckedImage: "Check-Box_Normal.png";
+    comboImage: "combo.png";
+    commandBehavior: "Side";
+    dialogTransitionIn: "fade";
+    dialogTransitionOut: "fade";
+    dlgButtonCommandUIID: "DialogButton";
+    dlgCommandGridBool: true;
+    dlgInvisibleButtons: #1a1a1a;
+    formTransitionIn: "empty";
+    formTransitionOut: "slide";
+    includeNativeBool: true;
+    menuImage: "of_menu.png";
+    noTextModeBool: true;
+    onOffIOSModeBool: true;
+    otherPopupRendererBool: false;
+    pureTouchBool: true;
+    radioSelectedFocusImage: "Radio_btn_Press.png";
+    radioSelectedImage: "Radio_btn_Press.png";
+    radioUnselectedFocusImage: "Radio_btn_Normal.png";
+    radioUnselectedImage: "Radio_btn_Normal.png";
+    sideMenuImage: "menu.png";
+    switchMaskImage: "switch_mask.png";
+    switchOffImage: "switch_off.png";
+    switchOnImage: "switch_on.png";
+    tabPlacementInt: 0;
+    backIconImage: "Back-icon.png";
+    articleSourceIconImage: "Source-icon.png";
+    articleDateIconImage: "Date-icon.png";
+    articleArrowRightImage: "Arrow-right.png";
+    articleShareIconImage: "Share-icon.png";
+    articleBookmarkIconImage: "Bookmark-icon.png";
+    articleTextIconImage: "Text-icon.png";
+    articleCommentsIconImage: "Comments-icon.png";
+    newsIconImage: "News-icon.png";
+    channelsIconImage: "Channels-icon.png";
+    bookmarksIconImage: "Bookmarks-icon.png";
+    overviewIconImage: "Overview-icon.png";
+    calendarIconImage: "Calendar-icon.png";
+    timelineIconImage: "Timeline-icon.png";
+    profileIconImage: "Profile-icon.png";
+    widgetsIconImage: "Widgets-icon.png";
+    settingsIconImage: "Settings-icon.png";
+    
+}
+~~~~
+
 
 ## Examples
 
