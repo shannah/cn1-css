@@ -31,7 +31,11 @@ A library to add support for designing Codename One themes using CSS (Cascading 
  
 ## Usage / How it Works
 
-Once you install the above snippet into your build.xml file, it will activate the CSS compiler to run each time you compile your project.  The CSS compiler will look for .css files inside your project's "css" directory (which you'll need to create).  It will compiles these CSS files into corresponding `.res` files which will be placed into your project's `src` directory.  You can then load this theme in your app just as you would load any other theme file.  E.g.
+Once you install the above snippet into your build.xml file, it will activate the CSS compiler to run each time you compile your project.  The CSS compiler will look for .css files inside your project's "css" directory (which you'll need to create).  It will compiles these CSS files into corresponding `.res` files which will be placed into your project's `src` directory.  You can then load this theme in your app just as you would load any other theme file.
+
+image::https://cloud.githubusercontent.com/assets/2677562/10549739/bf44abe4-73f7-11e5-8ecb-976478e297da.png[]
+
+E.g.
 
 Suppose you add a CSS file into your project  `css/theme.css`.  When you compile your project, it will generate the file `src/theme.css.res`.  Then you can load this file in your app as follows:
 
