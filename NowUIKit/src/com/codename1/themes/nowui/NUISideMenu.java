@@ -18,18 +18,19 @@ import com.codename1.ui.util.Resources;
  * @author shannah
  */
 public class NUISideMenu {
-    public void install(final Resources theme, Toolbar toolbar) {
+    public void install(Toolbar toolbar) {
+        final Resources theme = NUI.getTheme();
         Button[] commands =  new Button[]{
             new Button(new Command("NEWS", i("newsIconImage")) {
                 public void actionPerformed(ActionEvent evt) {
-                    new ArticleListForm(theme).show();
+                    new ArticleListForm().show();
                 }
             }),
             new Button(new Command("CHANNELS", i("channelsIconImage")) {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
                     System.out.println("In Channels action");
-                    new ChannelsForm(theme).show();
+                    new ChannelsForm().show();
                 }
             }),
             new Button(new Command("BOOKMARKS", i("bookmarksIconImage")) {
@@ -42,12 +43,14 @@ public class NUISideMenu {
             new Button(new Command("OVERVIEW", i("overviewIconImage")) {
                 public void actionPerformed(ActionEvent evt) {
                     //new ArticleListForm(theme).show();
+                    new OverviewForm().show();
                 }
             }),
             
             new Button(new Command("CALENDAR", i("calendarIconImage")) {
                 public void actionPerformed(ActionEvent evt) {
                     //new ArticleListForm(theme).show();
+                    new CalendarForm(theme).show();
                 }
             }),
         
@@ -66,6 +69,7 @@ public class NUISideMenu {
             new Button(new Command("SETTINGS", i("settingsIconImage")) {
                 public void actionPerformed(ActionEvent evt) {
                     //new ArticleListForm(theme).show();
+                    new CoolButtonsForm().show();
                 }
             })
         };

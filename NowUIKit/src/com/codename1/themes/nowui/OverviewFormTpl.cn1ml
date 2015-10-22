@@ -1,0 +1,16 @@
+<!doctype cn1ml>
+<html>
+    <head>
+    </head>
+    <body layout="y" set:scrollableY="true">
+        <label uiid="NUIHeadingLabel">OVERVIEW</label>
+        <label uiid="NUISubHeadingLabel">What you are reading the most</label>
+        <div class="NUIProgress" set:category="FASHION" set:progress="34"/>
+        <div class="NUIProgress" set:category="ENVIRONMENT" set:progress="28"/>
+        <div class="NUIProgress" set:category="TECHNOLOGY" set:progress="12"/>
+        <div class="NUIProgress" set:category="AUTO" set:progress="10"/>
+        <div class="NUIProgress" set:category="FINANCES" set:progress="8"/>
+        <div class="NUIProgress" set:category="SCIENCE" set:progress="5"/>
+        <div class="NUIProgress" set:category="SPORT" set:progress="3"/>
+    </body>
+</html>

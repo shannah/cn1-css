@@ -12,7 +12,9 @@
         </div>
         
         <div layout-constraint="s" layout="y">
-           
+           <div layout="BorderLayout">
+               <div name="testPath" layout="y" layout-constraint="e"/>
+           </div>
             <input name="usernameField" type="text" set:Hint="Username"/>
             <input name="passwordField" type="password" set:Hint="Password"/>
             <button name="submitButton">Get Started</button>

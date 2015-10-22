@@ -8,6 +8,7 @@ import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
+import com.codename1.util.BigInteger;
 import java.io.IOException;
 
 public class NowUIKitDemo {
@@ -16,7 +17,14 @@ public class NowUIKitDemo {
     private Resources theme;
 
     public void init(Object context) {
-        theme = UIManager.initFirstTheme("/nowui.css");
+        try {
+            NUI.install();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex.getMessage());
+        }
+        theme = NUI.getTheme();
+        //theme = UIManager.initFirstTheme("/nowui.css");
         //Display.getInstance().setFramerate(120);
         // Pro users - uncomment this code to get crash reports sent to you automatically
         /*Display.getInstance().addEdtErrorHandler(new ActionListener() {
@@ -37,10 +45,10 @@ public class NowUIKitDemo {
             current.show();
             return;
         }
-        LoginForm hi = new LoginForm(theme);
+        LoginForm hi = new LoginForm();
         hi.getSignupButton().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                new SignupForm(theme).show();
+                new SignupForm().show();
                 
             }
         });
@@ -48,7 +56,7 @@ public class NowUIKitDemo {
         hi.getSubmitButton().addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent evt) {
-                new ArticleForm(theme, "News Article", "http://dev.weblite.ca/demo-xmlview.xml").show();
+                new ArticleForm("News Article", "http://dev.weblite.ca/demo-xmlview.xml").show();
             }
            
         });
@@ -56,7 +64,7 @@ public class NowUIKitDemo {
         hi.getHelpButton().addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent evt) {
-                new ArticleListForm(theme).show();
+                new ArticleListForm().show();
             }
            
         });

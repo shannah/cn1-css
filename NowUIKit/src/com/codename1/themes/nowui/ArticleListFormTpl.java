@@ -111,120 +111,20 @@ BoxLayout node13Layout = new BoxLayout(BoxLayout.Y_AXIS);
 node13.setLayout(node13Layout);
 node13.setName("articleList");
 _nameIndex.put("articleList", node13);
-Container node14 = new Container();
-BoxLayout node14Layout = new BoxLayout(BoxLayout.Y_AXIS);
-node14.setLayout(node14Layout);
-node14.setUIID("ArticleListItem");
-SpanLabel node15 = new SpanLabel();
-node15.setText("Arctic sea ice extent hits record low for winter maximum");
-if (node15.getClientProperty("__CN1ML_NO_ADD__") == null && node14 != node15.getParent()){
-node14.addComponent(node15);
-}
-Container node16 = new Container();
-BorderLayout node16Layout = new BorderLayout();
-node16.setLayout(node16Layout);
-node16.setUIID("ArticleCommandArea");
-Container node17 = new Container();
-FlowLayout node17Layout = new FlowLayout();
-node17.setLayout(node17Layout);
-Button node18 = new Button();
-node18.setUIID("NUISourceButton30");
-node18.setName("sourceButton_1");
-_nameIndex.put("sourceButton_1", node18);
-node18.setText("CNN");
-if (node18.getClientProperty("__CN1ML_NO_ADD__") == null && node17 != node18.getParent()){
-node17.addComponent(node18);
-}
-Button node19 = new Button();
-node19.setUIID("NUIDateButton30");
-node19.setName("dateButton_1");
-_nameIndex.put("dateButton_1", node19);
-node19.setText("1h ago");
-if (node19.getClientProperty("__CN1ML_NO_ADD__") == null && node17 != node19.getParent()){
-node17.addComponent(node19);
-}
-if (node17.getClientProperty("__CN1ML_NO_ADD__") == null && node16 != node17.getParent()){
-node16.addComponent(BorderLayout.WEST, node17);
-}
-Container node20 = new Container();
-FlowLayout node20Layout = new FlowLayout();
-node20.setLayout(node20Layout);
-Button node21 = new Button();
-node21.setUIID("NUICategoryButton");
-node21.setName("categoryButton_1");
-_nameIndex.put("categoryButton_1", node21);
-node21.setText("ENVIRONMENT");
-if (node21.getClientProperty("__CN1ML_NO_ADD__") == null && node20 != node21.getParent()){
-node20.addComponent(node21);
-}
-if (node20.getClientProperty("__CN1ML_NO_ADD__") == null && node16 != node20.getParent()){
-node16.addComponent(BorderLayout.EAST, node20);
-}
-if (node16.getClientProperty("__CN1ML_NO_ADD__") == null && node14 != node16.getParent()){
-node14.addComponent(node16);
-}
+NUIArticleListItem node14 = new NUIArticleListItem();
+init2_node14(node14, node13);
 if (node14.getClientProperty("__CN1ML_NO_ADD__") == null && node13 != node14.getParent()){
 node13.addComponent(node14);
 }
-Container node22 = new Container();
-BoxLayout node22Layout = new BoxLayout(BoxLayout.Y_AXIS);
-node22.setLayout(node22Layout);
-node22.setUIID("ArticleListItem");
-SpanLabel node23 = new SpanLabel();
-node23.setText("New battery for smart phones can be charged in a minute");
-if (node23.getClientProperty("__CN1ML_NO_ADD__") == null && node22 != node23.getParent()){
-node22.addComponent(node23);
-}
-Container node24 = new Container();
-BorderLayout node24Layout = new BorderLayout();
-node24.setLayout(node24Layout);
-node24.setUIID("ArticleCommandArea");
-Container node25 = new Container();
-FlowLayout node25Layout = new FlowLayout();
-node25.setLayout(node25Layout);
-Button node26 = new Button();
-node26.setUIID("NUISourceButton30");
-node26.setName("sourceButton_2");
-_nameIndex.put("sourceButton_2", node26);
-node26.setText("Reuters");
-if (node26.getClientProperty("__CN1ML_NO_ADD__") == null && node25 != node26.getParent()){
-node25.addComponent(node26);
-}
-Button node27 = new Button();
-node27.setUIID("NUIDateButton30");
-node27.setName("dateButton_2");
-_nameIndex.put("dateButton_2", node27);
-node27.setText("6h ago");
-if (node27.getClientProperty("__CN1ML_NO_ADD__") == null && node25 != node27.getParent()){
-node25.addComponent(node27);
-}
-if (node25.getClientProperty("__CN1ML_NO_ADD__") == null && node24 != node25.getParent()){
-node24.addComponent(BorderLayout.WEST, node25);
-}
-Container node28 = new Container();
-FlowLayout node28Layout = new FlowLayout();
-node28.setLayout(node28Layout);
-Button node29 = new Button();
-node29.setUIID("NUICategoryButton");
-node29.setName("categoryButton_2");
-_nameIndex.put("categoryButton_2", node29);
-node29.setText("TECHNOLOGY");
-if (node29.getClientProperty("__CN1ML_NO_ADD__") == null && node28 != node29.getParent()){
-node28.addComponent(node29);
-}
-if (node28.getClientProperty("__CN1ML_NO_ADD__") == null && node24 != node28.getParent()){
-node24.addComponent(BorderLayout.EAST, node28);
-}
-if (node24.getClientProperty("__CN1ML_NO_ADD__") == null && node22 != node24.getParent()){
-node22.addComponent(node24);
-}
-if (node22.getClientProperty("__CN1ML_NO_ADD__") == null && node13 != node22.getParent()){
-node13.addComponent(node22);
+NUIArticleListItem node15 = new NUIArticleListItem();
+init3_node15(node15, node13);
+if (node15.getClientProperty("__CN1ML_NO_ADD__") == null && node13 != node15.getParent()){
+node13.addComponent(node15);
 }
 if (node13.getClientProperty("__CN1ML_NO_ADD__") == null && root != node13.getParent()){
 root.addComponent(node13);
 }
-init2_root(root, null);
+init4_root(root, null);
 return root;
 }
 private void init1_node6(SpanLabel self, Container parent){
@@ -243,25 +143,19 @@ public Button getCategoryButton(){
 public Container getArticleList(){
       return (Container)get("articleList");
       }
-public Button getSourceButton_1(){
-      return (Button)get("sourceButton_1");
-      }
-public Button getDateButton_1(){
-      return (Button)get("dateButton_1");
-      }
-public Button getCategoryButton_1(){
-      return (Button)get("categoryButton_1");
-      }
-public Button getSourceButton_2(){
-      return (Button)get("sourceButton_2");
-      }
-public Button getDateButton_2(){
-      return (Button)get("dateButton_2");
-      }
-public Button getCategoryButton_2(){
-      return (Button)get("categoryButton_2");
-      }
-private void init2_root(Container self, Container parent){
+private void init2_node14(NUIArticleListItem self, Container parent){
+self.setHeadline("Arctic sea ice extent hits record low for winter maximum");
+self.setSource("CNN");
+self.setCategory("ENVIRONMENT");
+
+}
+private void init3_node15(NUIArticleListItem self, Container parent){
+self.setHeadline("New battery for smart phones can be charged in a minute");
+self.setSource("Reuters");
+self.setCategory("TECHNOLOGY");
+
+}
+private void init4_root(Container self, Container parent){
 self.setScrollableY(true);
 
 }

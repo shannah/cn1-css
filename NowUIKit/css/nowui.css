@@ -26,8 +26,8 @@
     PopupDialogArrowBool: false;
     calTitleDayStyleBool: true;
     calTransitionVertBool: false;
-    calendarLeftImage: "cal_left_arrow.png";
-    calendarRightImage: "cal_right_arrow.png";
+    calendarLeftImage: "calendar-arrow-left.png";
+    calendarRightImage: "calendar-arrow-right.png";
     centeredPopupBool: false;
     checkBoxCheckDisFocusImage: "Check-Box_Normal.png";
     checkBoxCheckedFocusImage: "Check-Box_Press.png";
@@ -108,6 +108,8 @@ Images {
         url(images/Profile-icon.png),
         url(images/Widgets-icon.png),
         url(images/Settings-icon.png),
+        url(images/calendar-arrow-left.png),
+        url(images/calendar-arrow-right.png),
         url(images/Bookmark-icon.png);
         
     
@@ -402,7 +404,7 @@ NUIIconLinkButton {
     color: black;
     background-color: transparent;
     font-family: "Montserrat";
-    font-size: small;
+    font-size: 1mm;
     padding: 5px;
     padding-left: 3mm;
     margin: 5px 10px 5px 10px;
@@ -487,6 +489,10 @@ ArticleListItem {
     border-bottom: 1pt solid rgb(249, 249, 249);
 }
 
+NUIArticleListItemHeadline, NUIArticleListItemHeadlineText {
+    font-family: "Montserrat-Bold";
+    color: black;
+}
 
 /*Channels Form*/
 
@@ -582,3 +588,159 @@ FilterButton.pressed {
 
 
 /** Calendar Form*/
+
+/**Cool Buttons*/
+
+Round1 {
+    width: 40pt;
+    height: 40pt;
+    border-radius: 20pt;
+    border: 1pt solid black;
+    text-align: center;
+}
+
+Round1InnerShadow {
+    cn1-derive: Round1;
+    box-shadow: inset 0px 0px 21pt 10pt rgba(61,59,61,0.48);
+    border: 1pt solid transparent;
+}
+
+Round1OuterShadow {
+    cn1-derive: Round1;
+    box-shadow: 5pt 5pt 10pt 0px rgba(61,59,61,0.48);
+    border-radius: 5pt;
+    border: 1pt solid #ccc;
+    padding-bottom: 2mm;
+    padding-top: 1mm; 
+}
+
+Round1Gradient {
+    cn1-derive: Round1OuterShadow;
+    background: linear-gradient(to bottom, rgba(242,246,248,1) 0%, rgba(216,225,231,1) 50%, rgba(181,198,208,1) 51%, rgba(224,239,249,1) 100%);
+}
+
+Round1OuterShadow.pressed {
+    box-shadow: none;
+}
+
+GradientContainer {
+    background: linear-gradient(to bottom, rgba(179,220,237,1) 0%, rgba(41,184,229,1) 50%, rgba(188,224,238,1) 100%);
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    cn1-background-type: cn1-image-scaled-fill;
+}
+
+
+
+/** Calendar **/
+
+Calendar {
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    
+}
+
+CalendarDate, CalendarTitleArea {
+    margin: 0;
+    background-color: rgb(249, 99, 50);
+}
+
+CalendarDateLabel {
+    color: white;
+    font-family: "Montserrat";
+    font-size: large;
+    text-align: center;
+}
+
+
+CalendarTitle {
+    color: rgb(225, 173, 150);
+    font-family: "Montserrat";
+    font-size: medium;
+}
+
+MonthView {
+    margin:0;
+    padding:0;
+}
+
+CalendarDayArea {
+    background-color: white;
+}
+
+CalendarDay {
+    text-align: center;
+    color: black;
+    font-family: "Montserrat";
+    font-size: small;
+}
+
+CalendarDay.disabled {
+    color: #ccc;
+}
+
+CalendarSelectedDay {
+    color: white;
+    font-family: "Montserrat";
+    font-size: small;
+    text-align: center;
+    border-radius: 20pt;
+    width: 40pt;
+    height: 40pt;
+    background-color: rgb(249, 99, 50);
+    /*box-shadow: 5pt 5pt 5pt 1pt rgba(8,8,8,0.21);*/
+    padding: 1mm;
+    
+}
+
+
+/** Overview Form **/
+
+NUIOrangeForm {
+    cn1-derive: NoPaddingForm;
+    background-image: url(images/Orange-bg.png);
+    cn1-background-type: cn1-image-tile-both;
+}
+
+NUIHeadingLabel {
+    color: white;
+    font-family: "Montserrat-Bold";
+    font-size: large;
+    text-align: center;
+}
+
+NUISubHeadingLabel {
+    color: rgba(255, 255, 255, 0.502);
+    font-family: "Montserrat-Bold";
+    font-size: small;
+    text-align: center;
+}
+
+NUIProgress {
+    padding: 0 2mm 0 2mm;
+    margin: 0;
+}
+
+NUIProgressLabel {
+    color: white;
+    font-family: "Montserrat";
+    font-size: 2mm;
+    text-align: left;
+}
+
+NUIProgressPercentLabel {
+    color: white;
+    font-family: "Montserrat";
+    font-size: 2mm;
+    text-align: left;
+}
+
+Slider {
+    border-top: 1pt solid rgba(255, 255, 255, 0.502);
+}
+
+SliderFull {
+    border-top: 1pt solid white;
+}

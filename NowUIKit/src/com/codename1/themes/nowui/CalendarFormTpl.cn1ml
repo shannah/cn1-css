@@ -1,0 +1,24 @@
+<!doctype cn1ml>
+<html>
+    <head>
+    </head>
+    <body layout="BorderLayout" uiid="NoPadding">
+        <div layout-constraint="n" class="Calendar"/>
+        <div layout-constraint="c">
+            <table>
+                <tr>
+                    <td>Name</td>
+                    <td>
+                        <input type="text" name="nameField"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button name="submit">Submit</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div layout-constraint="s">Good Bye World</div>
+    </body>
+</html>

@@ -29,6 +29,12 @@
         
         
         <div layout="y" name="articleList">
+            <div class="NUIArticleListItem" 
+                set:headline="Arctic sea ice extent hits record low for winter maximum"
+                set:source="CNN"
+                set:category="ENVIRONMENT"
+                />
+            <!--
             <div layout="y" uiid="ArticleListItem">
                 <label class="SpanLabel">Arctic sea ice extent hits record low for winter maximum</label>
                 <div layout="BorderLayout" uiid="ArticleCommandArea">
@@ -41,8 +47,14 @@
                     </div>
                 </div>
             </div>
+            -->
+             <div class="NUIArticleListItem" 
+                set:headline="New battery for smart phones can be charged in a minute"
+                set:source="Reuters"
+                set:category="TECHNOLOGY"
+                />
             
-            <div layout="y" uiid="ArticleListItem">
+            <!--<div layout="y" uiid="ArticleListItem">
                 <label class="SpanLabel">New battery for smart phones can be charged in a minute</label>
                 <div layout="BorderLayout" uiid="ArticleCommandArea">
                     <div layout-constraint="w">
@@ -53,7 +65,7 @@
                         <button uiid="NUICategoryButton" name="categoryButton_2">TECHNOLOGY</button>
                     </div>
                 </div>
-            </div>
+            </div>->
         </div>
         
     </body>

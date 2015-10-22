@@ -1,0 +1,28 @@
+<!doctype cn1ml>
+<html>
+    <head>
+    </head>
+    <body layout="y" set:scrollableY="true">
+        <div layout="y" uiid="NUIFormHeadingArea">
+            <label uiid="NUIHeadingLabel">SCIENCE CHANNEL</label>
+            <button uiid="NUIPillButtonWhite">Following</button>
+            <label uiid="NUISubheadingLabelWhite">234K Followers</label>
+        </div>
+        <div layout-constraint="c">
+            <table>
+                <tr>
+                    <td>Name</td>
+                    <td>
+                        <input type="text" name="nameField"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button name="submit">Submit</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div layout-constraint="s">Good Bye World</div>
+    </body>
+</html>

@@ -19,13 +19,13 @@ import java.util.HashMap;
  */
 public class SignupForm extends Form {
     SignupFormTpl tpl;
-    public SignupForm(Resources theme) {
+    public SignupForm() {
         super("");
+        final Resources theme = NUI.getTheme();
         customizeCoreUIIDs(this);
         setUIID("NUISignupForm");
-        HashMap context = new HashMap();
-        context.put("res", theme);
-        tpl = new SignupFormTpl(context);
+        
+        tpl = new SignupFormTpl(NUI.createTemplateContext());
         
         TextField nameField = tpl.getNameField();
         nameField.setHintIcon(theme.getImage("Name-icon.png"));

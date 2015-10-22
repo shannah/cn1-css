@@ -1,0 +1,17 @@
+<!doctype cn1ml>
+<html>
+    <head>
+    </head>
+    <body layout="y" uiid="ArticleListItem">
+        <label class="SpanLabel" name="headlineLabel" uiid="NUIArticleListItemHeadline" set:textUIID="NUIArticleListItemHeadlineText">Arctic sea ice extent hits record low for winter maximum</label>
+        <div layout="BorderLayout" uiid="ArticleCommandArea">
+            <div layout-constraint="w">
+                <button uiid="NUISourceButton30" name="sourceButton">CNN</button>
+                <button uiid="NUIDateButton30" name="dateButton">1h ago</button>
+            </div>
+            <div layout-constraint="e">
+                <button uiid="NUICategoryButton" name="categoryButton">ENVIRONMENT</button>
+            </div>
+        </div>
+    </body>
+</html>

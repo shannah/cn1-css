@@ -26,16 +26,12 @@ import java.util.HashMap;
  *
  * @author shannah
  */
-public class ArticleForm extends Form {
+public class ArticleForm extends NUIForm {
     ArticleFormTpl tpl;
     
-    public ArticleForm(Resources theme, String title, String url) {
-        super("");
-        setUIID("NoPaddingForm");
-        HashMap context = new HashMap();
-        context.put("res", theme);
-        context.put("ui", UIManager.getInstance());
-        tpl = new ArticleFormTpl(context);
+    public ArticleForm(String title, String url) {
+        final Resources theme = NUI.getTheme();
+        tpl = new ArticleFormTpl(NUI.createTemplateContext());
         tpl.getBody().setTheme(theme);
         tpl.getHeadline().setTextUIID(tpl.getHeadline().getUIID()+"Text");
         DefaultXMLViewKit kit = new DefaultXMLViewKit();
@@ -74,16 +70,7 @@ public class ArticleForm extends Form {
         });
         addComponent(BorderLayout.CENTER, tpl.getRoot());
         
-        final Form current = Display.getInstance().getCurrent();
-        Command back = new Command(" ", i("backIconImage")) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                current.showBack();
-            }
-        };
-        setBackCommand(back);
-        Toolbar toolbar = new Toolbar();
-        this.setToolBar(toolbar);
+        Toolbar toolbar = this.getToolbar();
         toolbar.addCommandToRightBar(new Command(" ", i("articleBookmarkIconImage")));
         toolbar.addCommandToRightBar(new Command(" ", i("articleShareIconImage")));
         

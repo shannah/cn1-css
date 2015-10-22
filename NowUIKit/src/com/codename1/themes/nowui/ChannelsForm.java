@@ -21,31 +21,16 @@ import java.util.Map;
  *
  * @author shannah
  */
-public class ChannelsForm extends Form {
+public class ChannelsForm extends NUIForm {
     ChannelsFormTpl tpl;
     
-    public ChannelsForm(Resources theme) {
-        setUIID("NoPaddingForm");
+    public ChannelsForm() {
         setLayout(new BorderLayout());
-        Map ctx = new HashMap();
-        ctx.put("res", theme);
-        tpl = new ChannelsFormTpl(ctx);
+        tpl = new ChannelsFormTpl(NUI.createTemplateContext());
         addComponent(BorderLayout.CENTER, tpl.getRoot());
-        final Form current = Display.getInstance().getCurrent();
-        Command back = new Command(" ", i("backIconImage")) {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                current.showBack();
-            }
-        };
-        setBackCommand(back);
-        Toolbar toolbar = new Toolbar();
+        new NUISideMenu().install(getToolbar());
         
-        this.setToolBar(toolbar);
-        new NUISideMenu().install(theme, toolbar);
+        
     }
     
-    private Image i(String name) {
-        return UIManager.getInstance().getThemeImageConstant(name);
-    }
 }
