@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<root>
+    <channel id="fashion" name="FASHION">
+    
+    </channel>
+    <channel id="science" name="SCIENCE">
+        <article id="SCI1" title="NASA goes to Mars: Astronauts could land on Red Planet by 2039" source="SPACE.com">
+        
+        </article>
+        <article id="SCI2" title="Archaeologists discovered lost city in Honduran jungle" source="CNN">
+        
+        </article>
+        <article id="SCI3" title="The balloons that could fly tourists to the edge of space" source="CNN" >
+        
+        </article>
+    
+    </channel>
+    <channel id="auto" name="AUTO">
+    
+    </channel>
+    <channel id="technology" name="TECHNOLOGY">
+    
+    </channel>
+    <channel id="finances" name="FINANCES">
+    
+    </channel>
+    <channel id="environment" name="ENVIRONMENT">
+    
+    </channel>
+
+    
+</root>
