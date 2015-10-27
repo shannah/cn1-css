@@ -508,8 +508,8 @@ public class ResourcesMutator {
     private ChangeListener<Worker.State> changeListener;
     public void createScreenshots(WebView web, String html, String baseURL) {
         String captureSrc = this.getClass().getResource("capture.js").toExternalForm();
-        final String modifiedHtml = html.replace("</body>", "<script src=\"https://code.jquery.com/jquery-2.1.4.min.js\">"
-                + "</script><script src=\""+captureSrc+"\"></script></body>");
+        final String modifiedHtml = html.replace("</body>", /*"<script src=\"https://code.jquery.com/jquery-2.1.4.min.js\">"
+                + */"</script><script src=\""+captureSrc+"\"></script></body>");
         this.web = web;
         screenshotsComplete = false;
         Platform.runLater(() -> {
