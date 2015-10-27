@@ -38,6 +38,9 @@ public class CN1CSSCompileTask extends Task {
     public void execute() throws BuildException {
         
         String srcDirPath = getProject().getProperty("src.dir");
+        if (srcDirPath == null || "".equals(srcDirPath)) {
+            srcDirPath = "src";
+        }
         
         File cssDir = new File(getProject().getBaseDir(), "css");
         if (!cssDir.exists()) {
@@ -47,7 +50,12 @@ public class CN1CSSCompileTask extends Task {
         
         File srcDir = new File(getProject().getBaseDir(), srcDirPath);
         //System.out.println(getProject().getProperties());
-        String[] classPath = getProject().getProperty("run.classpath").split(":");
+        
+        String runClasspath = getProject().getProperty("run.classpath");
+        if (runClasspath == null || "".equals(runClasspath)) {
+            runClasspath = "JavaSE.jar";
+        }
+        String[] classPath = runClasspath.split(":");
         String javaSEJarPath = null;
         for (String path : classPath) {
             if (path.endsWith("JavaSE.jar")) {
