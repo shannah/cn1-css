@@ -41,7 +41,7 @@ Suppose you add a CSS file into your project  `css/theme.css`.  When you compile
 
 ~~~~
 Resources css = Resources.openLayered("/theme.css");
-UIManager.getInstance().addThemeProps(css.getThemeResourceNames()[0]);
+UIManager.getInstance().addThemeProps(css.getTheme(css.getThemeResourceNames()[0]));
 ~~~~
 
 ## Supported CSS Directives
