@@ -140,7 +140,10 @@ public class CN1CSSCompileTask extends Task {
                 javaTask.setFork(true);
                 javaTask.setClassname("com.codename1.ui.css.CN1CSSCLI");
                 javaTask.setFailonerror(true);
-                javaTask.setMaxmemory("4096m");
+                String maxMemory = getProject().getProperty("cn1css.max.memory");
+                if (maxMemory != null) {
+                    javaTask.setMaxmemory("4096m");
+                }
                 
                 Argument arg = javaTask.createArg();
                 arg.setValue(f.getAbsolutePath());
