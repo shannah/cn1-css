@@ -44,6 +44,10 @@ Resources css = Resources.openLayered("/theme.css");
 UIManager.getInstance().addThemeProps(css.getTheme(css.getThemeResourceNames()[0]));
 ~~~~
 
+Alternatively, you can use the "OverlayThemes" theme constant in your project's main theme to have your css theme loaded automatically at runtime.  Using this approach has the benefit that the designer previews will reflect the styles in your CSS file.
+
+E.g. You could set the `OverlayThemes` constant in your main project theme to "theme.css" to have your theme automatically included in your app.
+
 ## Supported CSS Directives
 
 [See the Supported CSS Properties Wiki Page](https://github.com/shannah/cn1-css/wiki/Supported-Properties)
