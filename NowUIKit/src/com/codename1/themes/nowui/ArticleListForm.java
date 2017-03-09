@@ -5,31 +5,34 @@
  */
 package com.codename1.themes.nowui;
 
-import com.codename1.ui.Command;
-import com.codename1.ui.Display;
-import com.codename1.ui.Form;
-import com.codename1.ui.Image;
-import com.codename1.ui.Toolbar;
-import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.Container;
 import com.codename1.ui.layouts.BorderLayout;
-import com.codename1.ui.plaf.UIManager;
-import com.codename1.ui.util.Resources;
-import java.util.HashMap;
-import java.util.Map;
+import com.codename1.ui.list.DefaultListModel;
+import java.util.List;
 
 /**
  *
  * @author shannah
  */
 public class ArticleListForm extends NUIForm {
-    public ArticleListForm() {
-        ArticleListFormTpl tpl = new ArticleListFormTpl(NUI.createTemplateContext());
-        
+    ArticleListFormTpl tpl;
+    public ArticleListForm(List<Article> articles) {
+        tpl = new ArticleListFormTpl(NUI.createTemplateContext());
         setLayout(new BorderLayout());
         addComponent(BorderLayout.CENTER, tpl.getRoot());
         
         new NUISideMenu().install(getToolbar());
+        setArticles(articles);
         
+    }
+    
+    public void setArticles(List<Article> articles) {
+        Container articleList = tpl.getArticleList();
+        for (Article article : articles) {
+            NUIArticleListItem item = new NUIArticleListItem();
+            item.setArticle(article);
+            articleList.addComponent(item);
+        }
     }
     
 }

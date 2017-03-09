@@ -3,7 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.codename1.themes.nowui;
+package com.codename1.ui.nowui;
+
 
 import com.codename1.ui.Component;
 import com.codename1.ui.Display;
@@ -12,7 +13,9 @@ import com.codename1.ui.plaf.Style;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 /**
@@ -21,12 +24,26 @@ import java.util.Map;
  */
 public class NUI {
     private static Resources theme;
+    private static NUIFactory factory;
+    
     
     public static void install() throws IOException {
         if (theme == null) {
             theme = Resources.openLayered("/nowui.css");
-            UIManager.getInstance().addThemeProps(theme.getTheme(theme.getThemeResourceNames()[0]));
+            Hashtable ht = theme.getTheme(theme.getThemeResourceNames()[0]);
+            NUIFactory.fixFontSizes(ht);
+            UIManager.getInstance().addThemeProps(ht);
+            factory = new NUIFactory();
+            
         }
+    }
+    
+    public static <T extends Component> T apply(T cmp, NUIFactory.ComponentStyle style) {
+        return factory.apply(cmp, style);
+    }
+    
+    public static <T extends Component> T setIcon(T cmp, NUIFactory.ComponentStyle style, char icon) {
+        return factory.setIcon(cmp, style, icon);
     }
     
     public static Resources getTheme() {
@@ -101,11 +118,39 @@ public class NUI {
      */
     public static int mm2px(double mm) {
         Display d = Display.getInstance();
+        int i1h = (int)(mm * 100);
+        int px1h = d.convertToPixels(i1h, true);
+        return (int)(((double)px1h)/100.0);
         
-        int a = d.convertToPixels((int)Math.floor(mm), true);
-        int b = d.convertToPixels((int)Math.ceil(mm), true);
-        return (a+b)/2;
     }
+    
+    
+    public static String formatDateAsAgo(Date date) {
+        long diff = System.currentTimeMillis() - date.getTime();
+        if (diff < 0) {
+            if (diff > -60000) {
+                return "in "+(-diff/1000)+" seconds";
+            } else if (diff > -3600000) {
+                return "in "+(-diff/60000)+" minutes";
+            } else if (diff > -3600000 * 24) {
+                return "in "+(-diff/3600000)+" hours";
+            } else {
+                return "in "+(-diff/3600000/24)+" days";
+            }
+        } else {
+            if (diff < 60000) {
+                return "in "+(diff/1000)+" seconds";
+            } else if (diff < 3600000) {
+                return "in "+(diff/60000)+" minutes";
+            } else if (diff < 3600000 * 24) {
+                return "in "+(diff/3600000)+" hours";
+            } else {
+                return "in "+(diff/3600000/24)+" days";
+            }
+        }
+    }
+    
+    
     
     
 }

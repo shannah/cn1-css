@@ -1,10 +1,13 @@
 <!doctype cn1ml>
 <html>
     <head>
-        <script>import com.codename1.ui.plaf.UIManager;</script>
+        <script>
+            import com.codename1.ui.plaf.UIManager;
+            import com.codename1.ui.list.DefaultListModel;
+        </script>
     </head>
-    <body attributes="UIManager ui;" layout="y" uiid="NoPadding" set:scrollableY="true">
-        <div layout="LayeredLayout" uiid="NoPadding">
+    <body attributes="UIManager ui;" layout="y" uiid="NoPadding" set:scrollableY="true" name="articleList">
+        <div layout="LayeredLayout" uiid="NoPadding" name="featuredArticle">
             <div layout="y" uiid="NoPadding">
                 <label uiid="NoPaddingLabel">
                     <img src="res:RedPlanet.png"/>
@@ -27,46 +30,6 @@
             </div>
         </div>
         
-        
-        <div layout="y" name="articleList">
-            <div class="NUIArticleListItem" 
-                set:headline="Arctic sea ice extent hits record low for winter maximum"
-                set:source="CNN"
-                set:category="ENVIRONMENT"
-                />
-            <!--
-            <div layout="y" uiid="ArticleListItem">
-                <label class="SpanLabel">Arctic sea ice extent hits record low for winter maximum</label>
-                <div layout="BorderLayout" uiid="ArticleCommandArea">
-                    <div layout-constraint="w">
-                        <button uiid="NUISourceButton30" name="sourceButton_1">CNN</button>
-                        <button uiid="NUIDateButton30" name="dateButton_1">1h ago</button>
-                    </div>
-                    <div layout-constraint="e">
-                        <button uiid="NUICategoryButton" name="categoryButton_1">ENVIRONMENT</button>
-                    </div>
-                </div>
-            </div>
-            -->
-             <div class="NUIArticleListItem" 
-                set:headline="New battery for smart phones can be charged in a minute"
-                set:source="Reuters"
-                set:category="TECHNOLOGY"
-                />
-            
-            <!--<div layout="y" uiid="ArticleListItem">
-                <label class="SpanLabel">New battery for smart phones can be charged in a minute</label>
-                <div layout="BorderLayout" uiid="ArticleCommandArea">
-                    <div layout-constraint="w">
-                        <button uiid="NUISourceButton30" name="sourceButton_2">Reuters</button>
-                        <button uiid="NUIDateButton30" name="dateButton_2">6h ago</button>
-                    </div>
-                    <div layout-constraint="e">
-                        <button uiid="NUICategoryButton" name="categoryButton_2">TECHNOLOGY</button>
-                    </div>
-                </div>
-            </div>->
-        </div>
         
     </body>
 </html>

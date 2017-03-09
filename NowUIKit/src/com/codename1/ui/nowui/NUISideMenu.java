@@ -3,13 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.codename1.themes.nowui;
+package com.codename1.ui.nowui;
 
+import com.codename1.ui.nowui.*;
 import com.codename1.ui.Button;
 import com.codename1.ui.Command;
+import com.codename1.ui.Form;
 import com.codename1.ui.Image;
 import com.codename1.ui.Toolbar;
 import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.plaf.UIManager;
 import com.codename1.ui.util.Resources;
 
@@ -18,19 +21,47 @@ import com.codename1.ui.util.Resources;
  * @author shannah
  */
 public class NUISideMenu {
+    final Form form;
+    
+    public NUISideMenu(Form form) {
+        this.form = form;
+        Toolbar tb = form.getToolbar();
+        if (tb == null) {
+            tb = new Toolbar();
+            form.setToolBar(tb);
+        }
+    }
+    
+    public Button addMenuItem(String label, char icon, final ActionListener l) {
+        Button b = NUI.apply(new Button(new Command(label) {
+
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                l.actionPerformed(evt);
+            }
+            
+        }), NUIFactory.ComponentStyle.SideCommand);
+        NUI.setIcon(b, NUIFactory.ComponentStyle.SideCommand, icon);
+        Toolbar tb = this.form.getToolbar();
+        if (tb != null) {
+            tb.addComponentToSideMenu(b, b.getCommand());
+        }
+        return b;
+        
+    }
+    /*
     public void install(Toolbar toolbar) {
         final Resources theme = NUI.getTheme();
         Button[] commands =  new Button[]{
             new Button(new Command("NEWS", i("newsIconImage")) {
                 public void actionPerformed(ActionEvent evt) {
-                    new ArticleListForm().show();
+                    
                 }
             }),
             new Button(new Command("CHANNELS", i("channelsIconImage")) {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    System.out.println("In Channels action");
-                    new ChannelsForm().show();
+                    
                 }
             }),
             new Button(new Command("BOOKMARKS", i("bookmarksIconImage")) {
@@ -42,15 +73,13 @@ public class NUISideMenu {
        
             new Button(new Command("OVERVIEW", i("overviewIconImage")) {
                 public void actionPerformed(ActionEvent evt) {
-                    //new ArticleListForm(theme).show();
-                    new OverviewForm().show();
+                    
                 }
             }),
             
             new Button(new Command("CALENDAR", i("calendarIconImage")) {
                 public void actionPerformed(ActionEvent evt) {
-                    //new ArticleListForm(theme).show();
-                    new CalendarForm(theme).show();
+                    
                 }
             }),
         
@@ -68,8 +97,7 @@ public class NUISideMenu {
         
             new Button(new Command("SETTINGS", i("settingsIconImage")) {
                 public void actionPerformed(ActionEvent evt) {
-                    //new ArticleListForm(theme).show();
-                    new CoolButtonsForm().show();
+                    
                 }
             })
         };
@@ -90,4 +118,5 @@ public class NUISideMenu {
     private Image i(String name) {
         return UIManager.getInstance().getThemeImageConstant(name);
     }
+    */
 }

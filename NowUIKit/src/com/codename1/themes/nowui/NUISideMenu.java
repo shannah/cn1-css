@@ -23,7 +23,10 @@ public class NUISideMenu {
         Button[] commands =  new Button[]{
             new Button(new Command("NEWS", i("newsIconImage")) {
                 public void actionPerformed(ActionEvent evt) {
-                    new ArticleListForm().show();
+                    new ArticleListForm(NUI.getDataSource().find(
+                            new NUIDataSource.ArticleQuery(), 
+                            NUIDataSource.Sort.NEWEST)
+                    ).show();
                 }
             }),
             new Button(new Command("CHANNELS", i("channelsIconImage")) {

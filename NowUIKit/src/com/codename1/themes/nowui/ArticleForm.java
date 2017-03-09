@@ -32,7 +32,7 @@ public class ArticleForm extends NUIForm {
     public ArticleForm(String title, String url) {
         final Resources theme = NUI.getTheme();
         tpl = new ArticleFormTpl(NUI.createTemplateContext());
-        tpl.getBody().setTheme(theme);
+        //tpl.getBody().setTheme(theme);
         tpl.getHeadline().setTextUIID(tpl.getHeadline().getUIID()+"Text");
         DefaultXMLViewKit kit = new DefaultXMLViewKit();
         kit.install(tpl.getBody());

@@ -10,7 +10,7 @@
 
 @font-face {
     font-family: "FontAwesome";
-    src: url(github://FortAwesome/Font-Awesome/blob/master/fonts/fontawesome-webfont.ttf);
+    src: url(github://FontAwesome/Font-Awesome/blob/master/fonts/fontawesome-webfont.ttf);
 }
 
 #Device {
@@ -55,9 +55,9 @@
     radioUnselectedFocusImage: "Radio_btn_Normal.png";
     radioUnselectedImage: "Radio_btn_Normal.png";
     sideMenuImage: "menu.png";
-    switchMaskImage: "switch_mask.png";
-    switchOffImage: "switch_off.png";
-    switchOnImage: "switch_on.png";
+    switchMaskImage: "switch-mask-3.png";
+    switchOffImage: "switch-off-3.png";
+    switchOnImage: "switch-on-3.png";
     tabPlacementInt: 0;
     backIconImage: "Back-icon.png";
     articleSourceIconImage: "Source-icon.png";
@@ -76,6 +76,8 @@
     profileIconImage: "Profile-icon.png";
     widgetsIconImage: "Widgets-icon.png";
     settingsIconImage: "Settings-icon.png";
+    SubmitIconImage: "Submit-icon.png";
+    SubmitIconDarkImage: "SubmitButtonLight-icon.png";
     
 }
 
@@ -110,9 +112,19 @@ Images {
         url(images/Settings-icon.png),
         url(images/calendar-arrow-left.png),
         url(images/calendar-arrow-right.png),
+        url(images/Submit-icon.png),
+        url(images/SubmitButtonLight-icon.png),
         url(images/Bookmark-icon.png);
         
     
+}
+
+ImageHD {
+    background-image: url(images/switch-on-3.png),
+        url(images/switch-mask-3.png),
+        url(images/switch-off-3.png);
+    
+    cn1-source-dpi: 480;
 }
 
 SideNavigationPanel {
@@ -176,11 +188,10 @@ Title {
 }
 
 TextField {
-    background-color: white;
+    background-color: rgba(255,255,255, 0.102);
     width: 200pt;
     height: 40pt;
     border-radius: 20pt;
-    opacity: 0.102;
     color: white;
     font-family: "Montserrat";
     padding-left: 4mm;
@@ -644,7 +655,7 @@ Calendar {
 
 CalendarDate, CalendarTitleArea {
     margin: 0;
-    background-color: rgb(249, 99, 50);
+    background-color: rgb(236, 94, 48);
 }
 
 CalendarDateLabel {
@@ -656,7 +667,8 @@ CalendarDateLabel {
 
 
 CalendarTitle {
-    color: rgb(225, 173, 150);
+    color:white;
+    opacity: 0.5;
     font-family: "Montserrat";
     font-size: medium;
 }
@@ -743,4 +755,584 @@ Slider {
 
 SliderFull {
     border-top: 1pt solid white;
+}
+
+
+/** ATTEMPT 2**/
+
+PillButton {
+    cn1-background-type: none;
+    background-color: rgb( 249, 99, 50 );
+    font-family: "Montserrat-Bold";
+    font-size: 2mm;
+    color: white;
+    height: 44pt;
+    width: 200pt;
+    border-radius: 22pt;
+    margin: 1mm;
+    text-align: center;
+    padding-top: 2mm;
+    padding-bottom: 2mm;
+}
+
+PillButtonLarge {
+    cn1-derive: PillButton;
+    height: 60pt;
+    border-radius: 30pt;
+    
+}
+
+PillButton.pressed {
+    /*opacity: 0.12;
+    border: none;*/
+}
+
+PillButtonFilledLight {
+    color: rgb( 249, 99, 50 );
+    background-color: white;
+    cn1-derive: PillButton;
+}
+
+
+PillButtonFilledLight.pressed {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+PillButtonFilledLightLarge {
+    color: rgb( 249, 99, 50 );
+    background-color: white;
+    cn1-derive: PillButtonLarge;
+}
+
+PillButtonFilledLightLarge.pressed {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+
+PillButtonFilledDark {
+    cn1-derive: PillButton;
+}
+
+PillButtonFilledDark.pressed {
+    background-color: rgba( 249, 99, 50, 0.5 );
+}
+
+PillButtonFilledDarkLarge {
+    cn1-derive: PillButtonLarge;
+}
+
+PillButtonFilledDarkLarge.pressed {
+    background-color: rgba( 249, 99, 50, 0.5 );
+}
+
+PillButtonStrokedLight {
+    cn1-derive: PillButton;
+    border: 1pt solid rgba(255, 255, 255, 0.5);
+    color: white;
+    background-color: transparent;
+}
+
+PillButtonStrokedLight.pressed {
+    background-color: rgb( 249, 99, 50 );
+    border: 1pt solid rgb( 249, 99, 50 );
+}
+
+PillButtonStrokedLightLarge {
+    cn1-derive: PillButtonLarge;
+    border: 1pt solid rgba(255, 255, 255, 0.5);
+    color: white;
+    background-color: transparent;
+}
+
+PillButtonStrokedLightLarge.pressed {
+    background-color: rgb( 249, 99, 50 );
+    border: 1pt solid rgb( 249, 99, 50 );
+}
+
+PillButtonStrokedDark {
+    cn1-derive: PillButton;
+    border: 1pt solid rgb( 249, 99, 50 );
+    color: rgb( 249, 99, 50 );
+    background-color: transparent;
+}
+
+PillButtonStrokedDark.pressed {
+    border: 1pt solid rgb( 249, 99, 50 );
+    background-color: rgb( 249, 99, 50 );
+    color: white;
+}
+
+PillButtonStrokedDarkLarge {
+    cn1-derive: PillButtonLarge;
+    border: 1pt solid rgb( 249, 99, 50 );
+    color: rgb( 249, 99, 50 );
+    background-color: transparent;
+}
+
+PillButtonStrokedDarkLarge.pressed {
+    
+    border: 1pt solid rgb( 249, 99, 50 );
+    background-color: rgb( 249, 99, 50 );
+    color: white;
+}
+
+PillButtonTransparent {
+    background-color: rgba(255,255,255,0.102);
+    width: 200pt;
+    height: 40pt;
+    border-radius: 20pt;
+    
+    color: white;
+    font-family: "Montserrat-Bold";
+    font-size: 2mm;
+    text-align: center;
+}
+
+PillButtonTransparentLarge {
+    cn1-derive: PillButtonTransparent;
+    height: 60pt;
+    border-radius: 30pt;
+    
+}
+
+PillButtonTransparentLight {
+    cn1-derive: PillButtonTransparent;
+    color: white;
+}
+
+PillButtonTransparentLight.pressed {
+    background-color: rgba(255,255,255,0.102);
+    color: rgb( 249, 99, 50 );
+}
+
+PillButtonTransparentLightLarge {
+    cn1-derive: PillButtonTransparentLarge;
+    color: white;
+}
+PillButtonTransparentLightLarge.pressed {
+    background-color: rgba(255,255,255,0.102);;
+    
+    color: rgb( 249, 99, 50 );
+}
+
+PillButtonTransparentDark {
+    cn1-derive: PillButtonTransparent;
+    color: rgb( 249, 99, 50 );
+}
+
+PillButtonTransparentDark.pressed {
+    background-color: rgba(255,255,255,0.102);
+    color: white;
+}
+
+PillButtonTransparentDarkLarge {
+    cn1-derive: PillButtonTransparentLarge;
+    color: rgb( 249, 99, 50 );
+}
+
+PillButtonTransparentDarkLarge.pressed {
+    background-color: rgba(255,255,255,0.102);
+    color: white;
+}
+
+
+CircleButton {
+    cn1-background-type: none;
+    font-family: "FontAwesome";
+    text-align: center;
+    padding: 2.5mm;
+}
+
+CircleButtonFilledLight {
+    cn1-derive: CircleButton;
+    color: rgb( 249, 99, 50 );
+    background-color: white;
+}
+
+CircleButtonFilledLight.pressed {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: white;
+}
+
+
+CircleButtonFilledDark {
+    cn1-derive: CircleButton;
+    background-color: rgb( 249, 99, 50 );
+    color: white;
+}
+
+CircleButtonFilledDark.pressed {
+    background-color: rgba(255,255,255,0.102);
+    color: rgb( 249, 99, 50 );
+}
+
+CircleButtonStrokedLight {
+    cn1-derive: CircleButton;
+    color: white;
+    background-color: transparent;
+    
+}
+
+CircleButtonStrokedLight.pressed {
+    color: rgba( 249, 99, 50, 1.0 );
+    background-color: white;
+}
+
+CircleButtonStrokedDark {
+    cn1-derive: CircleButton;
+    color: rgb( 249, 99, 50 );
+}
+
+CircleButtonStrokedDark.pressed {
+    background-color: rgba( 249, 99, 50, 1.0 );
+    color: white;
+}
+
+CircleButtonTransparentLight {
+    cn1-derive: CircleButton;
+    background-color: rgba(255,255,255,0.12);
+    color: white;
+}
+
+
+CircleButtonTransparentLight.pressed {
+    color: rgb( 249, 99, 50 );
+    background-color: rgba(255, 255, 255, 1.0);
+}
+
+CircleButtonTransparentDark {
+    cn1-derive: CircleButton;
+    background-color: rgba(0,0,0,0.102);;
+    color: rgb( 249, 99, 50 );
+}
+
+CircleButtonTransparentDark.pressed {
+    background-color: rgba( 249, 99, 50, 1.0 );
+    color: white;
+}
+
+BackgroundDark {
+    background-color: rgb(236, 94, 48);
+    cn1-background-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+BackgroundLight {
+    background-color: white;
+    cn1-background-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+IconLinkButton {
+    color: black;
+    background-color: transparent;
+    font-family: "Montserrat-Bold";
+    font-size: 2mm;
+    padding: 5px;
+    padding-left: 3mm;
+    margin: 5px 10px 5px 10px;
+    text-align: center;
+    
+}
+
+IconLinkButtonLight {
+    color: white;
+    cn1-derive: IconLinkButton;
+}
+
+IconLinkButtonLight.pressed {
+    color: lightgray;
+}
+
+IconLinkButtonDark {
+    color: black;
+    cn1-derive: IconLinkButton;
+}
+
+IconLinkButtonDark.pressed {
+    color: darkgray;
+}
+
+LinkButtonUnderlined {
+    color: black;
+    background-color: transparent;
+    font-family: "Montserrat-Bold";
+    font-size: 2mm;
+    padding: 5px;
+    margin: 5px 10px 5px 10px;
+    border-bottom: 2pt solid #ccc;
+    text-align: center;
+    
+}
+
+LinkButtonUnderlinedLight {
+    color: white;
+    cn1-derive: LinkButtonUnderlined;
+}
+
+LinkButtonUnderlinedLight.pressed {
+    color: lightgray;
+}
+
+LinkButtonUnderlinedDark {
+    color: black;
+    cn1-derive: LinkButtonUnderlined;
+}
+
+LinkButtonUnderlinedDark.pressed {
+    color: darkgray;
+}
+
+LinkButton {
+    color: black;
+    background-color: transparent;
+    font-family: "Montserrat-Bold";
+    font-size: 2mm;
+    padding: 5px;
+    margin: 5px 10px 5px 10px;
+    border: none;
+    text-align: center;
+}
+
+LinkButtonSmall {
+    cn1-derive: LinkButton;
+    font-size: 1mm;
+}
+
+LinkButtonLight {
+    color: rgb(251, 161, 132);
+    cn1-derive: LinkButton;
+}
+
+LinkButtonLight.pressed {
+    color: white;
+}
+
+LinkButtonLightSmall {
+    cn1-derive: LinkButtonSmall;
+    color: rgb(251, 161, 132);
+}
+
+LinkButtonLightSmall.pressed {
+    color: white;
+}
+
+LinkButtonDark {
+    color: #666;
+    cn1-derive: LinkButton;
+}
+
+LinkButtonDark.pressed {
+    color: black;
+}
+
+LinkButtonDarkSmall {
+    cn1-derive: LinkButtonSmall;
+    color: #666;
+}
+
+LinkButtonDarkSmall.pressed {
+    color: black;
+}
+
+/** Text Fields **/
+
+TextFieldTransparent {
+    background-color: rgba(0,0,0,0.102);
+    width: 200pt;
+    height: 60pt;
+    border-radius: 30pt;
+    color: black;
+    font-family: "Montserrat-Bold";
+    padding: 3mm 50pt 3mm 50pt;
+    
+}
+
+TextFieldTransparentDark {
+    cn1-derive: TextFieldTransparent;
+}
+
+TextFieldTransparentLight {
+    cn1-derive: TextFieldTransparent;
+    color: white;
+    background-color: rgba(255,255,255, 0.102);
+
+}
+
+CommentsFieldLight {
+    background-color: transparent;
+    border-bottom: 2pt solid rgba(255,255,255, 0.2);
+    color: white;
+    font-family: "Montserrat";
+    padding-bottom: 4mm;
+    padding-left: 8mm;
+}
+
+CommentsFieldDark {
+    background-color: transparent;
+    border-bottom: 2pt solid rgb(244,244,244);
+    color: black;
+    font-family: "Montserrat";
+    padding-bottom: 4mm;
+    padding-left: 8mm;
+}
+
+
+/** Tabs **/
+
+TabsContainer, Tabs {
+    background-color: rgba(236, 94, 48, 1.0);
+    
+    border: none;
+}
+
+TabsContainer {
+    padding-top: 3mm;
+    padding-bottom: 3mm;
+}
+
+TabbedPane {
+    background-color: white;
+}
+
+Tab {
+    cn1-background-type: none;
+    color: rgb(251, 161, 132);
+    background-color: transparent;
+    font-family: "Montserrat-Bold";
+    font-size: 2mm;
+    padding: 2mm;
+    text-align: center;
+}
+
+Tab.selected, Tab.pressed {
+    cn1-background-type: none;
+    background-color: transparent;
+    font-family: "Montserrat-Bold";
+    font-size: 2mm;
+    color: rgb(254,254,254);
+    
+    height: 44pt;
+    width: 200pt;
+    border-radius: 22pt;
+    margin: 1mm;
+    text-align: center;
+
+    border: 1pt solid rgba(255, 255, 255, 0.5);
+}
+
+
+/** Labels and Headings */
+
+Heading {
+    font-size: 4mm;
+    font-family: "Montserrat-Bold";
+    color: black;
+    padding: 2mm;
+    text-align: center;
+}
+
+HeadingLight {
+    cn1-derive: Heading;
+    color: white;    
+}
+
+HeadingLightLarge {
+    cn1-derive: HeadingLight;
+    font-size: 3mm;
+}
+
+HeadingLightMedium {
+    cn1-derive: HeadingLight;
+    font-size: 3mm; /** Will be adjusted in NUIFactory on load to diff size*/
+}
+
+HeadingLightSmall {
+    cn1-derive: HeadingLight;
+    font-size: 2mm; /** Will be adjusted in NUIFactory on load to diff size*/
+}
+
+HeadingDark {
+    cn1-derive: Heading;
+    color: black;
+}
+
+HeadingDarkLarge {
+    cn1-derive: HeadingDark;
+    font-size: 3mm;/** Will be adjusted in NUIFactory on load to diff size*/
+}
+
+HeadingDarkMedium {
+    cn1-derive: HeadingDark;
+    font-size: 3mm;/** Will be adjusted in NUIFactory on load to diff size*/
+}
+
+HeadingDarkSmall {
+    cn1-derive: HeadingDark;
+    font-size: 3mm;/** Will be adjusted in NUIFactory on load to diff size*/
+}
+
+SubHeading {
+    font-size: 2mm;
+    font-family: "Montserrat-Bold";
+    text-align: center;  
+}
+
+SubHeadingLight {
+    cn1-derive: SubHeading;
+    color: rgb(251, 161, 132);
+}
+
+SubHeadingDark {
+    cn1-derive: SubHeading;
+    color: darkgray;
+}
+
+
+TextLightLarge {
+    cn1-derive: HeadingLightLarge;
+    text-align: left;
+}
+
+TextDarkLarge {
+    cn1-derive: HeadingDarkLarge;
+    text-align: left;
+}
+
+TextLightMedium {
+    cn1-derive: HeadingLightMedium;
+    text-align: left;
+}
+
+TextDarkMedium {
+    cn1-derive: HeadingDarkMedium;
+    text-align: left;
+}
+
+TextLightSmall {
+    cn1-derive: HeadingLightSmall;
+    text-align: left;
+}
+
+TextDarkSmall {
+    cn1-derive: HeadingDarkSmall;
+    text-align: left;
+}
+
+OnOffSwitch {
+    background-color: white;
+}
+
+
+MainThin {
+    font-family: "native:MainThin";
+    font-size: 100px;
+}
+
+MainRegular {
+    font-family: "nagive:MainRegular";
 }

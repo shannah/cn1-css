@@ -64,7 +64,8 @@ public class NowUIKitDemo {
         hi.getHelpButton().addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent evt) {
-                new ArticleListForm().show();
+                new ArticleListForm(NUI.getDataSource().find(new NUIDataSource.ArticleQuery(), 
+                        NUIDataSource.Sort.NEWEST)).show();
             }
            
         });
