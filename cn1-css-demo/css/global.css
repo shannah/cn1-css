@@ -84,3 +84,46 @@ BlueRoundedButton {
     padding: 20pt;
     
 }
+
+
+ArtieRound1 {
+    width: 40pt;
+    height: 40pt;
+    border-radius: 20pt;
+    border: 1pt solid black;
+    text-align: center;
+}
+
+ArtieBar1 {
+	box-shadow: 0pt 0pt 3pt 3pt rgba(0,0,0,0.25);		
+}
+
+ArtieHugeLabel1 {
+	color: #163966;
+	text-decoration: cn1-3d-lowered;
+	font-size: 100px;
+}
+
+TitleArea {
+	box-shadow: 0pt 0pt 3pt 3pt rgba(0,0,0,0.25);
+	padding-top: 0.5mm;
+	padding-left: 0.5mm;
+	padding-bottom: 0.5mm;
+	padding-right: 0.5mm;
+}
+
+ArtieNavButton1 {
+	font-size: 10pt;	
+	color: #1f569d;
+}
+
+ArtieContent1 {
+	box-shadow: 0pt 0pt 10pt 10pt rgba(227,227,227,1);
+	padding-left: 3mm;
+	padding-right: 3mm;
+	padding-bottom: 3mm;
+	padding-top: 3mm;
+	
+}
+
+

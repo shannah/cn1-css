@@ -7,3 +7,6 @@ CLDC11.jar
 CodenameOne.jar
 .DS_STORE
 cn1-css-demo/res
+*.p12
+*.mobileprovision
+codenameone_push_instructions.txt
