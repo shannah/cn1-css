@@ -538,6 +538,11 @@ public class CSSTheme {
         if (property.contains("padding") || property.contains("margin")) {
             return "";
         }
+        if ("opacity".equals(property)) {
+            // We don't render opacity.  We let CN1 handle this using the opacity
+            // style property.
+            return "";
+        }
         if (property.startsWith("cn1-")) {
             switch (property) {
                 case "cn1-border-bottom-left-radius-x":
@@ -839,6 +844,11 @@ public class CSSTheme {
             res.setThemeProperty(themeName, pressedId+"#derive", el.getThemeDerive(pressedStyles, ".press"));
             res.setThemeProperty(themeName, disabledId+"#derive", el.getThemeDerive(disabledStyles, ".dis"));
             
+            res.setThemeProperty(themeName, unselId+".opacity", el.getThemeOpacity(unselectedStyles));
+            res.setThemeProperty(themeName, selId+"#opacity", el.getThemeOpacity(selectedStyles));
+            res.setThemeProperty(themeName, pressedId+"#opacity", el.getThemeOpacity(pressedStyles));
+            res.setThemeProperty(themeName, disabledId+"#opacity", el.getThemeOpacity(disabledStyles));
+            
            //System.out.println("Checking if background image is here for "+unselectedStyles);
            if (el.hasBackgroundImage(unselectedStyles) && !el.requiresBackgroundImageGeneration(unselectedStyles) && !el.requiresImageBorder(unselectedStyles)) {
                //System.out.println("Getting background image... it is here"); 
@@ -901,6 +911,7 @@ public class CSSTheme {
                     }
                     if (im == null) {
                         //System.out.println(Arrays.toString(res.getImageResourceNames()));
+                        System.err.println("Error processing file "+this.baseURL);
                         throw new RuntimeException("Failed to set constant value "+constantKey+" to value "+ lu.getStringValue()+" because no such image was found in the resource file");
                     }
                     res.setThemeProperty(themeName, "@"+constantKey, im);
@@ -2878,6 +2889,8 @@ public class CSSTheme {
             
             loop : while (fontFamily != null) {
                 if (fontFamily.getStringValue() != null) {
+                    
+                    
                     switch (fontFamily.getStringValue().toLowerCase()) {
                         case "sans-serif" :
                         case "serif" :
@@ -2891,64 +2904,69 @@ public class CSSTheme {
                         case "monospace" :
                             iFontFace = Font.FACE_MONOSPACE;
                             break loop;
-                        default :
+                        default : {
+                            int ttfFontSize = 1; // medium
+                            float actualSize = 14f;
+                            switch (iFontSizeType) {
+                                case Font.SIZE_SMALL:
+                                    ttfFontSize = 0;
+                                    actualSize = 11f;
+                                    break;
+                                case Font.SIZE_LARGE:
+                                    ttfFontSize = 2;
+                                    actualSize = 20f;
+                                    break;
+                            }
+                            // Check for a more specific font size
+                            if (fontSize != null) {
+                                switch (fontSize.getLexicalUnitType()) {
+                                    case LexicalUnit.SAC_MILLIMETER:
+                                        ttfFontSize = 3;
+                                        actualSize = fontSize.getFloatValue();
+                                        break;
+                                    case LexicalUnit.SAC_PIXEL:
+                                    case LexicalUnit.SAC_POINT:
+                                        ttfFontSize = 4;
+                                        actualSize = fontSize.getFloatValue();
+                                        break;
+
+                                    case LexicalUnit.SAC_CENTIMETER:
+                                        ttfFontSize = 3;
+                                        actualSize = fontSize.getFloatValue()*10f;
+                                        break;
+                                    case LexicalUnit.SAC_INCH:
+                                        ttfFontSize = 3;
+                                        actualSize = fontSize.getFloatValue()*25f;
+                                        break;
+                                    case LexicalUnit.SAC_EM:
+                                        ttfFontSize = 4;
+                                        actualSize = fontSize.getFloatValue()* 14f;
+                                        break;
+                                    case LexicalUnit.SAC_PERCENTAGE:
+                                        ttfFontSize = 4;
+                                        actualSize = fontSize.getFloatValue() /100f * 14f;
+                                        break;
+
+                                }
+                            }
                             FontFace face = findFontFace(fontFamily.getStringValue());
                             if (face != null) {
                                 File fontFile = face.getFontFile();
                                 if (fontFile != null) {
-                                    
-                                    int ttfFontSize = 1; // medium
-                                    float actualSize = 14f;
-                                    switch (iFontSizeType) {
-                                        case Font.SIZE_SMALL:
-                                            ttfFontSize = 0;
-                                            actualSize = 11f;
-                                            break;
-                                        case Font.SIZE_LARGE:
-                                            ttfFontSize = 2;
-                                            actualSize = 20f;
-                                            break;
-                                    }
-                                    
-                                    // Check for a more specific font size
-                                    if (fontSize != null) {
-                                        switch (fontSize.getLexicalUnitType()) {
-                                            case LexicalUnit.SAC_MILLIMETER:
-                                                ttfFontSize = 3;
-                                                actualSize = fontSize.getFloatValue();
-                                                break;
-                                            case LexicalUnit.SAC_PIXEL:
-                                            case LexicalUnit.SAC_POINT:
-                                                ttfFontSize = 4;
-                                                actualSize = fontSize.getFloatValue();
-                                                break;
-                                                
-                                            case LexicalUnit.SAC_CENTIMETER:
-                                                ttfFontSize = 3;
-                                                actualSize = fontSize.getFloatValue()*10f;
-                                                break;
-                                            case LexicalUnit.SAC_INCH:
-                                                ttfFontSize = 3;
-                                                actualSize = fontSize.getFloatValue()*25f;
-                                                break;
-                                            case LexicalUnit.SAC_EM:
-                                                ttfFontSize = 4;
-                                                actualSize = fontSize.getFloatValue()* 14f;
-                                                break;
-                                            case LexicalUnit.SAC_PERCENTAGE:
-                                                ttfFontSize = 4;
-                                                actualSize = fontSize.getFloatValue() /100f * 14f;
-                                                break;
-                                                
-                                        }
-                                    }
                                     Font sys = Font.createSystemFont(iFontFace,iFontStyle, iFontSizeType);
                                     //System.out.println("TTF Font "+fontFile+" "+ttfFontSize + " " +actualSize + " "+sys);
                                     ttfFont = new EditorTTFFont(fontFile, ttfFontSize, actualSize, sys);
                                     break loop;
                                 }
+                            } else {
+                                
+                                if(fontFamily.getStringValue().startsWith("native:")) {
+                                    Font sys = Font.createSystemFont(iFontFace,iFontStyle, iFontSizeType);
+                                    ttfFont = new EditorTTFFont(fontFamily.getStringValue(), ttfFontSize, actualSize, sys);
+                                    break loop;
+                                }
                             }
-                            
+                        }   
                             
                     }
                 }
@@ -2963,7 +2981,13 @@ public class CSSTheme {
             
         }
         
-        
+        public String getThemeOpacity(Map<String,LexicalUnit> styles) {
+            if (styles.get("opacity") != null && !requiresImageBorder(styles) && !requiresBackgroundImageGeneration(styles)) {
+                double opacity = ((ScaledUnit)styles.get("opacity")).getNumericValue();
+                return ""+(int)(opacity * 255.0);
+            }
+            return null;
+        }
         
         public String getThemeTransparency(Map<String,LexicalUnit> styles) {
             
@@ -2972,10 +2996,7 @@ public class CSSTheme {
                 return "0";
             }
             
-            if (styles.get("opacity") != null && !requiresImageBorder(styles) && !requiresBackgroundImageGeneration(styles)) {
-                double opacity = ((ScaledUnit)styles.get("opacity")).getNumericValue();
-                return ""+(int)(opacity * 255.0);
-            }
+            
             
         LexicalUnit bgColor = styles.get("background-color");
         if (bgColor == null) {

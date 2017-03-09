@@ -66,11 +66,15 @@ public class CN1CSSCompileTask extends Task {
         
         String codenameOneTempPath = System.getProperty("user.home") + File.separator + ".codenameone";
         
-        String designerJarPath = codenameOneTempPath + File.separator + "designer_1.jar";
-        
+        String designerJarPath = cssDir.getAbsolutePath() + File.separator + "designer_1.jar";
         File designerJar = new File(designerJarPath);
         if (!designerJar.exists()) {
-            throw new BuildException("Could not find designer_1.jar file at path "+designerJar);
+            designerJarPath = codenameOneTempPath + File.separator + "designer_1.jar";
+
+            designerJar = new File(designerJarPath);
+            if (!designerJar.exists()) {
+                throw new BuildException("Could not find designer_1.jar file at path "+designerJar);
+            }
         }
         
         File javaSEJar = new File(getProject().getBaseDir(), javaSEJarPath);
@@ -86,7 +90,7 @@ public class CN1CSSCompileTask extends Task {
             try {
                 exportResource("cn1css.jar", cssJar);
             } catch (IOException ex) {
-                throw new BuildException("Failed to export cn1css.jar to temp directory.");
+                throw new BuildException("Failed to export cn1css.jar to temp directory.", ex);
             }
         }
         
@@ -97,7 +101,7 @@ public class CN1CSSCompileTask extends Task {
                 exportResource("cn1css.jar", cssJar);
             }
         } catch (IOException ex) {
-            throw new BuildException("Failed to get checksum for "+cssJar);
+            throw new BuildException("Failed to get checksum for "+cssJar, ex);
         }
         
         
