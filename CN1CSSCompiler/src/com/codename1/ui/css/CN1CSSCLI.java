@@ -69,7 +69,7 @@ public class CN1CSSCLI extends Application {
             frm.setVisible(false);
             Display.init(frm.getContentPane());
         new Thread(() -> {
-            launch(CN1CSSCLI.class, "Nothing here");
+            launch(CN1CSSCLI.class, new String[0]);
         }).start();
         //Thread.sleep(5000);
         File inputFile = new File(inputPath);

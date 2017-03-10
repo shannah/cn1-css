@@ -15,6 +15,7 @@ import com.codename1.ui.Image;
 import com.codename1.ui.animations.AnimationAccessor;
 import com.codename1.ui.plaf.Accessor;
 import com.codename1.ui.plaf.Border;
+import com.codename1.ui.plaf.RoundBorder;
 import com.codename1.ui.plaf.Style;
 import com.codename1.ui.util.CSSEditableResources;
 import com.codename1.ui.util.EditableResources;
@@ -26,6 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -437,6 +439,8 @@ public class CSSTheme {
         public int getPixelValue(double targetDpi) {
             return getPixelValue(targetDpi, screenWidth, screenHeight);
         }
+        
+        
         
         public int getPixelValue(double targetDpi, int baseWidth, int baseHeight) {
             switch (src.getLexicalUnitType()) {
@@ -2486,6 +2490,19 @@ public class CSSTheme {
             return false;
         }
         
+        private boolean usesRoundBorder(Map<String, LexicalUnit> style) {
+            LexicalUnit backgroundType = style.get("cn1-background-type");
+            return (backgroundType != null) && 
+                    ("cn1-round-border".equals(backgroundType.getStringValue()) || 
+                        "cn1-pill-border".equals(backgroundType.getStringValue())
+                    );
+        }
+        
+        private boolean isRoundRectBorder(Map<String, LexicalUnit> style) {
+            LexicalUnit backgroundType = style.get("cn1-background-type");
+            return (backgroundType != null) && "cn1-pill-border".equals(backgroundType.getStringValue());
+        }
+        
         public boolean requiresBackgroundImageGeneration(Map<String,LexicalUnit> style) {
             /*
             LexicalUnit backgroundType = style.get("cn1-background-type");
@@ -2498,6 +2515,10 @@ public class CSSTheme {
             }
             */
             Border b = createBorder(style);
+            LexicalUnit backgroundType = style.get("cn1-background-type");
+            if (usesRoundBorder(style)) {
+                return false;
+            }
             
             if (b.hasBorderRadius() || b.hasGradient() || b.hasBoxShadow() || hasFilter(style) || b.hasUnequalBorders() || !b.isStyleNativelySupported() || usesPointUnitsInBorder(style)) {
                 // We might need to generate a background image
@@ -2515,8 +2536,9 @@ public class CSSTheme {
                 if (height != null && height.getLexicalUnitType() == LexicalUnit.SAC_PERCENTAGE) {
                     return true;
                 }
-                LexicalUnit backgroundType = style.get("cn1-background-type");
+                
                 if (backgroundType != null) {
+                    
                     if ( backgroundType.getStringValue().startsWith("cn1-image") && !backgroundType.getStringValue().endsWith("border")) {
 
 
@@ -2552,6 +2574,9 @@ public class CSSTheme {
             if (backgroundType != null && "cn1-image-border".equals(backgroundType.getStringValue())) {
                 return true;
             } else if (backgroundType != null && backgroundType.getStringValue().startsWith("cn1-image")) {
+                return false;
+            } else if (usesRoundBorder(style)) {
+                
                 return false;
             }
             
@@ -2747,6 +2772,8 @@ public class CSSTheme {
                 case "cn1-image-align-bottom-right" :
                     return Style.BACKGROUND_IMAGE_ALIGNED_BOTTOM_RIGHT;
                 case "cn1-image-border":
+                case "cn1-round-border":
+                case "cn1-pill-border":
                 case "cn1-none" :
                 case "none":
                     return Style.BACKGROUND_NONE;
@@ -2981,6 +3008,67 @@ public class CSSTheme {
             
         }
         
+        public Integer getColorAlphaInt(LexicalUnit bgColor) {
+            if (bgColor == null) {
+                return null;
+            }
+            while (bgColor != null) {
+                if ("transparent".equals(bgColor.getStringValue())) {
+                    return 0;
+                }
+                if ("rgba".equals(bgColor.getFunctionName())) {
+                    ScaledUnit r = (ScaledUnit)bgColor.getParameters();
+                    ScaledUnit g = r.getNextNumericUnit();
+                    ScaledUnit b = g.getNextNumericUnit();
+                    ScaledUnit a = b.getNextNumericUnit();
+
+                    return (int)(a.getNumericValue()*255.0);
+                } else {
+                    return 255;
+                }
+                
+            }
+
+            return null;
+        }
+        
+        public int mm2px(float mm) {
+            int out = (int)Math.ceil(mm / 25.4f * 72f);
+            if (out == 0 && mm > 0) {
+                out = 1;
+            } else if (out == 0 && mm < 0) {
+                out = -1;
+            }
+            return out;
+        }
+        
+        public float mm2in(float mm) {
+            return mm / 25.4f;
+        }
+        
+        public float in2mm(float inches) {
+            return inches * 25.4f;
+        }
+        
+        public float px2mm(int px) {
+            return px / 72f * 25.4f;
+        }
+        
+        public float pt2mm(float pt) {
+            return pt / 72f * 25.4f;
+        }
+        
+        public int in2px(float inches) {
+            int out =  (int)Math.round(inches * 72);
+            if (out == 0 && inches > 0) {
+                out = 1;
+            } else if (out == 0 && inches < 0) {
+                out = -1;
+            }
+            return out;
+        }
+        
+        
         public String getThemeOpacity(Map<String,LexicalUnit> styles) {
             if (styles.get("opacity") != null && !requiresImageBorder(styles) && !requiresBackgroundImageGeneration(styles)) {
                 double opacity = ((ScaledUnit)styles.get("opacity")).getNumericValue();
@@ -3021,9 +3109,233 @@ public class CSSTheme {
         
         return null;
     }
+        
+        private float calculateShadowRatio(RoundBorder out, boolean spreadMM, float spreadMMVal, ScaledUnit value) {
+            float val = (float)value.getNumericValue();
+            if (val == 0 || out.getShadowSpread() == 0) {
+                // leave alone
+                if (val == 0) {
+                    switch (value.getLexicalUnitType()) {
+                        case LexicalUnit.SAC_REAL:
+                        case LexicalUnit.SAC_INTEGER:
+                            break;
+                        default:
+                            val += 0.5;
+                    }
+                }
+            } else {
+                switch (value.getLexicalUnitType()) {
+                    case LexicalUnit.SAC_REAL:
+                    case LexicalUnit.SAC_INTEGER:
+                        //out.shadowX((int)val);
+                        break;
+                    case LexicalUnit.SAC_PIXEL: {
+                        if (spreadMM) {
+                            val = -px2mm((int)val) / spreadMMVal / 2;
+                        } else {
+                            val = -val / out.getShadowSpread() / 2;
+                        }
+                        val += 0.5;
+                        break;
+                    }
+                    case LexicalUnit.SAC_POINT: {
+                        if (spreadMM) {
+                            val = -pt2mm(val) / spreadMMVal / 2;
+                        } else {
+                            val = -val / out.getShadowSpread() / 2;
+                        }
+                        val += 0.5;
+                        break;
+
+                    }   
+                    case LexicalUnit.SAC_MILLIMETER: {
+
+                        if (spreadMM) {
+                            val = -val/spreadMMVal / 2;
+                        } else {
+                            val = -mm2px(val)/out.getShadowSpread() / 2;
+                        }
+                        val += 0.5;
+                        break;
+                    }  
+                    case LexicalUnit.SAC_CENTIMETER: {
+                        if (spreadMM) {
+                            val = -val/spreadMMVal*10f / 2;
+                        } else {
+                            val = -mm2px(val*10f)/out.getShadowSpread() /2 ;
+                        }
+                        val += 0.5;
+                        break;
+                    }
+                    case LexicalUnit.SAC_INCH:{
+                        if (spreadMM) {
+                            val = -in2mm(val)/spreadMMVal / 2;
+                        } else {
+                            val = -in2px(val)/out.getShadowSpread() / 2;
+                        }
+                        val += 0.5;
+                        break;
+                    }
+                    default:
+                        System.err.println("In file "+baseURL);
+                        System.err.println("Unsupported unit for cn1-box-shadow-h: "+value.getLexicalUnitType()+". Setting shadowX to 0");
+                        val = 0;
+                }
+            }
+            return val;
+        }
+        
         public com.codename1.ui.plaf.Border getThemeBorder(Map<String,LexicalUnit> styles) {
             Border b = this.createBorder(styles);
+            LexicalUnit cn1BackgroundType = styles.get("cn1-background-type");
             
+            if (cn1BackgroundType != null && usesRoundBorder(styles)) {
+                // We create a round border
+                LexicalUnit backgroundColor = styles.get("background-color");
+                
+                LexicalUnit borderColor = styles.get("border-top-color");
+                ScaledUnit borderWidth = (ScaledUnit)styles.get("border-top-width");
+                
+                
+                com.codename1.ui.plaf.RoundBorder out = RoundBorder.create();
+                if (isRoundRectBorder(styles)) {
+                    out.rectangle(true);
+                } else {
+                    out.rectangle(false);
+                }
+                if (borderWidth != null) {
+                    switch (borderWidth.getLexicalUnitType()) {
+                        case LexicalUnit.SAC_MILLIMETER:
+                            out.stroke((int)borderWidth.getNumericValue(), true);
+                            break;
+                        case LexicalUnit.SAC_INTEGER:
+                        case LexicalUnit.SAC_REAL:
+                        case LexicalUnit.SAC_POINT:
+                            out.stroke((float)borderWidth.getNumericValue() * 25.4f / 72f, true);
+                            break;
+                        case LexicalUnit.SAC_PIXEL:
+                            out.stroke((int)borderWidth.getNumericValue(), false);
+                            break;
+                        case LexicalUnit.SAC_CENTIMETER:
+                            out.stroke((float)borderWidth.getNumericValue() * 10, true);
+                            break;
+                        case LexicalUnit.SAC_INCH:
+                            out.stroke((float)borderWidth.getNumericValue() * 25.4f, true);
+                            break;
+                        default:
+                            System.err.println("In file "+baseURL);
+                            System.err.println("Invalid border width unit " + borderWidth.getLexicalUnitType()+". Setting border width to 1");
+                            out.stroke(1, false);
+
+                    }
+                } else {
+                    out.stroke(1, false);
+                }
+                
+                if (backgroundColor != null) {
+                    out.color(getColorInt(backgroundColor));
+                    Integer alpha = getColorAlphaInt(backgroundColor);
+                    if (alpha != null) {
+                        out.opacity(alpha);
+                    } else {
+                        out.opacity(255);
+                    }
+                } else {
+                    out.opacity(0);
+                }
+                
+                if (borderColor != null) {
+                    out.strokeColor(getColorInt(borderColor));
+                    Integer alpha = getColorAlphaInt(borderColor);
+                    if (alpha != null) {
+                        out.strokeOpacity(alpha);
+                    } else {
+                        out.strokeOpacity(255);
+                    }
+                } else {
+                    out.strokeOpacity(0);
+                }
+                
+                /*
+                
+                apply(style, "cn1-box-shadow-inset", value);
+                    apply(style, "cn1-box-shadow-color", value);
+                    apply(style, "cn1-box-shadow-spread", value);
+                    apply(style, "cn1-box-shadow-blur", value);
+                    apply(style, "cn1-box-shadow-h", value);
+                    apply(style, "cn1-box-shadow-v", value);
+                */
+                
+                
+                ScaledUnit shadowSpread = (ScaledUnit)styles.get("cn1-box-shadow-spread");
+                boolean spreadMM = false;
+                float spreadMMVal = 0f;
+                if (shadowSpread != null) {
+                    switch (shadowSpread.getLexicalUnitType()) {
+                            
+                        case LexicalUnit.SAC_PIXEL:
+                            out.shadowSpread((int)shadowSpread.getNumericValue());
+                            break;
+                        case LexicalUnit.SAC_MILLIMETER:
+                            spreadMMVal = (float)Math.max(1, Math.round(shadowSpread.getNumericValue()));
+                            spreadMM = true;
+                            out.shadowSpread((int)spreadMMVal, true);
+                            break;
+                        case LexicalUnit.SAC_INCH:
+                            spreadMMVal = (float)Math.max(1, Math.round(in2mm((float)shadowSpread.getNumericValue())));
+                            spreadMM = true;
+                            out.shadowSpread((int)spreadMMVal, true);
+                            break;
+                        case LexicalUnit.SAC_CENTIMETER:
+                            spreadMMVal = (float)Math.max(1, Math.round(10*shadowSpread.getNumericValue()));
+                            spreadMM = true;
+                            out.shadowSpread((int)spreadMMVal, true);
+                            break;
+                        case LexicalUnit.SAC_POINT:
+                            spreadMMVal = (float)Math.max(1, Math.round(pt2mm((float)shadowSpread.getNumericValue())));
+                            spreadMM = true;
+                            out.shadowSpread((int)spreadMMVal, true);
+                            break;
+                        default:
+                            System.err.println("In file "+baseURL);
+                            System.err.println("Unsupported unit for cn1-box-shadow-spread: "+shadowSpread.getLexicalUnitType()+". Setting shadow spread to 0");
+                            out.shadowSpread(0);
+                            
+                            
+                    }
+                }
+                
+                ScaledUnit shadowH = (ScaledUnit)styles.get("cn1-box-shadow-h");
+                if (shadowH != null) {
+                    out.shadowX(calculateShadowRatio(out, spreadMM, spreadMMVal, shadowH));
+                }
+                ScaledUnit shadowV = (ScaledUnit)styles.get("cn1-box-shadow-v");
+                if (shadowV != null) {
+                    out.shadowY(calculateShadowRatio(out, spreadMM, spreadMMVal, shadowV));
+                }
+                
+                ScaledUnit boxShadowBlur = (ScaledUnit)styles.get("cn1-box-shadow-blur");
+                if (boxShadowBlur != null) {
+                    out.shadowBlur(-calculateShadowRatio(out, spreadMM, spreadMMVal, boxShadowBlur));
+                }
+                
+                LexicalUnit shadowColor = styles.get("cn1-box-shadow-color");
+                if (shadowColor != null) {
+                    System.err.println("In file "+baseURL);
+                    System.err.println("Shadow color not supported for background type cn1-round-border.  Ignoring RGB Portion  Only using Alpha");
+                    Integer alpha = getColorAlphaInt(shadowColor);
+                    if (alpha != null) {
+                        out.shadowOpacity(alpha);
+                    }
+                    
+                }
+                
+                
+                
+                //System.out.println("Round border: "+out.getShadowX()+", "+out.getShadowY()+", "+out.getShadowSpread()+", "+out.getShadowOpacity());
+                return out;
+                
+            }
             if (b.hasUnequalBorders()) {
                 //System.out.println("We have unequal borders");
                 return com.codename1.ui.plaf.Border.createCompoundBorder(
@@ -3031,7 +3343,7 @@ public class CSSTheme {
                         getThemeBorder(styles, "bottom"),
                         getThemeBorder(styles, "left"),
                         getThemeBorder(styles, "right")
-                );
+                );    
             } else {
                 //System.out.println("Web have equal borders");
                 return getThemeBorder(styles, "top");
@@ -3083,6 +3395,9 @@ public class CSSTheme {
                         break;
                 }
             }
+            
+            
+            
             //com.codename1.ui.plaf.Border out;
             switch (topStyle.getStringValue()) {
                 case "none" :
@@ -4033,6 +4348,7 @@ public class CSSTheme {
                         case LexicalUnit.SAC_EM:
                         case LexicalUnit.SAC_POINT:
                         case LexicalUnit.SAC_INTEGER:
+                        case LexicalUnit.SAC_REAL:
                             apply(style, params[i++], value);
                             break;
                             
@@ -4426,8 +4742,10 @@ public class CSSTheme {
             System.setProperty("org.w3c.css.sac.parser", "org.w3c.flute.parser.Parser");
             InputSource source = new InputSource();
             InputStream stream = uri.openStream();
-            source.setByteStream(stream);
+            
+            source.setCharacterStream(new InputStreamReader(stream, "UTF-8"));
             source.setURI(uri.toString());
+            source.setEncoding("UTF-8");
             ParserFactory parserFactory = new ParserFactory();
             Parser parser = parserFactory.makeParser();
             final CSSTheme theme = new CSSTheme();

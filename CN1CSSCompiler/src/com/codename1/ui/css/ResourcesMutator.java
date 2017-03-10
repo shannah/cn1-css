@@ -382,6 +382,11 @@ public class ResourcesMutator {
         return ret;
     }
     
+    public com.codename1.ui.plaf.Border createRoundBorder(int arcWidth, int arcHeight, int color, boolean outline) {
+        com.codename1.ui.plaf.Border b = com.codename1.ui.plaf.Border.createRoundBorder(arcWidth, arcHeight, color, outline);
+        return b;
+    }
+    
     public com.codename1.ui.plaf.Border create9PieceBorder(BufferedImage img, String prefix, int top, int right, int bottom, int left) {
         //BufferedImage buff = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
         //Graphics2D bg2d = buff.createGraphics();
