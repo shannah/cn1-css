@@ -184,7 +184,53 @@ public class NUIDemo {
         Label regular = new Label("Main Regular: The Quick Brown Fox Jumped");
         regular.setUIID("MainRegular");
         
-        f.add(BorderLayout.CENTER, BoxLayout.encloseY(thin, regular));
+        Label regular0001 = new Button("Main Regular: The Quick Brown Fox Jumped");
+        regular0001.setUIID("MainRegular0001");
+        
+        Label regular1001 = new Button("Main Regular: The Quick Brown Fox Jumped");
+        regular1001.setUIID("MainRegular1001");
+        
+        Label regular0p5001 = new Label("Main Regular: The Quick Brown Fox Jumped");
+        regular0p5001.setUIID("MainRegular0p5001");
+        
+        
+        Label regular2001 = new Label("Main Regular: The Quick Brown Fox Jumped");
+        regular2001.setUIID("MainRegular2001");
+        
+        Label regular5001 = new Label("Main Regular: The Quick Brown Fox Jumped");
+        regular5001.setUIID("MainRegular5001");
+        
+        Label regular0101 = new Label("Main Regular: The Quick Brown Fox Jumped");
+        regular0101.setUIID("MainRegular0101");
+        
+        Label regularm1001 = new Label("Main Regular: The Quick Brown Fox Jumped");
+        regularm1001.setUIID("MainRegularm1001");
+        
+        Label regular0m101 = new Label("Main Regular: The Quick Brown Fox Jumped");
+        regular0m101.setUIID("MainRegular0m101");
+        
+        Container root = BoxLayout.encloseY(thin, regular, 
+                new Label("shadowX(0), shadowY(0), blur(0), spread(1):"),
+                regular0001,
+                new Label("shadowX(1), shadowY(0), blur(0), spread(1):"),
+                regular1001,
+                new Label("shadowX(2), shadowY(0), blur(0), spread(1):"),
+                regular2001,
+                new Label("shadowX(0.5), shadowY(0), blur(0), spread(1):"),
+                regular0p5001,
+                new Label("shadowX(5), shadowY(0), blur(0), spread(1):"),
+                regular5001,
+                new Label("shadowX(0), shadowY(1), blur(0), spread(1):"),
+                regular0101,
+                new Label("shadowX(-1), shadowY(0), blur(0), spread(1):"),
+                regularm1001,
+                new Label("shadowX(0), shadowY(-1), blur(0), spread(1):"),
+                regular0m101
+                
+        );
+        root.setScrollableY(true);
+        f.add(BorderLayout.CENTER, root
+        );
         f.show();
     }
     

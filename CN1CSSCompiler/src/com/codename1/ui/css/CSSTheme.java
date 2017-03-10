@@ -2849,13 +2849,26 @@ public class CSSTheme {
             return null;
         }
         
-        
+        private static final int TTF_SIZE_TYPE_PIXELS=-1;
+        private static final int TTF_SIZE_TYPE_SMALL=0;
+        private static final int TTF_SIZE_TYPE_MEDIUM=1;
+        private static final int TTF_SIZE_TYPE_LARGE=2;
+        private static final int TTF_SIZE_TYPE_MM=3;
         
         public com.codename1.ui.Font getThemeFont(Map<String,LexicalUnit> styles) {
             LexicalUnit fontFamily = styles.get("font-family");
-            LexicalUnit fontSize = styles.get("font-size");
+            ScaledUnit fontSize = (ScaledUnit)styles.get("font-size");
             LexicalUnit fontStyle = styles.get("font-style");
             LexicalUnit fontWeight = styles.get("font-weight");
+            
+            File ttfFontFile = null;
+            String ttfFontName = "native:MainRegular";
+            int ttfSizeType = TTF_SIZE_TYPE_MEDIUM;
+            float ttfSize = 0;
+            int sysFace = Font.FACE_SYSTEM;
+            int sysStyle = Font.STYLE_PLAIN;
+            int sysSize = Font.SIZE_MEDIUM;
+            
             
             if (fontFamily == null && fontSize == null && fontStyle == null && fontWeight == null) {
                 return null;
@@ -2869,35 +2882,86 @@ public class CSSTheme {
             
             
             loop : while (fontSize != null) {
-                switch (fontSize.getLexicalUnitType()) {
+                outer: switch (fontSize.getLexicalUnitType()) {
                     case LexicalUnit.SAC_IDENT: {
                         switch (fontSize.getStringValue().toLowerCase()) {
                             case "small":
                             case "x-small":
                             case "xx-small":
                                 iFontSizeType = Font.SIZE_SMALL;
-                                break loop;
+                                ttfSizeType = TTF_SIZE_TYPE_SMALL;
+                                sysSize = Font.SIZE_SMALL;
+                                break outer;
                             case "large":
                             case "x-large":
                             case "xx-large":
                                 iFontSizeType = Font.SIZE_LARGE;
-                                break loop;
+                                ttfSizeType = TTF_SIZE_TYPE_LARGE;
+                                sysSize = Font.SIZE_LARGE;
+                                break outer;
                                 
                         }
                     }
+                    case LexicalUnit.SAC_PIXEL:
+                        ttfSizeType = TTF_SIZE_TYPE_PIXELS;
+                        ttfSize = fontSize.getIntegerValue();
+                        if (ttfSize == 0) {
+                            ttfSize = fontSize.getFloatValue();
+                        }
+                        break;
+                        
+                    case LexicalUnit.SAC_POINT:
+                        ttfSizeType = TTF_SIZE_TYPE_MM;
+                        ttfSize = (float)fontSize.getNumericValue() / 72f * 25.4f;
+                        break;
+                    case LexicalUnit.SAC_MILLIMETER:
+                        ttfSizeType = TTF_SIZE_TYPE_MM;
+                        ttfSize = (float)fontSize.getNumericValue();
+                        break;
+                        
+                    case LexicalUnit.SAC_CENTIMETER:
+                        ttfSizeType = TTF_SIZE_TYPE_MM;
+                        ttfSize = (float)fontSize.getNumericValue() * 10;
+                        break;
+                    case LexicalUnit.SAC_INCH:
+                        ttfSizeType = TTF_SIZE_TYPE_MM;
+                        ttfSize = (float)fontSize.getNumericValue() * 25.4f;
+                        break; 
+                        
+                    case LexicalUnit.SAC_PERCENTAGE:
+                        
+                        if (ttfSizeType == TTF_SIZE_TYPE_PIXELS) {
+                            ttfSize = ttfSize * (float)fontSize.getNumericValue() / 100f;
+                        } else if (ttfSizeType == TTF_SIZE_TYPE_MM) {
+                            ttfSize = ttfSize * (float)fontSize.getNumericValue() / 100f;
+                        } else if (ttfSizeType == TTF_SIZE_TYPE_MEDIUM) {
+                            ttfSizeType = TTF_SIZE_TYPE_MM;
+                            ttfSize = 3f * (float)fontSize.getNumericValue() / 100f;
+                        } else if (ttfSizeType == TTF_SIZE_TYPE_SMALL) {
+                            ttfSizeType = TTF_SIZE_TYPE_MM;
+                            ttfSize = 2f * (float)fontSize.getNumericValue() / 100f;
+                        } else if (ttfSizeType == TTF_SIZE_TYPE_LARGE) {
+                            ttfSizeType = TTF_SIZE_TYPE_MM;
+                            ttfSize = 4f * (float)fontSize.getNumericValue() / 100f;
+                        }
+                        break;
+                        
                         
                 }
-                fontSize = fontSize.getNextLexicalUnit();
+                fontSize = (ScaledUnit)fontSize.getNextLexicalUnit();
             }
-            fontSize = styles.get("font-size");
+            //fontSize = styles.get("font-size");
             loop : while (fontStyle != null) {
                 switch (fontStyle.getStringValue()) {
                     case "normal" :
                         iFontStyle = Font.STYLE_PLAIN;
+                        sysStyle = Font.STYLE_PLAIN;
                         break loop;
                     case "italic" :
                     case "oblique" :
                         iFontStyle = Font.STYLE_ITALIC;
+                        sysStyle = Font.STYLE_ITALIC;
+                        ttfFontName = "native:ItalicRegular";
                         break loop;
                         
                 }
@@ -2908,6 +2972,12 @@ public class CSSTheme {
                 switch (fontWeight.getStringValue()) {
                     case "bold" :
                         iFontStyle = Font.STYLE_BOLD;
+                        sysStyle = sysStyle | Font.STYLE_BOLD;
+                        if ((sysStyle & Font.STYLE_ITALIC) != 0) {
+                            ttfFontName = "native:ItalicBold";
+                        } else {
+                            ttfFontName = "native:MainBold";
+                        }
                         break loop;
                         
                 }
@@ -2932,6 +3002,7 @@ public class CSSTheme {
                             iFontFace = Font.FACE_MONOSPACE;
                             break loop;
                         default : {
+                            /*
                             int ttfFontSize = 1; // medium
                             float actualSize = 14f;
                             switch (iFontSizeType) {
@@ -2975,22 +3046,25 @@ public class CSSTheme {
                                         break;
 
                                 }
-                            }
+                            }*/
                             FontFace face = findFontFace(fontFamily.getStringValue());
                             if (face != null) {
-                                File fontFile = face.getFontFile();
+                                ttfFontFile = face.getFontFile();
+                                /*
                                 if (fontFile != null) {
                                     Font sys = Font.createSystemFont(iFontFace,iFontStyle, iFontSizeType);
                                     //System.out.println("TTF Font "+fontFile+" "+ttfFontSize + " " +actualSize + " "+sys);
                                     ttfFont = new EditorTTFFont(fontFile, ttfFontSize, actualSize, sys);
                                     break loop;
                                 }
+                                */
                             } else {
                                 
                                 if(fontFamily.getStringValue().startsWith("native:")) {
-                                    Font sys = Font.createSystemFont(iFontFace,iFontStyle, iFontSizeType);
-                                    ttfFont = new EditorTTFFont(fontFamily.getStringValue(), ttfFontSize, actualSize, sys);
-                                    break loop;
+                                    ttfFontName = fontFamily.getStringValue();
+                                    //Font sys = Font.createSystemFont(iFontFace,iFontStyle, iFontSizeType);
+                                    //ttfFont = new EditorTTFFont(fontFamily.getStringValue(), ttfFontSize, actualSize, sys);
+                                    //break loop;
                                 }
                             }
                         }   
@@ -2999,12 +3073,18 @@ public class CSSTheme {
                 }
                 fontFamily = fontFamily.getNextLexicalUnit();
             }
-            
+           
+            if (ttfFontFile != null) {
+                return new EditorTTFFont(ttfFontFile, ttfSizeType, ttfSize, Font.createSystemFont(sysFace, sysStyle, sysSize));
+            } else {
+                return new EditorTTFFont(ttfFontName, ttfSizeType, ttfSize, Font.createSystemFont(sysFace, sysStyle, sysSize));
+            }
+            /*
             if (ttfFont != null) {
                 return ttfFont;
             } else {
                 return Font.createSystemFont(iFontFace,iFontStyle, iFontSizeType);
-            }
+            }*/
             
         }
         
@@ -3831,6 +3911,8 @@ public class CSSTheme {
                                 case "cn1-image-align-bottom-right" :
                                 case "cn1-image-border":
                                 case "cn1-none" :
+                                case "cn1-round-border":
+                                case "cn1-pill-border":
                                 case "none" :
                                     apply(style, "cn1-background-type", value);
                                     break; 
@@ -3934,6 +4016,13 @@ public class CSSTheme {
                 }
                 switch (units.size()) {
                     case 1 :
+                        if (units.get(0).getLexicalUnitType() == LexicalUnit.SAC_IDENT) {
+                            if ("cn1-round-border".equals(units.get(0).getStringValue())
+                                    || "cn1-pill-border".equals(units.get(0).getStringValue())) {
+                                apply(style, "cn1-border-type", units.get(0));
+                                break;
+                            }
+                        }
                         apply(style, "border-style-top", units.get(0));
                         apply(style, "border-style-left", units.get(0));
                         apply(style, "border-style-bottom", units.get(0));
@@ -4051,12 +4140,21 @@ public class CSSTheme {
                             apply(style, "border-width-top", value);
                             break;
                         case LexicalUnit.SAC_IDENT :
-                            try {
-                                Color.web(value.getStringValue());
-                                apply(style, "border-color-top", value);
-                            } catch (IllegalArgumentException ex) {
-                                apply(style, "border-style-top", value);
+                            switch (value.getStringValue()) {
+                                case "cn1-round-border":
+                                case "cn1-pill-border":
+                                    apply(style, "cn1-background-type", value);
+                                    break;
+                                default:
+                                    try {
+                                        Color.web(value.getStringValue());
+                                        apply(style, "border-color-top", value);
+                                    } catch (IllegalArgumentException ex) {
+                                        apply(style, "border-style-top", value);
+                                    }
+                                    
                             }
+                            
                             break;
                         default :
                             throw new RuntimeException("Unsupported lexical unit in border-top: "+value.getLexicalUnitType());

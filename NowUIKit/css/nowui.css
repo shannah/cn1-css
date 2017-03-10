@@ -1330,9 +1330,95 @@ OnOffSwitch {
 
 MainThin {
     font-family: "native:MainThin";
-    font-size: 100px;
+    font-size: 200%;
+    cn1-background-type: cn1-round-border;
+    background-color: red;
+    color: white;
+    border: 1px solid blue;
 }
 
-MainRegular {
-    font-family: "nagive:MainRegular";
+MainRegular0001 {
+    font-family: "native:MainRegular";
+    /*background: cn1-pill-border;
+    background-color: red;*/
+    color: blue;
+    border: 1px cn1-pill-border blue;
+    /*box-shadow: 1mm 1mm 0 2mm rgba(0,0,0,1.0);*/
+    padding: 2mm;
 }
+
+MainRegular0001.pressed {
+    font-family: "native:MainRegular";
+    background: cn1-pill-border blue;
+    /*background-color: red;*/
+    color: white;
+    border: 1px solid white;
+    /*box-shadow: 1mm 1mm 0 2mm rgba(0,0,0,1.0);*/
+    padding: 2mm;
+}
+
+MainRegular1001 {
+    font-family: "native:MainRegular";
+    cn1-background-type: cn1-round-border;
+    background-color: red;
+    color: white;
+    border: 1px solid blue;
+    box-shadow: 1 0 0 1mm rgba(0,0,0,1.0);
+}
+
+MainRegular0p5001 {
+    font-family: "native:MainRegular";
+    cn1-background-type: cn1-round-border;
+    background-color: red;
+    color: white;
+    border: 1px solid blue;
+    box-shadow: 0.5 0 0 1mm rgba(0,0,0,1.0);
+}
+
+MainRegular2001 {
+    font-family: "native:MainRegular";
+    cn1-background-type: cn1-round-border;
+    background-color: red;
+    color: white;
+    border: 1px solid blue;
+    box-shadow: 2 0 0 1mm rgba(0,0,0,1.0);
+}
+
+MainRegular5001 {
+    font-family: "native:MainRegular";
+    cn1-background-type: cn1-round-border;
+    background-color: red;
+    color: white;
+    border: 1px solid blue;
+    box-shadow: 5 0 0 1mm rgba(0,0,0,1.0);
+}
+
+MainRegular0101 {
+    font-family: "native:MainRegular";
+    cn1-background-type: cn1-round-border;
+    background-color: red;
+    color: white;
+    border: 1px solid green;
+    box-shadow: 0 1 0 1mm rgba(0,0,0,1.0);
+}
+
+MainRegularm1001 {
+    font-family: "native:MainRegular";
+    cn1-background-type: cn1-round-border;
+    background-color: red;
+    color: white;
+    border: 1px solid blue;
+    box-shadow: -1 0 0 1mm rgba(0,0,0,1.0);
+}
+
+MainRegular0m101 {
+    font-family: "native:MainRegular";
+    cn1-background-type: cn1-round-border;
+    background-color: red;
+    color: white;
+    border: 1px solid blue;
+    box-shadow: 0 -1 0 1mm rgba(0,0,0,1.0);
+    
+}
+
+
