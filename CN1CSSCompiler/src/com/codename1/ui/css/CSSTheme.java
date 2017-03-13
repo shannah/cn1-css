@@ -115,6 +115,252 @@ public class CSSTheme {
     private double minDpi = 120;
     private double maxDpi = 480;
     private double currentDpi = 480;
+    
+    
+    static class CN1Gradient {
+        /**
+         * One of {@link Style#BACKGROUND_GRADIENT_LINEAR_HORIZONTAL}, {@link Style#BACKGROUND_GRADIENT_LINEAR_VERTICAL}, or
+         * {@link Style#BACKGROUND_GRADIENT_RADIAL}.
+         */
+        int type;
+        
+        int startColor;
+        int endColor;
+        float gradientX;
+        float gradientY;
+        float size;
+        byte bgTransparency;
+        
+        String reason;
+        
+        /**
+         * Flag to indicate whether this gradient is valid
+         * Only gradients that can be completely reproduced using CN1
+         * are valid.   E.g. if the opacity of the start color is different than
+         * the end color, or there are multiple stages, or other parameters
+         * that can't be expressed as a CN1 gradient style, then this gradient won't 
+         * be used and a 9-piece border will be generated as a fallback.
+         */
+        boolean valid;
+        
+        void parse(ScaledUnit background) {
+            
+            //System.out.println("Step 1");
+            //ScaledUnit background = (ScaledUnit)style.get("background");
+            ScaledUnit linearGradientFunc = null;
+            int gradientType = 0;
+            boolean reverse = false;
+            Integer startColor = null;
+            Integer endColor = null;
+            int alpha = -1;
+            
+            loop: while (background != null) {
+                switch (background.getLexicalUnitType()) {
+                    case LexicalUnit.SAC_FUNCTION:
+                        if ("linear-gradient".equals(background.getFunctionName())) {
+                            linearGradientFunc = background;
+                            break loop;
+                        }
+                }
+                background = (ScaledUnit)background.getNextLexicalUnit();
+            }
+            
+            if (linearGradientFunc == null) {
+                return;
+            }
+            //System.out.println("Step 2");
+            ScaledUnit params = (ScaledUnit)linearGradientFunc.getParameters();
+            if (params == null) {
+                return;
+            }
+            //System.out.println("Step 3");
+            
+            ScaledUnit param1 = params;
+            switch (param1.getLexicalUnitType()) {
+                case LexicalUnit.SAC_IDENT: {
+                    String identVal = param1.getStringValue();
+                    if ("to".equals(identVal)) {
+                        param1 = (ScaledUnit)param1.getNextLexicalUnit();
+                        if (param1 == null) {
+                            reason = "Invalid linear-gradient syntax.  'to' must be followed by a side.";
+                            return;
+                        }
+                        if (param1.getLexicalUnitType() == LexicalUnit.SAC_IDENT) {
+                            String sideStr = param1.getStringValue();
+                            switch (sideStr) {
+                                case "top" : {
+                                    gradientType = Style.BACKGROUND_GRADIENT_LINEAR_VERTICAL;
+                                    reverse = true;
+                                    break;
+                                    
+                                }
+                                case "bottom" : {
+                                    gradientType = Style.BACKGROUND_GRADIENT_LINEAR_VERTICAL;
+                                    break;
+                                }
+                                case "left" : {
+                                    gradientType = Style.BACKGROUND_GRADIENT_LINEAR_HORIZONTAL;
+                                    reverse = true;
+                                    break;
+                                }
+                                case "right": {
+                                    gradientType = Style.BACKGROUND_GRADIENT_LINEAR_HORIZONTAL;
+                                    break;
+                                }
+                                default :
+                                    reason = "Unrecognized side identifier '"+sideStr+"'.  Expected top, left, bottom, or right";
+                                    return;
+                                    
+                                
+                                    
+                            }
+                        } else {
+                            reason = "Unsupported syntax following to ident in linear-gradient.";
+                            return;
+                        }
+                    } else {
+                        reason = "Unsupported syntax for first parameter of linear-gradient.  Only 'to' and 'degree' values are supported";
+                        return;
+                    }
+                    
+                    break;
+                }
+                
+                
+                case LexicalUnit.SAC_RADIAN:
+                case LexicalUnit.SAC_DEGREE: {
+                    double degreeVal = params.getNumericValue();
+                    degreeVal = (params.getLexicalUnitType() ==  LexicalUnit.SAC_RADIAN) ?
+                            (degreeVal * 180.0/Math.PI) : degreeVal;
+
+                    if (Math.abs(degreeVal) < 0.0001) {
+                        gradientType = Style.BACKGROUND_GRADIENT_LINEAR_VERTICAL;
+                        reverse = true;  //bottom to top
+                    } else if (Math.abs(degreeVal - 90) < 0.0001 ) {
+                        gradientType = Style.BACKGROUND_GRADIENT_LINEAR_HORIZONTAL;
+                    } else if (Math.abs(degreeVal - 180) < 0.0001) {
+                        gradientType = Style.BACKGROUND_GRADIENT_LINEAR_VERTICAL;
+                    } else if (Math.abs(degreeVal - 270) < 0.0001) {
+                        gradientType = Style.BACKGROUND_GRADIENT_LINEAR_HORIZONTAL;
+                        reverse = true;
+                    }
+                    break;
+
+                }
+                default:
+                    System.err.println("Expected degree.  Found lexical type" +param1.getLexicalUnitType());
+                    System.err.println("Currently only degree and radian parameters supported for first arg of linear-gradient");
+                    // We only support degree and radian first param right now.
+                    return; 
+
+            }
+
+            ScaledUnit param2 = (ScaledUnit)param1.getNextLexicalUnit();
+            if (param2 == null) {
+                return;
+            }
+            //System.out.println("Step 4");
+            if (param2.getLexicalUnitType() == LexicalUnit.SAC_OPERATOR_COMMA) {
+                param2 = (ScaledUnit)param2.getNextLexicalUnit();
+            }
+            if (param2 == null) {
+                return;
+            }
+
+            switch (param2.getLexicalUnitType()) {
+                case LexicalUnit.SAC_IDENT:
+                case LexicalUnit.SAC_FUNCTION:
+                case LexicalUnit.SAC_RGBCOLOR:
+                case LexicalUnit.SAC_ATTR:
+                    if (reverse) {
+                        endColor = getColorInt(param2);
+                    } else {
+                        startColor = getColorInt(param2);
+                    }
+                    alpha = getColorAlphaInt(param2);
+                break;
+                default:
+                    System.err.println("Expected color for 2nd parameter of linear-gradient");
+                    return;
+            }
+            //System.out.println("Stemp 5");
+            ScaledUnit param3 = (ScaledUnit)param2.getNextLexicalUnit();
+            if (param3 == null) {
+                return;
+            }
+            if (param3.getLexicalUnitType() == LexicalUnit.SAC_OPERATOR_COMMA) {
+                param3 = (ScaledUnit)param3.getNextLexicalUnit();
+            }
+            if (param3 == null) {
+                return;
+            }
+            //System.out.println("Step 6");
+            switch (param3.getLexicalUnitType()) {
+                case LexicalUnit.SAC_IDENT:
+                case LexicalUnit.SAC_FUNCTION:
+                case LexicalUnit.SAC_RGBCOLOR:
+                case LexicalUnit.SAC_ATTR:
+                    if (reverse) {
+                        startColor = getColorInt(param3);
+                    } else {
+                        endColor = getColorInt(param3);
+                    }
+                    int alpha2 = getColorAlphaInt(param3);
+                    if (alpha2 != alpha) {
+                        // Alphas don't match so the gradient can't be expressed using CN1 gradients.
+                        reason = "alphas of start and end colors don't match";
+                        return;
+                    }
+                    
+                break;
+                    
+                    
+                default: 
+                    System.err.println("Expecting color for param 3 of linear-gradient");
+                    return;
+            }
+           
+            //System.out.println("Step 8");
+            this.startColor = startColor;
+            this.endColor = endColor;
+            this.type = gradientType;
+            this.bgTransparency = (byte)alpha;
+            this.valid = true;
+            /*
+            Object[] out = new Object[] {
+                startColor,
+                endColor,
+                0f,
+                0f,
+                0f
+            };
+            System.out.println("Gradient: "+Arrays.toString(out));
+            */
+            
+        }
+        
+        Object[] getThemeBgGradient() {
+            if (!valid) {
+                return null;
+            }
+            return new Object[]{
+                startColor,
+                endColor,
+                gradientX,
+                gradientY,
+                size
+            };
+        }
+        
+        byte getBgTransparency() {
+            if (valid) {
+                return 0;
+            }
+            return bgTransparency;
+        }
+        
+    }
+    
     //private int currentScreenWidth=1080;
     //private int currentScreenHeight=1920;
     
@@ -266,6 +512,7 @@ public class CSSTheme {
         double dpi=144;
         int screenWidth=640;
         int screenHeight=960;
+        CN1Gradient gradient;
         
         
         ScaledUnit(LexicalUnit src, double dpi, int screenWidth, int screenHeight) {
@@ -276,7 +523,30 @@ public class CSSTheme {
             
         }
 
+        /**
+         * If this lexical unit is a gradient function and can be expressed as a CN1 gradient
+         * this will return that gradient.  Otherwise it will return null.
+         * @return 
+         */
+        public CN1Gradient getCN1Gradient() {
+            
+            if (gradient == null && src.getLexicalUnitType() == LexicalUnit.SAC_FUNCTION && 
+                    "linear-gradient".equals(src.getFunctionName())) {
+                            
+                gradient = new CN1Gradient();
+                gradient.parse(this);
+               
+            }
+            if (gradient != null && gradient.valid) {
+                return gradient;
+            }
+            return null;
+        }
         
+        public boolean isCN1Gradient() {
+            CN1Gradient g = getCN1Gradient();
+            return (g != null && g.valid);
+        }
         
         
         @Override
@@ -466,6 +736,8 @@ public class CSSTheme {
         public String toString() {
             return src.toString();
         }
+        
+        
         
         
     }
@@ -837,6 +1109,11 @@ public class CSSTheme {
             res.setThemeProperty(themeName, selId+"#textDecoration", el.getThemeTextDecoration(selectedStyles));
             res.setThemeProperty(themeName, pressedId+"#textDecoration", el.getThemeTextDecoration(pressedStyles));
             res.setThemeProperty(themeName, disabledId+"#textDecoration", el.getThemeTextDecoration(disabledStyles));
+            
+            res.setThemeProperty(themeName, unselId+".bgGradient", el.getThemeBgGradient(unselectedStyles));
+            res.setThemeProperty(themeName, selId+"#bgGradient", el.getThemeBgGradient(selectedStyles));
+            res.setThemeProperty(themeName, pressedId+"#bgGradient", el.getThemeBgGradient(pressedStyles));
+            res.setThemeProperty(themeName, disabledId+"#bgGradient", el.getThemeBgGradient(disabledStyles));
             
             res.setThemeProperty(themeName, unselId+".bgType", el.getThemeBgType(unselectedStyles));
             res.setThemeProperty(themeName, selId+"#bgType", el.getThemeBgType(selectedStyles));
@@ -2267,6 +2544,106 @@ public class CSSTheme {
         }
         
         
+        /**
+         * Will either return a valid gradient type or -1 if the gradient
+         * can't be achieved using codenameone gradient background types.
+         * @param styles
+         * @return 
+         */
+//        int tryGetCN1GradientType(Map<String, LexicalUnit> styles) {
+//            //System.out.println("Trying to get gradient type");
+//            LexicalUnit background = styles.get("background");
+//            if (background == null) {
+//                return -1;
+//            }
+//            //System.out.println("Step 1");
+//            int gradientType = -1;
+//            if (background.getFunctionName() != null && background.getFunctionName().equals("linear-gradient")) {
+//                ScaledUnit params = (ScaledUnit)background.getParameters();
+//                if (params == null) {
+//                    return -1;
+//                }
+//                //System.out.println("Step 2");
+//                switch (params.getLexicalUnitType()) {
+//                    case LexicalUnit.SAC_DEGREE:
+//                    case LexicalUnit.SAC_RADIAN:
+//                        
+//                        double dval = params.getNumericValue();
+//                        if (params.getLexicalUnitType() == LexicalUnit.SAC_RADIAN) {
+//                            dval = dval * 180.0 / Math.PI;
+//                        }
+//                        int ival = (int)dval;
+//                        
+//                        if (ival != 0 && ival != 90 && ival != 180 && ival != 270) {
+//                            System.err.println("Background gradient wrong degrees");
+//                            return -1;
+//                        }
+//                        if (ival == 0 || ival == 180) {
+//                            gradientType = Style.BACKGROUND_GRADIENT_LINEAR_VERTICAL;
+//                        } else {
+//                            gradientType = Style.BACKGROUND_GRADIENT_LINEAR_HORIZONTAL;
+//                        }
+//                    break;
+//                    default:
+//                        System.err.println("Background gradient first parameter needs to be degree or radian or CN1 can't handle it.  Using image background");
+//                        return -1;
+//                }
+//                
+//                
+//                params = (ScaledUnit)params.getNextLexicalUnit();
+//                if (params == null) {
+//                    
+//                    return -1;
+//                }
+//                
+//                if (params.getLexicalUnitType() == LexicalUnit.SAC_OPERATOR_COMMA) {
+//                    params = (ScaledUnit)params.getNextLexicalUnit();
+//                }
+//                if (params == null) {
+//                    return -1;
+//                }
+//                //System.out.println("Step 3");
+//                switch (params.getLexicalUnitType()) {
+//                    case LexicalUnit.SAC_FUNCTION:
+//                    case LexicalUnit.SAC_IDENT:
+//                    case LexicalUnit.SAC_RGBCOLOR:
+//                    case LexicalUnit.SAC_ATTR:
+//                    
+//                        break;
+//                    default:
+//                        System.err.println("2nd param for linear-gradient needs to be a color but found "+params+" type "+params.getLexicalUnitType());
+//                        return -1;
+//                }
+//                //System.out.println("gradientType so far is "+gradientType);
+//                //System.out.println("Params is "+params);
+//                params = (ScaledUnit)params.getNextLexicalUnit();
+//                if (params == null) {
+//                    
+//                    return -1;
+//                }
+//                if (params.getLexicalUnitType() == LexicalUnit.SAC_OPERATOR_COMMA) {
+//                    params = (ScaledUnit)params.getNextLexicalUnit();
+//                }
+//                if (params == null) {
+//                    return -1;
+//                }
+//                //System.out.println("Step 4");
+//                switch (params.getLexicalUnitType()) {
+//                    case LexicalUnit.SAC_FUNCTION:
+//                    case LexicalUnit.SAC_IDENT:
+//                    case LexicalUnit.SAC_RGBCOLOR:
+//                    case LexicalUnit.SAC_ATTR:
+//                        break;
+//                    default:
+//                        return -1;
+//                }
+//                
+//            }
+//            //System.out.println("And gradient type is "+gradientType);
+//            return gradientType;
+//        
+//        
+//        }
         
         Map style = new HashMap();
         
@@ -2485,6 +2862,21 @@ public class CSSTheme {
             return getColorString(color);
         }
         
+        
+        public Object[] getThemeBgGradient(Map<String, LexicalUnit> style) {
+            if (requiresImageBorder(style) || requiresBackgroundImageGeneration(style)) {
+                return null;
+            }
+            
+            ScaledUnit background = (ScaledUnit)style.get("background");
+            if (background != null && background.isCN1Gradient()) {
+                return background.getCN1Gradient().getThemeBgGradient();
+            }
+            
+            return null;
+            
+                    
+        }
         public boolean hasFilter(Map<String,LexicalUnit> style) {
             
             return false;
@@ -2514,13 +2906,15 @@ public class CSSTheme {
                 }
             }
             */
+            ScaledUnit background  = (ScaledUnit) style.get("background");
+            boolean isCN1Gradient = background != null && background.isCN1Gradient();
             Border b = createBorder(style);
             LexicalUnit backgroundType = style.get("cn1-background-type");
             if (usesRoundBorder(style)) {
                 return false;
             }
             
-            if (b.hasBorderRadius() || b.hasGradient() || b.hasBoxShadow() || hasFilter(style) || b.hasUnequalBorders() || !b.isStyleNativelySupported() || usesPointUnitsInBorder(style)) {
+            if (b.hasBorderRadius() || (b.hasGradient() && !isCN1Gradient) || b.hasBoxShadow() || hasFilter(style) || b.hasUnequalBorders() || !b.isStyleNativelySupported() || usesPointUnitsInBorder(style)) {
                 // We might need to generate a background image
                 // We first need to determine if this can be done with a 9-piece border
                 // or if we'll need to stretch it.
@@ -2570,6 +2964,8 @@ public class CSSTheme {
         }
         
         public boolean requiresImageBorder(Map<String,LexicalUnit> style) {
+            ScaledUnit background = (ScaledUnit)style.get("background");
+            boolean isCN1Gradient = background != null && background.isCN1Gradient();
             LexicalUnit backgroundType = style.get("cn1-background-type");
             if (backgroundType != null && "cn1-image-border".equals(backgroundType.getStringValue())) {
                 return true;
@@ -2586,7 +2982,7 @@ public class CSSTheme {
             
             Border b = this.createBorder(style);
             
-            if (b.hasBorderRadius() || b.hasGradient() || b.hasBoxShadow() || hasFilter(style) || b.hasUnequalBorders() || !b.isStyleNativelySupported() || usesPointUnitsInBorder(style)) {
+            if (b.hasBorderRadius() || (b.hasGradient() && !isCN1Gradient) || b.hasBoxShadow() || hasFilter(style) || b.hasUnequalBorders() || !b.isStyleNativelySupported() || usesPointUnitsInBorder(style)) {
                 LexicalUnit width = style.get("width");
                 LexicalUnit height = style.get("height");
                 
@@ -2608,8 +3004,13 @@ public class CSSTheme {
         
         public Byte getThemeBgType(Map<String,LexicalUnit> style) {
             LexicalUnit value = style.get("cn1-background-type");
+            ScaledUnit background = (ScaledUnit)style.get("background");
+            boolean isCN1Gradient = background != null && background.isCN1Gradient();
             if (value == null) {
                 // Not explicitly specified so we must use some heuristics here
+                if (!requiresImageBorder(style) && !requiresBackgroundImageGeneration(style) && isCN1Gradient) {
+                    return (byte)background.getCN1Gradient().type;
+                }
                 if (!requiresBackgroundImageGeneration(style) &&  hasBackgroundImage(style)) {
                     LexicalUnit repeat = style.get("background-repeat");
                     if (repeat != null) {
@@ -2735,6 +3136,10 @@ public class CSSTheme {
             }
             
             switch (value.getStringValue()) {
+                case "cn1-background-gradient-linear-horizontal":
+                    return Style.BACKGROUND_GRADIENT_LINEAR_HORIZONTAL;
+                case "cn1-background-gradient-linear-vertical":
+                    return Style.BACKGROUND_GRADIENT_LINEAR_VERTICAL;
                 case "cn1-image-scaled":
                     return Style.BACKGROUND_IMAGE_SCALED;
                 case "cn1-image-scaled-fill":
@@ -3088,29 +3493,7 @@ public class CSSTheme {
             
         }
         
-        public Integer getColorAlphaInt(LexicalUnit bgColor) {
-            if (bgColor == null) {
-                return null;
-            }
-            while (bgColor != null) {
-                if ("transparent".equals(bgColor.getStringValue())) {
-                    return 0;
-                }
-                if ("rgba".equals(bgColor.getFunctionName())) {
-                    ScaledUnit r = (ScaledUnit)bgColor.getParameters();
-                    ScaledUnit g = r.getNextNumericUnit();
-                    ScaledUnit b = g.getNextNumericUnit();
-                    ScaledUnit a = b.getNextNumericUnit();
-
-                    return (int)(a.getNumericValue()*255.0);
-                } else {
-                    return 255;
-                }
-                
-            }
-
-            return null;
-        }
+        
         
         public int mm2px(float mm) {
             int out = (int)Math.ceil(mm / 25.4f * 72f);
@@ -3158,6 +3541,11 @@ public class CSSTheme {
         }
         
         public String getThemeTransparency(Map<String,LexicalUnit> styles) {
+            
+            ScaledUnit background = (ScaledUnit)styles.get("background");
+            if (!requiresBackgroundImageGeneration(styles) && !requiresImageBorder(styles) && background != null && background.isCN1Gradient()) {
+                return String.valueOf(background.getCN1Gradient().getBgTransparency());
+            }
             
             LexicalUnit cn1BgType = styles.get("cn1-background-type");
             if (cn1BgType != null && "none".equals(cn1BgType.getStringValue()) && !styles.containsKey("background-color")) {
@@ -4755,12 +5143,36 @@ public class CSSTheme {
         
     }
     
-    int getColorInt(LexicalUnit color) {
+    static int getColorInt(LexicalUnit color) {
         String str = getColorString(color);
         return Integer.valueOf(str, 16);
     }
     
-    String getColorString(LexicalUnit color) {
+    static public Integer getColorAlphaInt(LexicalUnit bgColor) {
+        if (bgColor == null) {
+            return null;
+        }
+        while (bgColor != null) {
+            if ("transparent".equals(bgColor.getStringValue())) {
+                return 0;
+            }
+            if ("rgba".equals(bgColor.getFunctionName())) {
+                ScaledUnit r = (ScaledUnit)bgColor.getParameters();
+                ScaledUnit g = r.getNextNumericUnit();
+                ScaledUnit b = g.getNextNumericUnit();
+                ScaledUnit a = b.getNextNumericUnit();
+
+                return (int)(a.getNumericValue()*255.0);
+            } else {
+                return 255;
+            }
+
+        }
+
+        return null;
+    }
+    
+    static String getColorString(LexicalUnit color) {
         
         if (color == null) {
                 return null;
