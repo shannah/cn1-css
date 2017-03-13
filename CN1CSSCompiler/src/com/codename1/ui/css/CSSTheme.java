@@ -117,6 +117,25 @@ public class CSSTheme {
     private double currentDpi = 480;
     
     
+    private static class XYVal {
+        double x;
+        double y;
+        String axis;
+        boolean valid;
+    }
+    
+    static boolean isGradient(LexicalUnit background) {
+        if (background != null) {
+            if (background.getLexicalUnitType() == LexicalUnit.SAC_FUNCTION && "linear-gradient".equals(background.getFunctionName())) {
+                return true;
+            } else if (background.getLexicalUnitType() == LexicalUnit.SAC_FUNCTION && "radial-gradient".equals(background.getFunctionName())) {
+                return true;
+            }
+        }
+        return false;
+        
+    }
+    
     static class CN1Gradient {
         /**
          * One of {@link Style#BACKGROUND_GRADIENT_LINEAR_HORIZONTAL}, {@link Style#BACKGROUND_GRADIENT_LINEAR_VERTICAL}, or
@@ -144,9 +163,269 @@ public class CSSTheme {
         boolean valid;
         
         void parse(ScaledUnit background) {
+            if (background != null) {
+                if (background.getLexicalUnitType() == LexicalUnit.SAC_FUNCTION && "linear-gradient".equals(background.getFunctionName())) {
+                    parseLinearGradient(background);
+                } else if (background.getLexicalUnitType() == LexicalUnit.SAC_FUNCTION && "radial-gradient".equals(background.getFunctionName())) {
+                    parseRadialGradient(background);
+                }
+            }
+        }
+        
+        private XYVal parseTransformCoordVal(String val) {
+            XYVal out = new XYVal();
+            switch (val) {
+                case "center" : out.x = 0.5; out.y = 0.5; break;
+                case "left" : out.x = 0; out.y = -1; out.axis = "x"; break;
+                case "right" : out.x = 1; out.y = -1; out.axis = "x"; break;
+                case "bottom" : out.x = -1;; out.y = 1; out.axis = "y"; break;
+                case "top" : out.x = -1; out.y = 0; out.axis = "y"; break;
+                default: return out;
+            }
+            out.valid = true;
+            return out;
+        }
+        
+        private XYVal parseTransformCoordVal(double val, boolean x) {
+            XYVal out = new XYVal();
+            if (x) {
+                out.y = 0.5;
+                out.x = val / 100;
+                out.axis = "x";
+            } else {
+                out.y = val / 100;
+                out.x = 0.5;
+                out.axis = "y";
+            }
+            out.valid = true;
+            return out;
+        }
+        
+        
+        
+        private void parseRadialGradient(ScaledUnit background) {
+            System.out.println("parsing radial gradient");
+            if (background == null || background.getLexicalUnitType() != LexicalUnit.SAC_FUNCTION || !"radial-gradient".equals(background.getFunctionName())) {
+                return;
+            }
             
-            //System.out.println("Step 1");
-            //ScaledUnit background = (ScaledUnit)style.get("background");
+            ScaledUnit params = (ScaledUnit)background.getParameters();
+            if (params == null) {
+                reason = "No parameters found in radial-gradient() function [1]";
+                return;
+            }
+            
+            ScaledUnit param1 = params;
+            ScaledUnit param2 = null;
+            double relX = 0.5;
+            double relY = 0.5;
+            double relSize = 1.0;
+            int step = 0;
+            while (param1 != null) {
+                // Parse the first parameter of radial-gradient
+                switch (param1.getLexicalUnitType()) {
+                    case LexicalUnit.SAC_IDENT: {
+                        switch (param1.getStringValue()) {
+                            case "circle": {
+                                if (step != 0) {
+                                    reason = "Unrecognized syntax for radial gradient [2]";
+                                    return;
+                                }
+                                step++;
+                                ScaledUnit nex = (ScaledUnit)param1.getNextLexicalUnit();
+                                if (nex == null) {
+                                    reason = "Unrecognized syntax for radial gradient [3]";
+                                    return;
+                                }
+                                if (nex.getLexicalUnitType() == LexicalUnit.SAC_OPERATOR_COMMA) {
+                                    // It's a circle at center
+                                    param1 = null;
+                                    param2 = (ScaledUnit)nex.getNextLexicalUnit();
+                                    break; 
+                                }
+                                param1 = nex;
+                                //reason = "Unsupported parameter following 'circle' in radial gradient.";
+                                //return;
+                                break;
+                            }
+                            case "closest-side" : {
+                                // This is the only extent value that is supported.
+                                step++;
+                                param1 = (ScaledUnit)param1.getNextLexicalUnit();
+                                if (param1 != null && param1.getLexicalUnitType() == LexicalUnit.SAC_OPERATOR_COMMA) {
+                                    param1 = null;
+                                }
+                                break;
+                                
+                            }
+                            case "at" : {
+                                ScaledUnit nex = (ScaledUnit)param1.getNextLexicalUnit();
+                                if (nex == null) {
+                                    reason = "Invalid syntax for radial-gradient position.  'at' followed by nothing. [4]";
+                                    return;
+                                }
+                                if (nex.getLexicalUnitType() == LexicalUnit.SAC_IDENT || nex.getLexicalUnitType() == LexicalUnit.SAC_PERCENTAGE) {
+                                    XYVal val, val2;
+                                    if (nex.getLexicalUnitType() == LexicalUnit.SAC_PERCENTAGE) {
+                                        val = parseTransformCoordVal(nex.getNumericValue(), true);
+                                    } else {
+                                        val = parseTransformCoordVal(nex.getStringValue());
+                                    }
+                                    if (!val.valid) {
+                                        reason = "Invalid position coordinate for radial-gradient. [5]";
+                                        return;
+                                    }
+                                    
+                                    
+                                    
+                                    if ("x".equals(val.axis)) {
+                                        relX = val.x;
+                                    } else if ("y".equals(val.axis)) {
+                                        relY = val.y;
+                                    } else {
+                                        relX = val.x;
+                                        relY = val.y;
+                                    }
+                                    
+                                    nex = (ScaledUnit)nex.getNextLexicalUnit();
+                                    if (nex == null) {
+                                        reason = "Invalid radial-gradient syntax.  No color information provided. [6]";
+                                        return;
+                                    }
+                                    
+                                    if (nex.getLexicalUnitType() == LexicalUnit.SAC_OPERATOR_COMMA) {
+                                        // we have our position.
+                                        param2 = (ScaledUnit)nex.getNextLexicalUnit();
+                                        param1 = null;
+                                        break;
+                                    }
+                                    
+                                    if (nex.getLexicalUnitType() == LexicalUnit.SAC_IDENT || nex.getLexicalUnitType() == LexicalUnit.SAC_PERCENTAGE) {
+                                        if (nex.getLexicalUnitType() == LexicalUnit.SAC_PERCENTAGE) {
+                                            val2 = parseTransformCoordVal(nex.getNumericValue(), "y".equals(val.axis));
+                                        } else {
+                                            val2 = parseTransformCoordVal(nex.getStringValue());
+                                        }
+                                        
+                                        if ("x".equals(val2.axis)) {
+                                            relX = val2.x;
+                                        } else if ("y".equals(val2.axis)) {
+                                            relY = val2.y;
+                                        } else if ("x".equals(val.axis)) {
+                                            relY = val2.y;
+                                        } else if ("y".equals(val.axis)) {
+                                            relX = val2.x;
+                                        } else {
+                                            relY = val2.y;
+                                        }
+                                    }
+                                    
+                                    nex = (ScaledUnit)nex.getNextLexicalUnit();
+                                    
+                                    if (nex == null || nex.getLexicalUnitType() != LexicalUnit.SAC_OPERATOR_COMMA) {
+                                        reason = "Invalid radial-gradient syntax.  No color information provided. [7]";
+                                        return;
+                                    }
+                                    
+                                    param1 = null;
+                                    param2 = (ScaledUnit) nex.getNextLexicalUnit();
+                                    break;
+                                    
+                                    
+                                }
+                                break;
+                            }
+                            
+                                
+                            
+                            default:
+                                reason = "Unsupported syntax for radial-gradient. ("+param1.getStringValue()+") [8]";
+                                return;
+
+                        }
+                    }
+                }
+            }
+            if (param2 == null) {
+                reason = "No color information provided (param2==null) [9]";
+                return;
+            }
+            
+            Integer color1 = null;
+            Integer color2 = null;
+            int alpha = 0;
+            
+            
+            while (param2 != null) {
+                // parse 2nd param of radial-gradient
+                if (color1 == null) {
+                    color1 = getColorInt(param2);
+                    alpha = getColorAlphaInt(param2);
+                    ScaledUnit nex = (ScaledUnit)param2.getNextLexicalUnit();
+                    if (nex == null) {
+                        reason = "Invalid radial gradient syntax.  Missing 2nd color [11]";
+                        return;
+                    }
+                    
+                    if (nex.getLexicalUnitType() == LexicalUnit.SAC_PERCENTAGE) {
+                        if (Math.abs(nex.getNumericValue()) > 0.0001) {
+                            reason = "CN1 native gradients must have start color at 0%.  Falling back to use image background. [12]";
+                            return;
+                        }
+                        nex = (ScaledUnit)nex.getNextLexicalUnit();
+                    }
+                    if (nex == null || nex.getLexicalUnitType()!= LexicalUnit.SAC_OPERATOR_COMMA) {
+                        reason = "Invalid radial gradient syntax.  Missing 2nd color";
+                        return;
+                    }
+                    param2 = (ScaledUnit)nex.getNextLexicalUnit();
+                } else if (color2 == null) {
+                    color2 = getColorInt(param2);
+                    int alpha2 = getColorAlphaInt(param2);
+                    if (alpha2 != alpha) {
+                        reason = "Codename One only native supports gradients with the same alpha for start and end colors [13]";
+                        return;
+                    }
+                    ScaledUnit nex = (ScaledUnit)param2.getNextLexicalUnit();
+                    if (nex == null) {
+                        break;
+                    } else if (nex.getLexicalUnitType() == LexicalUnit.SAC_PERCENTAGE) {
+                        relSize = nex.getNumericValue() / 100;
+                    }
+                    
+                    nex = (ScaledUnit)nex.getNextLexicalUnit();
+                    
+                    // This should be the last parameter
+                    if (nex != null) {
+                        reason = "Only radial gradients with two color stops are supported natively in CN1.  Falling back to image background. [14]";
+                        return;
+                    }
+                    param2 = null;
+                }
+                
+            }
+            
+            if (color1 == null || color2 == null) {
+                reason = "Failed to set either start or end color when parsing radial-gradient [15]";
+                return;
+            }
+            
+            type = Style.BACKGROUND_GRADIENT_RADIAL;
+            gradientX = 1-(float)relX;
+            gradientY = 1-(float)relY;
+            this.bgTransparency = (byte)alpha;
+            this.startColor = color1;
+            this.endColor = color2;
+            this.size = (float)relSize;
+            this.valid = true;
+            
+            
+        }
+        
+        
+        
+        private void parseLinearGradient(ScaledUnit background) {
+            
             ScaledUnit linearGradientFunc = null;
             int gradientType = 0;
             boolean reverse = false;
@@ -210,9 +489,7 @@ public class CSSTheme {
                                 default :
                                     reason = "Unrecognized side identifier '"+sideStr+"'.  Expected top, left, bottom, or right";
                                     return;
-                                    
-                                
-                                    
+      
                             }
                         } else {
                             reason = "Unsupported syntax following to ident in linear-gradient.";
@@ -530,11 +807,13 @@ public class CSSTheme {
          */
         public CN1Gradient getCN1Gradient() {
             
-            if (gradient == null && src.getLexicalUnitType() == LexicalUnit.SAC_FUNCTION && 
-                    "linear-gradient".equals(src.getFunctionName())) {
+            if (gradient == null && isGradient(src)) {
                             
                 gradient = new CN1Gradient();
                 gradient.parse(this);
+                if (!gradient.valid) {
+                    System.err.println("Gradient not valid: "+gradient.reason);
+                }
                
             }
             if (gradient != null && gradient.valid) {
