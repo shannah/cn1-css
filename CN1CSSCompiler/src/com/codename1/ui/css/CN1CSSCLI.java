@@ -9,6 +9,7 @@ package com.codename1.ui.css;
 
 import com.codename1.impl.javase.JavaSEPort;
 import com.codename1.ui.Display;
+import com.codename1.ui.util.EditableResources;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -48,11 +49,28 @@ public class CN1CSSCLI extends Application {
     }
     
     
+    private static void install(String[] args) throws Exception {
+        File cssFile = new File(args[1]);
+        File resFile = new File(args[2]);
+        
+        EditableResources res = new EditableResources();
+        res.openFileWithXMLSupport(resFile);
+        String mainTheme = res.getThemeResourceNames()[0];
+        res.setThemeProperty(mainTheme, "@OverlayThemes", cssFile.getName());
+        System.out.println("Setting @OverlayThemes constant in "+mainTheme+" theme of "+resFile.getPath()+" to "+cssFile.getName()+" so that the CSS styles will override styles in the default theme.");
+        res.saveXML(resFile);
+        
+    }
+    
     public static void main(String[] args) throws Exception {
         
         String inputPath = "test.css";
         
         if (args.length > 0) {
+            if ("install".equals(args[0])) {
+                install(args);
+                return;
+            }
             inputPath = args[0];
         }
             
