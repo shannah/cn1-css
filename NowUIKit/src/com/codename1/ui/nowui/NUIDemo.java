@@ -100,6 +100,18 @@ public class NUIDemo {
             }
         });
         
+        menu.addMenuItem("Radial Gradients", (char)0xf031, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showRadialGradients();
+            }
+        });
+        
+        menu.addMenuItem("Linear Gradients", (char)0xf031, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showLinearGradients();
+            }
+        });
+        
         
         
     }
@@ -420,6 +432,88 @@ public class NUIDemo {
         f.show();
         
     }
+    
+    private void showRadialGradients() {
+        Form f = new Form("RadialGradients");
+        installSideMenu(f);
+        
+        Tabs t = new Tabs();
+        Container c1 = new Container();
+        c1.setUIID("RGC100");
+        t.addTab("Center 100%", c1);
+        
+        Container c2 = new Container();
+        c2.setUIID("RGC200");
+        t.addTab("Center 200%", c2);
+        
+        Container c3 = new Container();
+        c3.setUIID("RGCX0100");
+        t.addTab("Center X=0", c3);
+        
+        Container c4 = new Container();
+        c4.setUIID("RGCX1100");
+        t.addTab("Center X=1", c4);
+        
+        f.setLayout(new BorderLayout());
+        f.addComponent(BorderLayout.CENTER, t);
+        f.show();
+    }
+    
+    private void showLinearGradients() {
+        Form f = new Form("Linear Gradients", new BorderLayout());
+        installSideMenu(f);
+        
+        
+        /*
+        
+LG0 {
+    background: linear-gradient(0deg, #ccc, #666);
+}
+
+LGToTop {
+    background: linear-gradient(to top, #ccc, #666);
+}
+
+LG90 {
+    background: linear-gradient(90deg, #ccc, #666);
+}
+
+LGToLeft {
+    background: linear-gradient(to left, #ccc, #666);
+}
+
+LG45 {
+    background: linear-gradient(45deg, #ccc, #666);
+}
+
+LGDiffAlpha {
+    background: linear-gradient(90deg, rgba(255, 0, 0, 0.5), blue);
+}
+
+        *
+        */
+        String[] styles = {
+            "LG0", "linear-gradient(0deg, #ccc, #666)",
+            "LGToTop", "linear-gradient(to top, #ccc, #666)",
+            "LG90", "linear-gradient(90deg, #ccc, #666)",
+            "LGToLeft", "linear-gradient(to left, #ccc, #666)",
+            "LG45", "linear-gradient(45deg, #cccccc, #666)",
+            "LGDiffAlpha", "linear-gradient(90deg, rgba(255, 0, 0, 0.5), blue)"
+        };
+        int len = styles.length;
+        Container center = new Container(new BoxLayout(BoxLayout.Y_AXIS));
+        center.setScrollableY(true);
+        f.add(BorderLayout.CENTER, center);
+        for (int i=0; i<len; i+=2) {
+            Container cnt = new Container();
+            cnt.setUIID(styles[i]);
+            cnt.setPreferredH(2 * Display.getInstance().getDisplayHeight()/ 3);
+            center.add(new Label(styles[i+1]));
+            center.add(cnt);
+        }
+        f.show();
+    }
+    
     
     public void start() {
         showButtonsForm();

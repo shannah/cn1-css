@@ -1329,12 +1329,9 @@ OnOffSwitch {
 
 
 MainThin {
-    font-family: "native:MainThin";
+    
     font-size: 200%;
-    cn1-background-type: cn1-round-border;
-    background-color: red;
-    color: white;
-    border: 1px solid blue;
+    background: radial-gradient(circle at top left, yellow, blue 100%);
 }
 
 MainRegular0001 {
@@ -1419,6 +1416,47 @@ MainRegular0m101 {
     border: 1px solid blue;
     box-shadow: 0 -1 0 1mm rgba(0,0,0,1.0);
     
+}
+
+
+RGC100 {
+    background: radial-gradient(circle, gray, white);
+}
+
+RGC200 {
+    background: radial-gradient(circle, gray, white 200%);
+}
+
+RGCX0100 {
+    background: radial-gradient(circle at left, gray, white);
+}
+
+RGCX1100 {
+    background: radial-gradient(circle at right, gray, white);
+}
+
+LG0 {
+    background: linear-gradient(0deg, #ccc, #666);
+}
+
+LGToTop {
+    background: linear-gradient(to top, #ccc, #666);
+}
+
+LG90 {
+    background: linear-gradient(90deg, #ccc, #666);
+}
+
+LGToLeft {
+    background: linear-gradient(to left, #ccc, #666);
+}
+
+LG45 {
+    background: linear-gradient(45deg, #eaeaea, #666666);
+}
+
+LGDiffAlpha {
+    background: linear-gradient(90deg, rgba(255, 0, 0, 0.6), blue);
 }
 
 

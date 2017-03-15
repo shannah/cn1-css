@@ -204,7 +204,6 @@ public class CSSTheme {
         
         
         private void parseRadialGradient(ScaledUnit background) {
-            System.out.println("parsing radial gradient");
             if (background == null || background.getLexicalUnitType() != LexicalUnit.SAC_FUNCTION || !"radial-gradient".equals(background.getFunctionName())) {
                 return;
             }
@@ -520,6 +519,9 @@ public class CSSTheme {
                     } else if (Math.abs(degreeVal - 270) < 0.0001) {
                         gradientType = Style.BACKGROUND_GRADIENT_LINEAR_HORIZONTAL;
                         reverse = true;
+                    } else {
+                        reason = "Only 0, 90, 180, and 270 degrees supported.";
+                        return;
                     }
                     break;
 
@@ -3202,7 +3204,6 @@ public class CSSTheme {
                 // then this looks like a case for a generated image.
                 LexicalUnit width = style.get("width");
                 LexicalUnit height = style.get("height");
-                
                 if (width != null && width.getLexicalUnitType() == LexicalUnit.SAC_PERCENTAGE) {
                     return true;
                 }
@@ -3217,6 +3218,10 @@ public class CSSTheme {
 
                         return true;
                     }
+                }
+                
+                if (isGradient(background) && !requiresImageBorder(style)) {
+                    return true;
                 }
             }
             
@@ -3271,6 +3276,10 @@ public class CSSTheme {
                 if (height != null && height.getLexicalUnitType() == LexicalUnit.SAC_PERCENTAGE) {
                     return false;
                 }
+                if (isGradient(background) && isNone(style.get("border")) && !b.hasBorderRadius() && !b.hasBoxShadow() && !b.hasUnequalBorders() && !usesPointUnitsInBorder(style)) {
+                    // This is just a gradient... it should be rendered just as an image background
+                    return false;
+                }
                 return true;
             }
             return false;
@@ -3290,7 +3299,7 @@ public class CSSTheme {
                 if (!requiresImageBorder(style) && !requiresBackgroundImageGeneration(style) && isCN1Gradient) {
                     return (byte)background.getCN1Gradient().type;
                 }
-                if (!requiresBackgroundImageGeneration(style) &&  hasBackgroundImage(style)) {
+                if (!requiresBackgroundImageGeneration(style) &&  hasBackgroundImage(style)) {    
                     LexicalUnit repeat = style.get("background-repeat");
                     if (repeat != null) {
                         switch (repeat.getStringValue()) {
@@ -3377,7 +3386,7 @@ public class CSSTheme {
                                 
                                     
                         }
-                    } else {
+                    }  else {
                         return Style.BACKGROUND_IMAGE_TILE_BOTH;
                     }
                 } else if (requiresBackgroundImageGeneration(style)) {
