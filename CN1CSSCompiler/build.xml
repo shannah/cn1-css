@@ -74,7 +74,7 @@
     <target name="-post-jar">
         
         <jar destfile="dist/cn1css.jar">
-            <fileset dir="build/classes"/>
+            <fileset dir="build/classes" excludes="**/cn1css.jar"/>
             <zipfileset includes="**/*.class" src="lib/flute.jar"/>
             <zipfileset includes="**/*.class" src="lib/sac-1.3.jar"/>
         </jar>

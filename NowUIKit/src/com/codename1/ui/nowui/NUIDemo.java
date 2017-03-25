@@ -7,8 +7,10 @@ import com.codename1.ui.Calendar;
 import com.codename1.ui.Command;
 import com.codename1.ui.Container;
 import com.codename1.ui.Display;
+import com.codename1.ui.FontImage;
 import com.codename1.ui.Form;
 import com.codename1.ui.Graphics;
+import com.codename1.ui.Image;
 import com.codename1.ui.Label;
 import com.codename1.ui.Tabs;
 import com.codename1.ui.TextField;
@@ -19,6 +21,7 @@ import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.FlowLayout;
 import com.codename1.ui.nowui.NUIFactory.ComponentStyle;
+import com.codename1.ui.plaf.Style;
 import com.codename1.ui.util.Resources;
 
 
@@ -109,6 +112,12 @@ public class NUIDemo {
         menu.addMenuItem("Linear Gradients", (char)0xf031, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showLinearGradients();
+            }
+        });
+        
+        menu.addMenuItem("Round Borders", (char)0xf031, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showRoundBorders();
             }
         });
         
@@ -240,6 +249,147 @@ public class NUIDemo {
                 regular0m101
                 
         );
+        
+        /*
+        PlainText0p5mm {
+    font-size: 0.5mm;
+}
+
+PlainText1mm {
+    font-size: 1mm;
+}
+
+PlainText2mm {
+    font-size: 2mm;
+}
+
+PlainText5mm {
+    font-size: 5mm;
+}
+
+PlainText10mm {
+    font-size: 10mm;
+}
+
+PlainText50mm {
+    font-size: 50mm;
+}
+
+PlainTextSmall {
+    font-size: small;
+}
+
+PlainTextMedium {
+    font-size: medium;
+}
+
+PlainTextLarge {
+    font-size: large;
+}
+
+PlainText3pt {
+    font-size: 3pt;
+}
+
+PlainText6pt {
+    font-size: 6pt;
+}
+
+PlainText12pt {
+    font-size: 12pt;
+}
+
+PlainText20pt {
+    font-size: 20pt;
+}
+
+PlainText36pt {
+    font-size: 36pt;
+}
+
+BoldText {
+    font-weight: bold;
+}
+
+BoldText1mm {
+    font-weight: bold;
+    font-size: 1mm;
+}
+
+BoldText2mm {
+    font-weight: bold;
+    font-size: 2mm;
+}
+
+BoldText3mm {
+    font-weight: bold;
+    font-size: 3mm;
+}
+
+BoldText5mm {
+    font-weight: bold;
+    font-size: 5mm;
+}
+
+ItalicText {
+    font-style: italic;
+}
+
+ItalicText3mm {
+    font-style: italic;
+    font-size: 3mm;
+}
+
+ItalicBoldText {
+    font-style: italic;
+    font-weight: bold;
+}
+        */
+        String[] styles = new String[]{
+            "PlainText0p5mm", "font-size: 0.5mm",
+            "PlainText1mm", "font-size: 1mm",
+            "PlainText2mm", "font-size: 2mm",
+            "PlainText5mm", "font-size: 5mm",
+            "PlainText10mm", "font-size: 10mm",
+            "PlainText50mm", "font-size: 50mm",
+            "PlainTextSmall", "font-size: small",
+            "PlainTextMedium", "font-size: medium",
+            "PlainTextLarge", "font-size: large",
+            "PlainText3pt", "font-size: 3pt",
+            "PlainText6pt", "font-size: 6pt",
+            "PlainText12pt", "font-size: 12pt",
+            "PlainText20pt", "font-size: 20pt",
+            "PlainText36pt", "font-size: 36pt",
+            "BoldText", "font-weight: bold",
+            "BoldText1mm", "font-weight:bold; font-size: 1mm",
+            "BoldText2mm", "font-weight:bold; font-size: 2mm",
+            "BoldText3mm", "font-weight:bold; font-size: 3mm",
+            "BoldText5mm", "font-weight:bold; font-size: 5mm",
+            "ItalicText", "font-style:italic",
+            "ItalicText3mm", "font-style:italic; font-size:3mm",
+            "ItalicBoldText", "font-style:italic; font-weight:bold",
+            "PlainTextUnderline", "text-decoration: underline",
+            "BoldTextUnderline", "text-decoration:underline; font-weight:bold",
+            "ItalicTextUnderline", "text-decoration:underline; font-style:italic",
+            "PlainText3d", "text-decoration:cn1-3d",
+            "BoldText3d", "text-decoration:cn1-3d; font-weight: bold",
+            "ItalicText3d", "text-decoration:cn1-3d; font-style: italic",
+            "PlainText3dLowered", "text-decoration:cn1-3d-lowered",
+            "BoldText3dLowered", "text-decoration:cn1-3d-lowered; font-weight: bold",
+            "ItalicText3dLowered", "text-decoration:cn1-3d-lowered; font-style:italic",
+            "PlainText3dShadow", "text-decoration:cn1-3d-shadow-north",
+            "BoldText3dShadow", "text-decoration:cn1-3d-shadow-north; font-weight:bold",
+            "ItalicText3dShadow", "text-decoration:cn1-3d-shadow-north; font-style:italic"
+              
+        };
+        
+        int len = styles.length;
+        for (int i=0; i<len; i+=2) {
+            root.add(new Label(styles[i+1]));
+            Label l = new Label("The Quick Brown Fox Jumped");
+            l.setUIID(styles[i]);
+            root.add(l);
+        }
         root.setScrollableY(true);
         f.add(BorderLayout.CENTER, root
         );
@@ -514,6 +664,56 @@ LGDiffAlpha {
         f.show();
     }
     
+    
+    private void showRoundBorders() {
+        Form f = new Form("Round Borders", new BorderLayout());
+        installSideMenu(f);
+        /*
+        PillBorder {
+            border: 1px #3399ff cn1-pill-border;
+        }
+
+        RoundBorder {
+            border: 1px #ee99ff cn1-round-border;
+        }
+
+        BorderRadius {
+            border: 1px solid #3399ff;
+            border-radius: 3mm;
+        }
+        */
+        
+        Style s = new Style();
+        s.setFgColor(0x336699);
+        s.setBgTransparency(0);
+        
+        Object[] styles = new Object[]{
+            "PillBorder", "border: 1px #3399ff cn1-pill-border", "Hello World",
+            "PillBorderFilled", "background: #33099ff cn1-pill-border", "Hello World",
+            "RoundBorder", "border: 1px #ee99ff cn1-round-border", FontImage.createMaterial(FontImage.MATERIAL_ALARM, s, 4f),
+            "RoundBorderFilled", "background: #ccc cn1-round-border", FontImage.createMaterial(FontImage.MATERIAL_ALARM, s, 4f),
+            "BorderRadius", "border: 1px solid #3399ff; border-radius: 3mm", "Hello World",
+            "BorderRadiusFilled", "border: 1px solid transparent; border-radius: 3mm; background-color:#ccc", "Hello World"
+        };
+        
+        Container root = new Container(new BoxLayout(BoxLayout.Y_AXIS));
+        root.setScrollableY(true);
+        int len = styles.length;
+        for (int i=0; i<len; i+=3) {
+            root.add(new Label(String.valueOf(styles[i+1])));
+            Object content = styles[i+2];
+            Label l = new Label();
+            if (content instanceof Image) {
+                l.setIcon((Image)content);
+            } else {
+                l.setText(String.valueOf(content));
+            }
+            l.setUIID(String.valueOf(styles[i]));
+            root.add(l);
+        }
+        f.add(BorderLayout.CENTER, root);
+        f.show();
+    }
     
     public void start() {
         showButtonsForm();
