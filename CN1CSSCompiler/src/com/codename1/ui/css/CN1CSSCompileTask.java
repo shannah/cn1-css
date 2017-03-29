@@ -147,6 +147,8 @@ public class CN1CSSCompileTask extends Task {
                 String maxMemory = getProject().getProperty("cn1css.max.memory");
                 if (maxMemory != null) {
                     javaTask.setMaxmemory("4096m");
+                } else {
+                    javaTask.setMaxmemory(maxMemory);
                 }
                 
                 Argument arg = javaTask.createArg();

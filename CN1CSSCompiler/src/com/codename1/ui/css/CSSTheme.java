@@ -1938,12 +1938,26 @@ public class CSSTheme {
             int[] dpis = getDpi(encImg);
             if (styles.containsKey("cn1-source-dpi")) {
                 //System.out.println("Using cn1-source-dpi "+styles.get("cn1-source-dpi").getFloatValue());
-                resm.targetDensity = getDensityForDpi(((ScaledUnit)styles.get("cn1-source-dpi")).getNumericValue());
+                double densityVal = ((ScaledUnit)styles.get("cn1-source-dpi")).getNumericValue();
+                if (Math.abs(densityVal) < 0.5) {
+                    resm.targetDensity = 0;
+                } else {
+                    resm.targetDensity = getDensityForDpi(densityVal);
+                }
             } else if (dpis[0] > 0) {
                 resm.targetDensity = getImageDensity(encImg);
             } else {
                 
                 resm.targetDensity = getDensityForDpi(bgImage.dpi);
+            }
+            
+            if (styles.containsKey("cn1-densities")) {
+                ScaledUnit densities = (ScaledUnit)styles.get("cn1-densities");
+                if (densities.getLexicalUnitType() == LexicalUnit.SAC_IDENT && "none".equals(densities.getStringValue())) {
+                    // Not a multi-image
+                    resm.setMultiImage(false);
+                    
+                }
             }
             
             //System.out.println("Target density for image is "+resm.targetDensity);

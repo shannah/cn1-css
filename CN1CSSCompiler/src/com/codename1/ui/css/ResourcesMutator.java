@@ -41,6 +41,7 @@ import netscape.javascript.JSObject;
  * @author shannah
  */
 public class ResourcesMutator {
+    private boolean multiImage = true;
     private final EditableResources res;
     private Set<Integer> includedDensities = new HashSet<Integer>();
     public static final int DEFAULT_TARGET_DENSITY = com.codename1.ui.Display.DENSITY_VERY_HIGH;
@@ -94,6 +95,9 @@ public class ResourcesMutator {
 
         float ratioWidth = 0;
         int multiVal = targetDensity;
+        if (!multiImage) {
+            multiVal = 0;
+        }
         switch(multiVal) {
             // Generate RGB Image
             case 0:
@@ -616,6 +620,14 @@ public class ResourcesMutator {
     
     public void log(String msg) {
         System.out.println(msg);
+    }
+    
+    public void setMultiImage(boolean mi) {
+        this.multiImage = mi;
+    }
+    
+    public boolean getMultiImage() {
+        return multiImage;
     }
     
 }
