@@ -1668,3 +1668,24 @@ BorderRadiusFilled {
     border-radius: 3mm;
 }
 
+Title {
+    border: none;
+    color: white;
+    background-color: transparent;
+    font-family: "native:MainThin";
+    font-size: 6mm;
+}
+
+DishListEntry {
+    border-radius: 6px;
+    border: 0px hidden #ffffff;
+    box-shadow: 0px 0px 15px 5px rgba(0,0,0,0.16);
+}
+
+RegularImageBg {
+    
+    color: white;
+    background-image: url(desktop.png);
+    cn1-background-type: cn1-image-scaled;
+    cn1-source-dpi: 0;
+}

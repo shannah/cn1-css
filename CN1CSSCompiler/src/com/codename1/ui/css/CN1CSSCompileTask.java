@@ -157,6 +157,9 @@ public class CN1CSSCompileTask extends Task {
                 Argument destArg = javaTask.createArg();
                 destArg.setValue(destFile.getAbsolutePath());
                 
+                Argument swPipeline = javaTask.createJvmarg();
+                swPipeline.setValue("-Dprism.order=sw");
+                
                 javaTask.execute();
                 
                 String checksum = getMD5Checksum(destFile.getAbsolutePath());

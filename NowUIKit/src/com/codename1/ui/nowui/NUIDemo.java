@@ -121,6 +121,12 @@ public class NUIDemo {
             }
         });
         
+        menu.addMenuItem("REg Image BG", (char)0xf031, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showRegularImageBg();
+            }
+        });
+        
         
         
     }
@@ -498,6 +504,8 @@ ItalicBoldText {
     public void showButtonsForm() {
         Form f = new Form("Buttons");
         installSideMenu(f);
+        f.setTitle("Buttons");
+        f.getToolbar().setTitle("Buttons");
         f.setLayout(new BorderLayout());
         
         NUI.apply(f.getContentPane(), ComponentStyle.BackgroundDark);
@@ -711,7 +719,20 @@ LGDiffAlpha {
             l.setUIID(String.valueOf(styles[i]));
             root.add(l);
         }
+        Container dishListEntry = FlowLayout.encloseCenter(new Label("Dish List Entry"));
+        dishListEntry.setUIID("DishListEntry");
+        root.add(dishListEntry);
+        
         f.add(BorderLayout.CENTER, root);
+        f.show();
+    }
+    
+    private void showRegularImageBg() {
+        Form f = new Form("Reg Image", new BorderLayout());
+        installSideMenu(f);
+        Container c = new Container();
+        c.setUIID("RegularImageBg");
+        f.add(BorderLayout.CENTER, c);
         f.show();
     }
     

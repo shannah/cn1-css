@@ -30,6 +30,7 @@ public class NUISideMenu {
             tb = new Toolbar();
             form.setToolBar(tb);
         }
+        tb.setTitle(form.getTitle());
     }
     
     public Button addMenuItem(String label, char icon, final ActionListener l) {
