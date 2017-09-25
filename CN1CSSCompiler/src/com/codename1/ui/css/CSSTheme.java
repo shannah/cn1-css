@@ -3854,7 +3854,10 @@ public class CSSTheme {
                 return "0";
             }
             
-            
+            if (requiresImageBorder(styles)) {
+                // If there is an image border, we don't want background color messing things up
+                return "0";
+            }
             
         LexicalUnit bgColor = styles.get("background-color");
         if (bgColor == null) {
