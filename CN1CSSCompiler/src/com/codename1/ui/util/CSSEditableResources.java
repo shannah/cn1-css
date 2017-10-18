@@ -28,6 +28,6 @@ public class CSSEditableResources extends EditableResources {
         if(fontFile.exists()) {
             return new EditorTTFFont(fontFile, sizeSetting, fontSize, f);
         }
-        return f;
+        return super.createTrueTypeFont(f, fontName, fileName, fontSize, sizeSetting);
     }
 }

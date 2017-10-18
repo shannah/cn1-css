@@ -136,7 +136,7 @@ public class CN1CSSCompileTask extends Task {
                 
                 Java javaTask = (Java)getProject().createTask("java");
                 Path cp = javaTask.createClasspath();
-                cp.add(new Path(getProject(), javaSEJar.getAbsolutePath()));
+                //cp.add(new Path(getProject(), javaSEJar.getAbsolutePath()));
                 cp.add(new Path(getProject(), designerJar.getAbsolutePath()));
                 cp.add(new Path(getProject(), cssJar.getAbsolutePath()));
                 
