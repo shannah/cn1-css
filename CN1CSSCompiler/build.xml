@@ -86,5 +86,7 @@
         </jar>
         <copy file="dist/cn1css-ant-task.jar" tofile="../cn1-css-demo/lib/cn1css-ant-task.jar" overwrite="true"/>
         <copy file="dist/cn1css-ant-task.jar" tofile="../NowUIKit/lib/cn1css-ant-task.jar" overwrite="true"/>
+        <copy file="dist/cn1css-ant-task.jar" tofile="/Users/shannah/cn1_files/tests/CSSBugTest/lib/cn1css-ant-task.jar" overwrite="true"/>
+        <copy file="dist/cn1css-ant-task.jar" tofile="../RoundRectDemo/lib/cn1css-ant-task.jar" overwrite="true"/>
     </target>
 </project>

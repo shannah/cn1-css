@@ -16,6 +16,7 @@ import com.codename1.ui.animations.AnimationAccessor;
 import com.codename1.ui.plaf.Accessor;
 import com.codename1.ui.plaf.Border;
 import com.codename1.ui.plaf.RoundBorder;
+import com.codename1.ui.plaf.RoundRectBorder;
 import com.codename1.ui.plaf.Style;
 import com.codename1.ui.util.CSSEditableResources;
 import com.codename1.ui.util.EditableResources;
@@ -991,7 +992,32 @@ public class CSSTheme {
             return getPixelValue(targetDpi, screenWidth, screenHeight);
         }
         
+        public float getMMValue(double targetDpi) {
+            return getMMValue(targetDpi, screenWidth, screenHeight);
+        }
         
+        public float getMMValue() {
+            return getMMValue(dpi);
+        }
+        public float getMMValue(double targetDpi, int baseWidth, int baseHeight) {
+            switch (src.getLexicalUnitType()) {
+                case LexicalUnit.SAC_POINT:
+                    return (float)this.getNumericValue() / 72f;
+                case LexicalUnit.SAC_PIXEL:
+                    return (float)(this.getNumericValue() * 25.4/targetDpi);
+                case LexicalUnit.SAC_MILLIMETER:
+                    return (float)this.getNumericValue();
+                case LexicalUnit.SAC_CENTIMETER:
+                    return (float)this.getNumericValue() * 10;
+                case LexicalUnit.SAC_INTEGER:
+                case LexicalUnit.SAC_REAL:
+                    return (float)(this.getNumericValue() * 25.4/targetDpi);
+                case LexicalUnit.SAC_PERCENTAGE:
+                    return (float)((((double)baseWidth) * this.getNumericValue() / 100.0) * 25.4/targetDpi);
+                    
+            }
+            throw new RuntimeException("Cannot get mm value for type "+src);
+        }
         
         public int getPixelValue(double targetDpi, int baseWidth, int baseHeight) {
             switch (src.getLexicalUnitType()) {
@@ -1175,6 +1201,35 @@ public class CSSTheme {
         }
         sb.append("</body></html>");
         return sb.toString();
+    }
+    
+    public boolean requiresCaptureHtml() {
+        for (String name : elements.keySet()) {
+            if (!isModified(name)) {
+                continue;
+            }
+            
+            
+            Element el = (Element)elements.get(name);
+            Map unselectedStyle = el.getUnselected().getFlattenedStyle();
+            if (el.requiresBackgroundImageGeneration(unselectedStyle) || el.requiresImageBorder(unselectedStyle)) {
+                return true;
+            }
+            Map selectedStyle = el.getSelected().getFlattenedStyle();
+            if (el.requiresBackgroundImageGeneration(selectedStyle) || el.requiresImageBorder(selectedStyle)) {
+                return true;
+            }
+            Map pressedStyle = el.getPressed().getFlattenedStyle();   
+            if (el.requiresBackgroundImageGeneration(pressedStyle) || el.requiresImageBorder(pressedStyle)) {
+                return true;
+            }
+            Map disabledStyle = el.getDisabled().getFlattenedStyle();
+            if (el.requiresBackgroundImageGeneration(disabledStyle) || el.requiresImageBorder(disabledStyle)) {
+                return true;
+            }
+                    
+        }
+        return false;
     }
     
     public String generateCaptureHtml() {
@@ -1992,7 +2047,11 @@ public class CSSTheme {
         }
     }
     
-    public void createImageBorders(WebView web) {
+    public static interface WebViewProvider {
+        WebView getWebView();
+    }
+    
+    public void createImageBorders(WebViewProvider webviewProvider) {
         if (res == null) {
             res = new CSSEditableResources(resourceFile);
         }
@@ -2200,7 +2259,9 @@ public class CSSTheme {
             
         }
         //System.out.println(generateCaptureHtml());
-        resm.createScreenshots(web, generateCaptureHtml(), this.baseURL.toExternalForm());
+        if (requiresCaptureHtml()) {
+            resm.createScreenshots(webviewProvider.getWebView(), generateCaptureHtml(), this.baseURL.toExternalForm());
+        }
         for (Runnable r : onComplete) {
             r.run();
         }
@@ -2245,6 +2306,102 @@ public class CSSTheme {
         
         boolean isStyleNativelySupported() {
             return this.styleTop == null || isBorderTypeNativelySupported(this.styleTop);
+        }
+        
+        boolean isBorderLineOrNone() {
+            return styleTop == null || "none".equals(styleTop) || "line".equals(styleTop) || "solid".equals(styleTop);
+        }
+        
+        public boolean canBeAchievedWithRoundRectBorder(Map<String,LexicalUnit> styles) {
+            //System.out.println("Checking if we can achieve with background image generation "+styles);
+            if (hasUnequalBorders() || this.hasGradient() || !isBorderLineOrNone() || !isNone(backgroundImageUrl) || hasBoxShadow()) {
+                //System.out.println("Failed test 1");
+                //System.out.println("unequalBorders? "+hasUnequalBorders());
+                //System.out.println("Has gradient? "+hasGradient());
+                //System.out.println("BorderLineOrNone? "+isBorderLineOrNone());
+                //System.out.println("Background Image URL: "+backgroundImageUrl);
+                return false;
+            }
+            
+            
+            
+            String prefix = "cn1-border";
+            String[] corners = new String[]{"top-left", "top-right", "bottom-left", "bottom-right"};
+            String[] xy = new String[]{"x", "y"};
+            
+            String[] radiusAtts = new String[8];
+            int i =0;
+            for (String axis : xy) {
+                for (String corner : corners) {
+                    radiusAtts[i++] = prefix+"-"+corner+"-radius-"+axis;
+                }
+            }
+            
+            ScaledUnit val = null;
+            for (String cornerStyle : radiusAtts) {
+                ScaledUnit u = (ScaledUnit)styles.get(cornerStyle);
+                if (u != null && u.getPixelValue() != 0) {
+                    if (val != null && val.getPixelValue() != u.getPixelValue()) {
+                        // We have more than one non-zero corner radius
+                        //System.out.println("Failed corner test");
+                        return false;
+                        
+                    }
+                    val = u;
+                }
+            }
+            
+            // All corners are the same, so we can proceed to the next step.
+            
+            prefix = "border";
+            String[] sides = new String[]{"top", "right", "bottom", "left"};
+            
+            String[] widthAtts = new String[4];
+            String[] colorAtts = new String[4];
+            i=0;
+            for (String side : sides) {
+                widthAtts[i] = "border-"+side+"-width";
+                colorAtts[i++] = "border-"+side+"-color";
+            }
+            
+            boolean borderColorSet=false;
+            boolean borderWidthSet=false;
+            int borderWidth=0;
+            int colorInt=0;
+            int alphaInt=0;
+            
+            for (String widthAtt : widthAtts) {
+                ScaledUnit uWidth = (ScaledUnit)styles.get(widthAtt);
+                if (uWidth != null) {
+                    if (borderWidthSet && uWidth.getPixelValue() != borderWidth) {
+                        ///System.out.println("Failed the width test");
+                        return false;
+                    }
+                    borderWidthSet = true;
+                    borderWidth = uWidth.getPixelValue();
+                }
+            }
+            
+            for (String colorAtt : colorAtts) {
+                LexicalUnit uColor = styles.get(colorAtt);
+                if (uColor != null) {
+                    if (borderColorSet && (getColorInt(uColor) != colorInt || getColorAlphaInt(uColor) != alphaInt)) {
+                        //System.out.println("Failed the color test");
+                        return false;
+                    } 
+                    borderColorSet = true;
+                    colorInt = getColorInt(uColor);
+                    alphaInt = getColorAlphaInt(uColor);
+                }
+            }
+            
+            //System.out.println("Can be achieved");
+            // We should be able to achieve this with a roundrect border
+            return true;
+            
+            
+            
+            
         }
         
         
@@ -2334,6 +2491,10 @@ public class CSSTheme {
         
         o = o.replaceAll("[^0-9]", "");
         return o.matches("^0*$");
+    }
+    
+    private static boolean isZero(ScaledUnit o) {
+        return o == null || "none".equals(o.getStringValue()) ||  o.getNumericValue() == 0 ;
     }
     
     private static String hashString(String message, String algorithm) {
@@ -3185,7 +3346,7 @@ public class CSSTheme {
                     );
         }
         
-        private boolean isRoundRectBorder(Map<String, LexicalUnit> style) {
+        private boolean isPillPorder(Map<String, LexicalUnit> style) {
             LexicalUnit backgroundType = style.get("cn1-background-type");
             return (backgroundType != null) && "cn1-pill-border".equals(backgroundType.getStringValue());
         }
@@ -3204,6 +3365,11 @@ public class CSSTheme {
             ScaledUnit background  = (ScaledUnit) style.get("background");
             boolean isCN1Gradient = background != null && background.isCN1Gradient();
             Border b = createBorder(style);
+            if (b.canBeAchievedWithRoundRectBorder(style)) {
+                // If we can do this with a roundrect border
+                // then we don't need background image
+                return false;
+            }
             LexicalUnit backgroundType = style.get("cn1-background-type");
             if (usesRoundBorder(style)) {
                 return false;
@@ -3279,6 +3445,10 @@ public class CSSTheme {
             }
             
             Border b = this.createBorder(style);
+            if (b.canBeAchievedWithRoundRectBorder(style)) {
+                // If we can do it with a RoundRectBorder, then we don't need to generate an imageborder
+                return false;
+            }
             
             if (b.hasBorderRadius() || (b.hasGradient() && !isCN1Gradient) || b.hasBoxShadow() || hasFilter(style) || b.hasUnequalBorders() || !b.isStyleNativelySupported() || usesPointUnitsInBorder(style)) {
                 LexicalUnit width = style.get("width");
@@ -3882,10 +4052,20 @@ public class CSSTheme {
         
         return null;
     }
+     
+        private int getShadowSpreadPx(com.codename1.ui.plaf.Border b) {
+            if (b instanceof RoundBorder) {
+                return ((RoundBorder)b).getShadowSpread();
+            }
+            if (b instanceof RoundRectBorder) {
+                return Display.getInstance().convertToPixels(((RoundRectBorder)b).getShadowSpread());
+            }
+            return 0;
+        }
         
-        private float calculateShadowRatio(RoundBorder out, boolean spreadMM, float spreadMMVal, ScaledUnit value) {
+        private float calculateShadowRatio(com.codename1.ui.plaf.Border out, boolean spreadMM, float spreadMMVal, ScaledUnit value) {
             float val = (float)value.getNumericValue();
-            if (val == 0 || out.getShadowSpread() == 0) {
+            if (val == 0 || getShadowSpreadPx(out) == 0) {
                 // leave alone
                 if (val == 0) {
                     switch (value.getLexicalUnitType()) {
@@ -3906,7 +4086,7 @@ public class CSSTheme {
                         if (spreadMM) {
                             val = -px2mm((int)val) / spreadMMVal / 2;
                         } else {
-                            val = -val / out.getShadowSpread() / 2;
+                            val = -val / getShadowSpreadPx(out) / 2;
                         }
                         val += 0.5;
                         break;
@@ -3915,7 +4095,7 @@ public class CSSTheme {
                         if (spreadMM) {
                             val = -pt2mm(val) / spreadMMVal / 2;
                         } else {
-                            val = -val / out.getShadowSpread() / 2;
+                            val = -val / getShadowSpreadPx(out) / 2;
                         }
                         val += 0.5;
                         break;
@@ -3926,7 +4106,7 @@ public class CSSTheme {
                         if (spreadMM) {
                             val = -val/spreadMMVal / 2;
                         } else {
-                            val = -mm2px(val)/out.getShadowSpread() / 2;
+                            val = -mm2px(val)/getShadowSpreadPx(out) / 2;
                         }
                         val += 0.5;
                         break;
@@ -3935,7 +4115,7 @@ public class CSSTheme {
                         if (spreadMM) {
                             val = -val/spreadMMVal*10f / 2;
                         } else {
-                            val = -mm2px(val*10f)/out.getShadowSpread() /2 ;
+                            val = -mm2px(val*10f)/getShadowSpreadPx(out) /2 ;
                         }
                         val += 0.5;
                         break;
@@ -3944,7 +4124,7 @@ public class CSSTheme {
                         if (spreadMM) {
                             val = -in2mm(val)/spreadMMVal / 2;
                         } else {
-                            val = -in2px(val)/out.getShadowSpread() / 2;
+                            val = -in2px(val)/getShadowSpreadPx(out) / 2;
                         }
                         val += 0.5;
                         break;
@@ -3958,156 +4138,347 @@ public class CSSTheme {
             return val;
         }
         
+        
+        private com.codename1.ui.plaf.Border createRoundBorder(Map<String,LexicalUnit> styles) {
+            // We create a round border
+            LexicalUnit backgroundColor = styles.get("background-color");
+
+            LexicalUnit borderColor = styles.get("border-top-color");
+            ScaledUnit borderWidth = (ScaledUnit)styles.get("border-top-width");
+
+
+            com.codename1.ui.plaf.RoundBorder out = RoundBorder.create();
+            if (isPillPorder(styles)) {
+                out.rectangle(true);
+            } else {
+                out.rectangle(false);
+            }
+            if (borderWidth != null) {
+                switch (borderWidth.getLexicalUnitType()) {
+                    case LexicalUnit.SAC_MILLIMETER:
+                        out.stroke((int)borderWidth.getNumericValue(), true);
+                        break;
+                    case LexicalUnit.SAC_INTEGER:
+                    case LexicalUnit.SAC_REAL:
+                    case LexicalUnit.SAC_POINT:
+                        out.stroke((float)borderWidth.getNumericValue() * 25.4f / 72f, true);
+                        break;
+                    case LexicalUnit.SAC_PIXEL:
+                        out.stroke((int)borderWidth.getNumericValue(), false);
+                        break;
+                    case LexicalUnit.SAC_CENTIMETER:
+                        out.stroke((float)borderWidth.getNumericValue() * 10, true);
+                        break;
+                    case LexicalUnit.SAC_INCH:
+                        out.stroke((float)borderWidth.getNumericValue() * 25.4f, true);
+                        break;
+                    default:
+                        System.err.println("In file "+baseURL);
+                        System.err.println("Invalid border width unit " + borderWidth.getLexicalUnitType()+". Setting border width to 1");
+                        out.stroke(1, false);
+
+                }
+            } else {
+                out.stroke(1, false);
+            }
+
+            if (backgroundColor != null) {
+                out.color(getColorInt(backgroundColor));
+                Integer alpha = getColorAlphaInt(backgroundColor);
+                if (alpha != null) {
+                    out.opacity(alpha);
+                } else {
+                    out.opacity(255);
+                }
+            } else {
+                out.opacity(0);
+            }
+
+            if (borderColor != null) {
+                out.strokeColor(getColorInt(borderColor));
+                Integer alpha = getColorAlphaInt(borderColor);
+                if (alpha != null) {
+                    out.strokeOpacity(alpha);
+                } else {
+                    out.strokeOpacity(255);
+                }
+            } else {
+                out.strokeOpacity(0);
+            }
+
+            /*
+
+            apply(style, "cn1-box-shadow-inset", value);
+                apply(style, "cn1-box-shadow-color", value);
+                apply(style, "cn1-box-shadow-spread", value);
+                apply(style, "cn1-box-shadow-blur", value);
+                apply(style, "cn1-box-shadow-h", value);
+                apply(style, "cn1-box-shadow-v", value);
+            */
+
+
+            ScaledUnit shadowSpread = (ScaledUnit)styles.get("cn1-box-shadow-spread");
+            boolean spreadMM = false;
+            float spreadMMVal = 0f;
+            if (shadowSpread != null) {
+                switch (shadowSpread.getLexicalUnitType()) {
+
+                    case LexicalUnit.SAC_PIXEL:
+                        out.shadowSpread((int)shadowSpread.getNumericValue());
+                        break;
+                    case LexicalUnit.SAC_MILLIMETER:
+                        spreadMMVal = (float)Math.max(1, Math.round(shadowSpread.getNumericValue()));
+                        spreadMM = true;
+                        out.shadowSpread((int)spreadMMVal, true);
+                        break;
+                    case LexicalUnit.SAC_INCH:
+                        spreadMMVal = (float)Math.max(1, Math.round(in2mm((float)shadowSpread.getNumericValue())));
+                        spreadMM = true;
+                        out.shadowSpread((int)spreadMMVal, true);
+                        break;
+                    case LexicalUnit.SAC_CENTIMETER:
+                        spreadMMVal = (float)Math.max(1, Math.round(10*shadowSpread.getNumericValue()));
+                        spreadMM = true;
+                        out.shadowSpread((int)spreadMMVal, true);
+                        break;
+                    case LexicalUnit.SAC_POINT:
+                        spreadMMVal = (float)Math.max(1, Math.round(pt2mm((float)shadowSpread.getNumericValue())));
+                        spreadMM = true;
+                        out.shadowSpread((int)spreadMMVal, true);
+                        break;
+                    default:
+                        System.err.println("In file "+baseURL);
+                        System.err.println("Unsupported unit for cn1-box-shadow-spread: "+shadowSpread.getLexicalUnitType()+". Setting shadow spread to 0");
+                        out.shadowSpread(0);
+
+
+                }
+            }
+
+            ScaledUnit shadowH = (ScaledUnit)styles.get("cn1-box-shadow-h");
+            if (shadowH != null) {
+                out.shadowX(calculateShadowRatio(out, spreadMM, spreadMMVal, shadowH));
+            }
+            ScaledUnit shadowV = (ScaledUnit)styles.get("cn1-box-shadow-v");
+            if (shadowV != null) {
+                out.shadowY(calculateShadowRatio(out, spreadMM, spreadMMVal, shadowV));
+            }
+
+            ScaledUnit boxShadowBlur = (ScaledUnit)styles.get("cn1-box-shadow-blur");
+            if (boxShadowBlur != null) {
+                out.shadowBlur(-calculateShadowRatio(out, spreadMM, spreadMMVal, boxShadowBlur));
+            }
+
+            LexicalUnit shadowColor = styles.get("cn1-box-shadow-color");
+            if (shadowColor != null) {
+                System.err.println("In file "+baseURL);
+                System.err.println("Shadow color not supported for background type cn1-round-border.  Ignoring RGB Portion  Only using Alpha");
+                Integer alpha = getColorAlphaInt(shadowColor);
+                if (alpha != null) {
+                    out.shadowOpacity(alpha);
+                }
+
+            }
+
+
+
+            //System.out.println("Round border: "+out.getShadowX()+", "+out.getShadowY()+", "+out.getShadowSpread()+", "+out.getShadowOpacity());
+            return out;
+        }
+        
+        private ScaledUnit getBorderRadius(Map<String,LexicalUnit> styles, String corner) {
+            return (ScaledUnit)styles.get("cn1-border-"+corner+"-radius-x");
+        }
+        
+        
+        
+        private ScaledUnit getBorderRadius(Map<String,LexicalUnit> styles) {
+            String prefix = "cn1-border";
+            String[] corners = new String[]{"top-left", "top-right", "bottom-left", "bottom-right"};
+            String[] xy = new String[]{"x", "y"};
+            
+            String[] radiusAtts = new String[8];
+            int i =0;
+            for (String axis : xy) {
+                for (String corner : corners) {
+                    radiusAtts[i++] = prefix+"-"+corner+"-radius-"+axis;
+                }
+            }
+            
+            
+            for (String cornerStyle : radiusAtts) {
+                ScaledUnit u = (ScaledUnit)styles.get(cornerStyle);
+                //System.out.println("Checking corner style "+cornerStyle+" with value "+u);
+                if (u != null && u.getPixelValue() != 0) {
+                    return u;
+                }
+            }
+            return null;
+        }
+        
+        private com.codename1.ui.plaf.Border createRoundRectBorder(Map<String,LexicalUnit> styles) {
+            // We create a round border
+            //LexicalUnit backgroundColor = styles.get("background-color");
+
+            LexicalUnit borderColor = styles.get("border-top-color");
+            ScaledUnit borderWidth = (ScaledUnit)styles.get("border-top-width");
+
+
+            com.codename1.ui.plaf.RoundRectBorder out = RoundRectBorder.create();
+            
+            ScaledUnit radius = getBorderRadius(styles);
+            if (radius != null) {
+                out.cornerRadius(radius.getMMValue());
+            } else {
+                out.cornerRadius(0);
+            }
+            
+            ScaledUnit topLeftRadius = getBorderRadius(styles, "top-left");
+            ScaledUnit bottomRightRadius = getBorderRadius(styles, "bottom-right");
+            //System.out.println("TopLeftRadius is : "+topLeftRadius+" isZero? "+isZero(topLeftRadius));
+            //System.out.println("BottomRight Radius is : "+bottomRightRadius+" isZero? "+isZero(bottomRightRadius));
+            if (!isZero(topLeftRadius) && isZero(bottomRightRadius)) {
+                //System.out.println("Setting top only mode");
+                out.topOnlyMode(true);
+            } else if (isZero(topLeftRadius) && !isZero(bottomRightRadius)) {
+                
+                out.bottomOnlyMode(true);
+            }
+            
+            
+            
+            if (borderWidth != null) {
+                switch (borderWidth.getLexicalUnitType()) {
+                    case LexicalUnit.SAC_MILLIMETER:
+                        out.stroke((float)borderWidth.getNumericValue(), true);
+                        break;
+                    case LexicalUnit.SAC_INTEGER:
+                    case LexicalUnit.SAC_REAL:
+                    case LexicalUnit.SAC_POINT:
+                        out.stroke((float)borderWidth.getNumericValue() * 25.4f / 72f, true);
+                        break;
+                    case LexicalUnit.SAC_PIXEL:
+                        out.stroke((int)borderWidth.getNumericValue(), false);
+                        break;
+                    case LexicalUnit.SAC_CENTIMETER:
+                        out.stroke((float)borderWidth.getNumericValue() * 10, true);
+                        break;
+                    case LexicalUnit.SAC_INCH:
+                        out.stroke((float)borderWidth.getNumericValue() * 25.4f, true);
+                        break;
+                    default:
+                        System.err.println("In file "+baseURL);
+                        System.err.println("Invalid border width unit " + borderWidth.getLexicalUnitType()+". Setting border width to 1");
+                        out.stroke(1, false);
+
+                }
+            } else {
+                out.stroke(1, false);
+            }
+
+            
+
+            if (borderColor != null) {
+                out.strokeColor(getColorInt(borderColor));
+                Integer alpha = getColorAlphaInt(borderColor);
+                if (alpha != null) {
+                    out.strokeOpacity(alpha);
+                } else {
+                    out.strokeOpacity(255);
+                }
+            } else {
+                out.strokeOpacity(0);
+            }
+
+            
+            /*
+
+            apply(style, "cn1-box-shadow-inset", value);
+                apply(style, "cn1-box-shadow-color", value);
+                apply(style, "cn1-box-shadow-spread", value);
+                apply(style, "cn1-box-shadow-blur", value);
+                apply(style, "cn1-box-shadow-h", value);
+                apply(style, "cn1-box-shadow-v", value);
+            */
+
+
+            ScaledUnit shadowSpread = (ScaledUnit)styles.get("cn1-box-shadow-spread");
+            boolean spreadMM = false;
+            float spreadMMVal = 0f;
+            if (shadowSpread != null) {
+                switch (shadowSpread.getLexicalUnitType()) {
+
+                    case LexicalUnit.SAC_PIXEL:
+                        out.shadowSpread((int)shadowSpread.getNumericValue());
+                        break;
+                    case LexicalUnit.SAC_MILLIMETER:
+                        spreadMMVal = (float)Math.max(1, Math.round(shadowSpread.getNumericValue()));
+                        spreadMM = true;
+                        out.shadowSpread((float)spreadMMVal);
+                        break;
+                    case LexicalUnit.SAC_INCH:
+                        spreadMMVal = (float)Math.max(1, Math.round(in2mm((float)shadowSpread.getNumericValue())));
+                        spreadMM = true;
+                        out.shadowSpread((float)spreadMMVal);
+                        break;
+                    case LexicalUnit.SAC_CENTIMETER:
+                        spreadMMVal = (float)Math.max(1, Math.round(10*shadowSpread.getNumericValue()));
+                        spreadMM = true;
+                        out.shadowSpread((float)spreadMMVal);
+                        break;
+                    case LexicalUnit.SAC_POINT:
+                        spreadMMVal = (float)Math.max(1, Math.round(pt2mm((float)shadowSpread.getNumericValue())));
+                        spreadMM = true;
+                        out.shadowSpread((float)spreadMMVal);
+                        break;
+                    default:
+                        System.err.println("In file "+baseURL);
+                        System.err.println("Unsupported unit for cn1-box-shadow-spread: "+shadowSpread.getLexicalUnitType()+". Setting shadow spread to 0");
+                        out.shadowSpread(0);
+
+
+                }
+            }
+
+            ScaledUnit shadowH = (ScaledUnit)styles.get("cn1-box-shadow-h");
+            if (shadowH != null) {
+                out.shadowX(calculateShadowRatio(out, spreadMM, spreadMMVal, shadowH));
+            }
+            ScaledUnit shadowV = (ScaledUnit)styles.get("cn1-box-shadow-v");
+            if (shadowV != null) {
+                out.shadowY(calculateShadowRatio(out, spreadMM, spreadMMVal, shadowV));
+            }
+
+            ScaledUnit boxShadowBlur = (ScaledUnit)styles.get("cn1-box-shadow-blur");
+            if (boxShadowBlur != null) {
+                out.shadowBlur(-calculateShadowRatio(out, spreadMM, spreadMMVal, boxShadowBlur));
+            }
+
+            LexicalUnit shadowColor = styles.get("cn1-box-shadow-color");
+            if (shadowColor != null) {
+                System.err.println("In file "+baseURL);
+                System.err.println("Shadow color not supported for background type cn1-round-border.  Ignoring RGB Portion  Only using Alpha");
+                Integer alpha = getColorAlphaInt(shadowColor);
+                if (alpha != null) {
+                    out.shadowOpacity(alpha);
+                }
+
+            }
+
+
+
+            //System.out.println("Round border: "+out.getShadowX()+", "+out.getShadowY()+", "+out.getShadowSpread()+", "+out.getShadowOpacity());
+            return out;
+        }
         public com.codename1.ui.plaf.Border getThemeBorder(Map<String,LexicalUnit> styles) {
             Border b = this.createBorder(styles);
             LexicalUnit cn1BackgroundType = styles.get("cn1-background-type");
             
             if (cn1BackgroundType != null && usesRoundBorder(styles)) {
-                // We create a round border
-                LexicalUnit backgroundColor = styles.get("background-color");
-                
-                LexicalUnit borderColor = styles.get("border-top-color");
-                ScaledUnit borderWidth = (ScaledUnit)styles.get("border-top-width");
-                
-                
-                com.codename1.ui.plaf.RoundBorder out = RoundBorder.create();
-                if (isRoundRectBorder(styles)) {
-                    out.rectangle(true);
-                } else {
-                    out.rectangle(false);
-                }
-                if (borderWidth != null) {
-                    switch (borderWidth.getLexicalUnitType()) {
-                        case LexicalUnit.SAC_MILLIMETER:
-                            out.stroke((int)borderWidth.getNumericValue(), true);
-                            break;
-                        case LexicalUnit.SAC_INTEGER:
-                        case LexicalUnit.SAC_REAL:
-                        case LexicalUnit.SAC_POINT:
-                            out.stroke((float)borderWidth.getNumericValue() * 25.4f / 72f, true);
-                            break;
-                        case LexicalUnit.SAC_PIXEL:
-                            out.stroke((int)borderWidth.getNumericValue(), false);
-                            break;
-                        case LexicalUnit.SAC_CENTIMETER:
-                            out.stroke((float)borderWidth.getNumericValue() * 10, true);
-                            break;
-                        case LexicalUnit.SAC_INCH:
-                            out.stroke((float)borderWidth.getNumericValue() * 25.4f, true);
-                            break;
-                        default:
-                            System.err.println("In file "+baseURL);
-                            System.err.println("Invalid border width unit " + borderWidth.getLexicalUnitType()+". Setting border width to 1");
-                            out.stroke(1, false);
-
-                    }
-                } else {
-                    out.stroke(1, false);
-                }
-                
-                if (backgroundColor != null) {
-                    out.color(getColorInt(backgroundColor));
-                    Integer alpha = getColorAlphaInt(backgroundColor);
-                    if (alpha != null) {
-                        out.opacity(alpha);
-                    } else {
-                        out.opacity(255);
-                    }
-                } else {
-                    out.opacity(0);
-                }
-                
-                if (borderColor != null) {
-                    out.strokeColor(getColorInt(borderColor));
-                    Integer alpha = getColorAlphaInt(borderColor);
-                    if (alpha != null) {
-                        out.strokeOpacity(alpha);
-                    } else {
-                        out.strokeOpacity(255);
-                    }
-                } else {
-                    out.strokeOpacity(0);
-                }
-                
-                /*
-                
-                apply(style, "cn1-box-shadow-inset", value);
-                    apply(style, "cn1-box-shadow-color", value);
-                    apply(style, "cn1-box-shadow-spread", value);
-                    apply(style, "cn1-box-shadow-blur", value);
-                    apply(style, "cn1-box-shadow-h", value);
-                    apply(style, "cn1-box-shadow-v", value);
-                */
-                
-                
-                ScaledUnit shadowSpread = (ScaledUnit)styles.get("cn1-box-shadow-spread");
-                boolean spreadMM = false;
-                float spreadMMVal = 0f;
-                if (shadowSpread != null) {
-                    switch (shadowSpread.getLexicalUnitType()) {
-                            
-                        case LexicalUnit.SAC_PIXEL:
-                            out.shadowSpread((int)shadowSpread.getNumericValue());
-                            break;
-                        case LexicalUnit.SAC_MILLIMETER:
-                            spreadMMVal = (float)Math.max(1, Math.round(shadowSpread.getNumericValue()));
-                            spreadMM = true;
-                            out.shadowSpread((int)spreadMMVal, true);
-                            break;
-                        case LexicalUnit.SAC_INCH:
-                            spreadMMVal = (float)Math.max(1, Math.round(in2mm((float)shadowSpread.getNumericValue())));
-                            spreadMM = true;
-                            out.shadowSpread((int)spreadMMVal, true);
-                            break;
-                        case LexicalUnit.SAC_CENTIMETER:
-                            spreadMMVal = (float)Math.max(1, Math.round(10*shadowSpread.getNumericValue()));
-                            spreadMM = true;
-                            out.shadowSpread((int)spreadMMVal, true);
-                            break;
-                        case LexicalUnit.SAC_POINT:
-                            spreadMMVal = (float)Math.max(1, Math.round(pt2mm((float)shadowSpread.getNumericValue())));
-                            spreadMM = true;
-                            out.shadowSpread((int)spreadMMVal, true);
-                            break;
-                        default:
-                            System.err.println("In file "+baseURL);
-                            System.err.println("Unsupported unit for cn1-box-shadow-spread: "+shadowSpread.getLexicalUnitType()+". Setting shadow spread to 0");
-                            out.shadowSpread(0);
-                            
-                            
-                    }
-                }
-                
-                ScaledUnit shadowH = (ScaledUnit)styles.get("cn1-box-shadow-h");
-                if (shadowH != null) {
-                    out.shadowX(calculateShadowRatio(out, spreadMM, spreadMMVal, shadowH));
-                }
-                ScaledUnit shadowV = (ScaledUnit)styles.get("cn1-box-shadow-v");
-                if (shadowV != null) {
-                    out.shadowY(calculateShadowRatio(out, spreadMM, spreadMMVal, shadowV));
-                }
-                
-                ScaledUnit boxShadowBlur = (ScaledUnit)styles.get("cn1-box-shadow-blur");
-                if (boxShadowBlur != null) {
-                    out.shadowBlur(-calculateShadowRatio(out, spreadMM, spreadMMVal, boxShadowBlur));
-                }
-                
-                LexicalUnit shadowColor = styles.get("cn1-box-shadow-color");
-                if (shadowColor != null) {
-                    System.err.println("In file "+baseURL);
-                    System.err.println("Shadow color not supported for background type cn1-round-border.  Ignoring RGB Portion  Only using Alpha");
-                    Integer alpha = getColorAlphaInt(shadowColor);
-                    if (alpha != null) {
-                        out.shadowOpacity(alpha);
-                    }
-                    
-                }
-                
-                
-                
-                //System.out.println("Round border: "+out.getShadowX()+", "+out.getShadowY()+", "+out.getShadowSpread()+", "+out.getShadowOpacity());
-                return out;
-                
+                return createRoundBorder(styles);
+            }
+            if (b.hasBorderRadius()) {
+                return createRoundRectBorder(styles);
             }
             if (b.hasUnequalBorders()) {
                 //System.out.println("We have unequal borders");
