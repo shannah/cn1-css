@@ -2,7 +2,9 @@
 
 A library to add support for designing Codename One themes using CSS (Cascading Style Sheets).
 
-#Requirements
+NOTE: This library has now been integrated directly into the Codename One plugin. See full details [here](https://www.codenameone.com/manual/css.html).  The source code is now part of the Codename One Designer project.  See the latest sources [here](https://github.com/codenameone/CodenameOne/tree/master/CodenameOneDesigner/src/com/codename1/designer/css).  This repository is no longer being maintained.  We recommend you use the built-in CSS support if Codename One instead.
+
+# Requirements
 
 - Your development machine must have Java 8 installed.
 
